@@ -18,33 +18,41 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
     die('Acceso no permitido');
 } else {
     if (!class_exists('sistema_de_inscripcion_a_carreras')) {
-        require_once dirname(__FILE__) . '/admin/constructores/menu.php';
         require_once dirname(__FILE__) . '/enque.php';
+        require_once dirname(__FILE__) . '/activar_plugin.php';
+        require_once dirname(__FILE__) . '/desactivar_plugin.php';
+        require_once dirname(__FILE__) . '/desinstalar_plugin.php';
 
         class sistema_de_inscripcion_a_carreras
         {
             public function __construct()
             {
-                add_shortcode('menu', array($this, 'construir_menu'));
-
-                add_shortcode('cuerpo', array($this, 'construir_cuerpo'));
-
-                add_shortcode('footer', array($this, 'construir_footer'));
-            }
-            
-            public function construir_menu()
-            {
-                
+                add_action('init', array($this, 'activar_desactivar_desinstalar'));
             }
 
-            public function construir_cuerpo()
+            public function activar_desactivar_desinstalar()
             {
+                register_activation_hook(__FILE__, 'activar_plugin');
 
-            }
+                // register_deactivation_hook(__FILE__, 'desactivar_plugin');
 
-            public function construir_footer()
-            {
+                // register_uninstall_hook(__FILE__, 'desinstalar_plugin');
 
+                /*
+                This table illustrates the differences between deactivation and uninstall.
+                Scenario                 | Deactivation Hook | Uninstall Hook
+                -------------------------|-------------------|----------------   
+                Flush Cache/Temp         |       Yes         |       No
+                -------------------------|-------------------|----------------
+                Flush Permalinks         |       Yes         |       No
+                -------------------------|-------------------|----------------
+                Remove Options from      |       No          |       Yes
+                {$wpdb->prefix}_options  |                   |
+                -------------------------|-------------------|----------------
+                Remove Tables from wpdb  |       No          |       Yes
+                */
+
+                register_deactivation_hook(__FILE__, 'desinstalar_plugin'); // USO EXCLUSIVO DE DEBUGGEO
             }
         }
     }
