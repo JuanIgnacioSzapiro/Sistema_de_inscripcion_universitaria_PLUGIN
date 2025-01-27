@@ -1,18 +1,18 @@
 <?php
 require_once(dirname(__FILE__) . "/generador_post_type.php");
 
-function registrar_carreras()
+class carreras extends tipo_de_post
 {
-    registrar_post_type('carreras', array(
-        'public' => true,
-        'label' => 'Carreras',
-        'menu_icon' => 'dashicons-database',
-    ));
-}
+    public function __construct()
+    {
+        $this->set_id('carreras');
 
-add_action('init', 'registrar_carreras');
+        $this->set_caracteristicas(array(
+            'public' => true,
+            'label' => 'Carreras',
+            'menu_icon' => 'dashicons-database',
+        ));
 
-function deregistrar_carreras()
-{
-    deregistrar_post_type('carreras');
+        add_action('init', array($this, 'registrar_post_type'));
+    }
 }

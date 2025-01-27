@@ -4,7 +4,10 @@ require_once dirname(__FILE__) . '/admin/post_type/carreras.php';
 // vaciado de base de datos
 function desactivar_plugin()
 {
-    deregistrar_carreras();
+    $carreras = new carreras();
+    $carreras->deregistrar_post_type();
+
+    flush_rewrite_rules(); // limpia permalinks
 
     //global $wpdb;
     //vaciar_tablas($wpdb);

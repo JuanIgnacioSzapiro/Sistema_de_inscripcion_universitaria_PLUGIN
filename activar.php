@@ -3,5 +3,7 @@ require_once dirname(__FILE__) . '/admin/post_type/carreras.php';
 
 function activar_plugin()
 {
-    registrar_carreras();
+    $carreras = new carreras();
+
+    flush_rewrite_rules(); // limpia permalinks
 }

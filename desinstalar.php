@@ -3,7 +3,11 @@ require_once dirname(__FILE__) . '/admin/post_type/carreras.php';
 
 function desinstalar_plugin()
 {
-    deregistrar_carreras();
+    $carreras = new carreras();
+    $carreras->deregistrar_post_type();
+    $carreras->borrar_todos_los_post();
+
+    flush_rewrite_rules(); // limpia permalinks
 
     // global $wpdb;
     // eliminar_tablas($wpdb);

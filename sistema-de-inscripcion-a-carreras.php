@@ -58,4 +58,3 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
     }
     new sistema_de_inscripcion_a_carreras();
 }
-
