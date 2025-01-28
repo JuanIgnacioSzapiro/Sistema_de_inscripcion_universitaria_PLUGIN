@@ -29,7 +29,7 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
             public function __construct()
             {
 
-                add_action('init', 'activar_plugin', -10); //no funciona
+                add_action('init', 'activar_plugin', -10);
             }
 
             public function activar_desactivar_desinstalar()
