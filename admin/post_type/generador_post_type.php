@@ -31,8 +31,6 @@ class tipo_de_post
     public function registrar_post_type()
     {
         register_post_type($this->get_id(), $this->get_caracteristicas());
-
-        //error_log('test: registrar_post_type');
     }
 
     public function deregistrar_post_type()

@@ -19,22 +19,22 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
 } else {
     if (!class_exists('sistema_de_inscripcion_a_carreras')) {
         require_once dirname(__FILE__) . '/enque.php';
-        require_once dirname(__FILE__) . '/activar_plugin.php';
-        require_once dirname(__FILE__) . '/desactivar_plugin.php';
-        require_once dirname(__FILE__) . '/desinstalar_plugin.php';
+        require_once dirname(__FILE__) . '/activar.php';
+        require_once dirname(__FILE__) . '/desactivar.php';
+        require_once dirname(__FILE__) . '/desinstalar.php';
+
 
         class sistema_de_inscripcion_a_carreras
         {
             public function __construct()
             {
-                add_action('init', array($this, 'activar_desactivar_desinstalar'));
+
+                add_action('init', 'activar_plugin', -10); //no funciona
             }
 
             public function activar_desactivar_desinstalar()
             {
-                register_activation_hook(__FILE__, 'activar_plugin');
-
-                // register_deactivation_hook(__FILE__, 'desactivar_plugin');
+                register_deactivation_hook(__FILE__, 'desactivar_plugin');
 
                 // register_uninstall_hook(__FILE__, 'desinstalar_plugin');
 
