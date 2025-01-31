@@ -22,16 +22,26 @@ class tipo_de_rol
     {
         return $this->habilidades;
     }
-    protected function set_id($valor)
+    public function set_id($valor)
     {
         $this->id = $valor;
     }
-    protected function set_nombre_para_mostrar($valor)
+    public function set_nombre_para_mostrar($valor)
     {
         $this->nombre_para_mostrar = $valor;
     }
-    protected function set_habilidades($valor)
+    public function set_habilidades($valor)
     {
         $this->habilidades = $valor;
+    }
+
+    public function agregar_rol()
+    {
+        add_role($this->id, $this->nombre_para_mostrar, $this->habilidades);
+    }
+
+    public function borrar_rol()
+    {
+        remove_role($this->get_id());
     }
 }

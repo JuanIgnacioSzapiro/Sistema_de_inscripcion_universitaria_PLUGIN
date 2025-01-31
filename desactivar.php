@@ -1,42 +1,49 @@
 <?php
-require_once dirname(__FILE__) . '/admin/post_type/post_type_carreras.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_coordinadores.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_preinscriptos.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_profesores.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_apoyo_de_alumnos.php';
+require_once dirname(__FILE__) . '/admin/post_type/generador_post_type.php';
 
 function desactivar_plugin()
 {
-    $apoyo_de_alumnos = new apoyo_de_alumnos();
-    $carreras = new carrera();
-    $coordinadores = new coordinador();
-    $preinscriptos = new preinscripto();
-    $profesores = new profesor();
+    desactivar_post_types();
 
-    $apoyo_de_alumnos->deregistrar_post_type();
-    $carreras->deregistrar_post_type();
-    $coordinadores->deregistrar_post_type();
-    $preinscriptos->deregistrar_post_type();
-    $profesores->deregistrar_post_type();
+    desactivar_roles();
 
     flush_rewrite_rules(); // limpia permalinks
-
-    //global $wpdb;
-    //vaciar_tablas($wpdb);
 }
 
-// function vaciar_tablas($wpdb)
-// {
-//     $tablas = TOTALIDAD_TABLAS;
+function desactivar_post_types()
+{
+    $apoyo_de_alumnos = new tipo_de_post();
+    $carreras = new tipo_de_post();
+    $coordinadores = new tipo_de_post();
+    $preinscriptos = new tipo_de_post();
+    $profesores = new tipo_de_post();
 
-//     foreach ($tablas as $tabla) {
-//         vaciar_tabla($wpdb, $tabla);
-//     }
-// }
+    $apoyo_de_alumnos->set_id('apoyo_de_alumnos');
+    $carreras->set_id('carreras');
+    $coordinadores->set_id('coordinadores');
+    $preinscriptos->set_id('preinscriptos');
+    $profesores->set_id('profesores');
 
-// function vaciar_tabla($wpdb, $nombre_tabla)
-// {
-//     $nombre_tabla_completo = $wpdb->prefix . asociar(obtener_datos_default(PREFIJO_TABLA . $nombre_tabla . SUFIJO_CSV))[NOMBRE_DE_TABLA];
-//     $sql = "TRUNCATE TABLE $nombre_tabla_completo";
-//     $wpdb->query($sql);
-// }
+    foreach (array($apoyo_de_alumnos, $carreras, $coordinadores, $preinscriptos, $profesores) as $objeto) {
+        $objeto->deregistrar_post_type();
+    }
+}
+
+function desactivar_roles()
+{
+    $supra_apoyo_de_alumno = new tipo_de_rol();
+    $supra_coordinador = new tipo_de_rol();
+    $preinscripto = new tipo_de_rol();
+    $supra_profesor = new tipo_de_rol();
+    $apoyo_de_alumno = new tipo_de_rol();
+    $coordinador = new tipo_de_rol();
+    $profesor = new tipo_de_rol();
+
+    $supra_apoyo_de_alumno->set_id('supra_apoyo_de_alumno');
+    $supra_coordinador->set_id('supra_coordinador');
+    $preinscripto->set_id('preinscripto');
+    $supra_profesor->set_id('supra_profesor');
+    $apoyo_de_alumno->set_id('apoyo_de_alumno');
+    $coordinador->set_id('coordinador');
+    $profesor->set_id('profesor');
+}

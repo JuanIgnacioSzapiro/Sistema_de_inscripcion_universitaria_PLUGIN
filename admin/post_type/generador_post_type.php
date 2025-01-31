@@ -8,12 +8,12 @@ class tipo_de_post
     {
     }
 
-    protected function set_id($valor)
+    public function set_id($valor)
     {
         $this->id = $valor;
     }
 
-    protected function set_caracteristicas($valor)
+    public function set_caracteristicas($valor)
     {
         $this->caracteristicas = $valor;
     }

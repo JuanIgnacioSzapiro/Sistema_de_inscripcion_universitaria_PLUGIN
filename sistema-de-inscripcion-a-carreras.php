@@ -23,17 +23,12 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
         require_once dirname(__FILE__) . '/desactivar.php';
         require_once dirname(__FILE__) . '/desinstalar.php';
 
-
         class sistema_de_inscripcion_a_carreras
         {
             public function __construct()
             {
+                add_action('init', 'activar_plugin', -10); // register_activation_hook no funciona
 
-                add_action('init', 'activar_plugin', -10);
-            }
-
-            public function activar_desactivar_desinstalar()
-            {
                 register_deactivation_hook(__FILE__, 'desactivar_plugin');
 
                 // register_uninstall_hook(__FILE__, 'desinstalar_plugin');

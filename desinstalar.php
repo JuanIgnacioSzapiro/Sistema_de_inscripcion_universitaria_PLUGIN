@@ -1,47 +1,49 @@
 <?php
-require_once dirname(__FILE__) . '/admin/post_type/post_type_carreras.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_coordinadores.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_preinscriptos.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_profesores.php';
-require_once dirname(__FILE__) . '/admin/post_type/post_type_apoyo_de_alumnos.php';
+require_once dirname(__FILE__) . '/admin/post_type/generador_post_type.php';
 
 function desinstalar_plugin()
 {
-    $apoyo_de_alumnos = new apoyo_de_alumnos();
-    $carreras = new carrera();
-    $coordinadores = new coordinador();
-    $preinscriptos = new preinscripto();
-    $profesores = new profesor();
+    desinstalar_post_types();
 
-    $apoyo_de_alumnos->deregistrar_post_type();
-    $apoyo_de_alumnos->borrar_todos_los_post();
-    $carreras->deregistrar_post_type();
-    $carreras->borrar_todos_los_post();
-    $coordinadores->deregistrar_post_type();
-    $coordinadores->borrar_todos_los_post();
-    $preinscriptos->deregistrar_post_type();
-    $preinscriptos->borrar_todos_los_post();
-    $profesores->deregistrar_post_type();
-    $profesores->borrar_todos_los_post();
+    desinstalar_roles();
 
-    flush_rewrite_rules(); // limpia permalinks
-
-    // global $wpdb;
-    // eliminar_tablas($wpdb);
+    flush_rewrite_rules();
 }
 
-// function eliminar_tablas($wpdb)
-// {
-//     $tablas = TOTALIDAD_TABLAS;
+function desinstalar_post_types()
+{
+    $apoyo_de_alumnos = new tipo_de_post();
+    $carreras = new tipo_de_post();
+    $coordinadores = new tipo_de_post();
+    $preinscriptos = new tipo_de_post();
+    $profesores = new tipo_de_post();
 
-//     foreach ($tablas as $tabla) {
-//         eliminar_tabla($wpdb, $tabla);
-//     }
-// }
+    $apoyo_de_alumnos->set_id('apoyo_de_alumnos');
+    $carreras->set_id('carreras');
+    $coordinadores->set_id('coordinadores');
+    $preinscriptos->set_id('preinscriptos');
+    $profesores->set_id('profesores');
 
-// function eliminar_tabla($wpdb, $nombre_tabla)
-// {
-//     $nombre_tabla_completo = $wpdb->prefix . asociar(obtener_datos_default(PREFIJO_TABLA . $nombre_tabla . SUFIJO_CSV))[NOMBRE_DE_TABLA];
-//     $sql = "DROP TABLE IF EXISTS $nombre_tabla_completo";
-//     $wpdb->query($sql);
-// }
+    foreach (array($apoyo_de_alumnos, $carreras, $coordinadores, $preinscriptos, $profesores) as $objeto) {
+        $objeto->deregistrar_post_type();
+        $objeto->borrar_todos_los_post();
+    }
+}
+
+
+function desinstalar_roles()
+{
+    $supra_apoyo_de_alumno = new tipo_de_rol();
+    // $supra_coordinador = new tipo_de_rol();
+    // $preinscripto = new tipo_de_rol();
+    // $supra_profesor = new tipo_de_rol();
+    // $apoyo_de_alumno = new tipo_de_rol();
+    // $coordinador = new tipo_de_rol();
+    // $profesor = new tipo_de_rol();
+
+    $supra_apoyo_de_alumno->set_id('supra_apoyo_de_alumno');
+
+    foreach (array($supra_apoyo_de_alumno, ) as $objeto) {
+        $objeto->borrar_rol();
+    }
+}
