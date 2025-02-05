@@ -1,6 +1,6 @@
 <?php
 
-class tipo_de_rol
+class TipoDeRol
 {
     protected $id;
     protected $nombre_para_mostrar;

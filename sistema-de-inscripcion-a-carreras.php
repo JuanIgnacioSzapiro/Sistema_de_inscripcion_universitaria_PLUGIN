@@ -17,13 +17,13 @@
 if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path absoluto que le da por default wordpress...
     die('Acceso no permitido');
 } else {
-    if (!class_exists('sistema_de_inscripcion_a_carreras')) {
+    if (!class_exists('SistemaDeInscripcionACarreras')) {
         require_once dirname(__FILE__) . '/enque.php';
         require_once dirname(__FILE__) . '/activar.php';
         require_once dirname(__FILE__) . '/desactivar.php';
         require_once dirname(__FILE__) . '/desinstalar.php';
 
-        class sistema_de_inscripcion_a_carreras
+        class SistemaDeInscripcionACarreras
         {
             public function __construct()
             {
@@ -51,5 +51,5 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
             }
         }
     }
-    new sistema_de_inscripcion_a_carreras();
+    new SistemaDeInscripcionACarreras();
 }

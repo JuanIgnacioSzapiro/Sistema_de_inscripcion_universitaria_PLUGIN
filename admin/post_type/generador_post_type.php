@@ -1,5 +1,5 @@
 <?php
-class tipo_de_post
+class TipoDePost
 {
     protected $id;
     protected $caracteristicas;
