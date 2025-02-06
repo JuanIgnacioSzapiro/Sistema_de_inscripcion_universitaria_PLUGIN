@@ -13,6 +13,32 @@
  * Update URI:        https://example.com/my-plugin/
  * Text Domain:       plugin-sistema-de-ingreso-a-carreras-INSPT
  */
+function my_plugin_install_dependencies()
+{
+    // Check if Meta Box is already active
+    if (!is_plugin_active('meta-box/meta-box.php')) {
+        // Include necessary WordPress files
+        require_once ABSPATH . 'wp-admin/includes/plugin-install.php';
+        require_once ABSPATH . 'wp-admin/includes/file.php';
+        require_once ABSPATH . 'wp-admin/includes/misc.php';
+        require_once ABSPATH . 'wp-admin/includes/plugin.php';
+        require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+
+        // Plugin slug and ZIP URL
+        $plugin_slug = 'meta-box';
+        $plugin_zip_url = 'https://downloads.wordpress.org/plugin/meta-box.latest-stable.zip';
+
+        // Install the plugin
+        $upgrader = new Plugin_Upgrader(new Automatic_Upgrader_Skin());
+        $installed = $upgrader->install($plugin_zip_url);
+
+        if ($installed) {
+            // Activate the plugin
+            activate_plugin($plugin_slug . '/' . $plugin_slug . '.php');
+        }
+    }
+}
+register_activation_hook(__FILE__, 'my_plugin_install_dependencies');
 
 if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path absoluto que le da por default wordpress...
     die('Acceso no permitido');
