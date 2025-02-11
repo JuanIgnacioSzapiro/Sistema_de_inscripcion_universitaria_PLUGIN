@@ -1,35 +1,22 @@
 <?php
+require_once dirname(__FILE__) . '/meta_box_tipo_texto.php';
+
 class TipoMetaBox
 {
-    protected $texto = 'texto';
     protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES_';
     protected $post_type_de_origen; //post_type al que pertenece
     protected $titulo;
+    protected $contenido;
     protected $nombre_meta;
-    protected $tipo_meta_data;
     protected $etiqueta;
     protected $texto_de_ejemplificacion;
     protected $descripcion;
 
-    public function __construct()
+    public function __construct($post_type_de_origen, $titulo, $contenido)
     {
-    }
-
-    public function asignar_valores_tipo_texto(
-        $post_type_de_origen,
-        $titulo,
-        $nombre_meta,
-        $etiqueta,
-        $texto_de_ejemplificacion,
-        $descripcion
-    ) {
         $this->set_post_type_de_origen($post_type_de_origen);
         $this->set_titulo($titulo);
-        $this->set_nombre_meta($nombre_meta);
-        $this->set_tipo_meta_data($this->texto);
-        $this->set_etiqueta($etiqueta);
-        $this->set_texto_de_ejemplificacion($texto_de_ejemplificacion);
-        $this->set_descripcion($descripcion);
+        $this->set_contenido($contenido);
     }
 
     public function set_post_type_de_origen($post_type_de_origen)
@@ -41,16 +28,16 @@ class TipoMetaBox
     {
         $this->titulo = $titulo;
     }
+    public function set_contenido($contenido)
+    {
+        $this->contenido = $contenido;
+    }
 
     public function set_nombre_meta($nombre_meta)
     {
         $this->nombre_meta = $nombre_meta;
     }
 
-    public function set_tipo_meta_data($tipo_meta_data)
-    {
-        $this->tipo_meta_data = $tipo_meta_data;
-    }
     public function set_etiqueta($etiqueta)
     {
         $this->etiqueta = $etiqueta;
@@ -64,9 +51,14 @@ class TipoMetaBox
         $this->descripcion = $descripcion;
     }
 
+    public function get_contenido()
+    {
+        return $this->contenido;
+    }
+
     public function get_llave_meta()
     {
-        return $this->prefijo . $this->get_post_type_de_origen() . '_' . $this->get_nombre_meta();
+        return $this->prefijo . $this->get_post_type_de_origen();
     }
 
     public function get_post_type_de_origen()
@@ -84,10 +76,6 @@ class TipoMetaBox
         return (string) $this->nombre_meta;
     }
 
-    public function get_tipo_meta_data()
-    {
-        return $this->tipo_meta_data;
-    }
     public function get_etiqueta()
     {
         return $this->etiqueta;
@@ -103,61 +91,77 @@ class TipoMetaBox
 
     public function crear_tipo_meta_box()
     {
-        switch ($this->get_tipo_meta_data()) {
-            case $this->texto:
-                add_action('add_meta_boxes', array($this, 'crear_metadata'));
-                add_action('save_post', array($this, 'guardar_tipo_texto'));
-                break;
-        }
+        add_action('add_meta_boxes', array($this, 'crear_metadata'));
+        add_action('save_post', array($this, 'guardar'));
     }
 
     public function crear_metadata()
     {
-        add_meta_box($this->get_llave_meta(), $this->get_titulo(), array($this, 'mostrar_tipo_texto'), $this->get_post_type_de_origen());
+        add_meta_box($this->get_llave_meta(), $this->get_titulo(), array($this, 'mostrar'), $this->get_post_type_de_origen());
     }
 
-    public function mostrar_tipo_texto($post)
+    public function mostrar($post)
     {
-        $custom_field_value = get_post_meta($post->ID, $this->get_llave_meta(), true);
-        $nombre_meta = esc_attr($this->get_nombre_meta());
         $llave_meta = esc_attr($this->get_llave_meta());
 
-        wp_nonce_field($llave_meta . '_nonce', $llave_meta . '_nonce');
+        wp_nonce_field($llave_meta, $llave_meta);
         ?>
         <div class="meta-box">
-            <label for="<?php echo $nombre_meta; ?>">
-                <?php echo esc_html($this->get_etiqueta()); ?>
-            </label>
-            <input type="text" id="<?php echo $nombre_meta; ?>" name="<?php echo $nombre_meta; ?>"
-                value="<?php echo esc_attr($custom_field_value); ?>" style="width: 100%;"
-                placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>" />
-            <p class="description">
-                <?php echo esc_html($this->get_descripcion()); ?>
-            </p>
+            <?php
+            foreach ($this->contenido as $individual) {
+                $individual->generar_fragmento_html($post, $this->get_llave_meta());
+            }
+            ?>
         </div>
         <?php
     }
 
-    public function guardar_tipo_texto($post_id)
+    public function guardar($post_id)
     {
-        // Check if nonce is set and valid
-        if (!isset($_POST['custom_meta_box_nonce']) || !wp_verify_nonce($_POST['custom_meta_box_nonce'], 'custom_meta_box_nonce')) {
-            return;
-        }
+        $nonce_name = $this->get_llave_meta();
 
-        // Check if the current user has permission to edit the post
-        if (!current_user_can('edit_' . $this->get_nombre_meta(), $post_id)) {
+        if (!wp_verify_nonce($_POST[$nonce_name], $nonce_name))
             return;
-        }
 
-        // Save the custom field data
-        if (isset($_POST[$this->get_nombre_meta()])) {
-            update_post_meta(
-                $post_id,
-                $this->get_llave_meta(), // Meta key
-                sanitize_text_field($_POST[$this->get_nombre_meta()]) // Sanitized value
-            );
+        if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
+            return;
+
+        if (!current_user_can('edit_' . $this->get_post_type_de_origen(), $post_id))
+            return;
+
+        foreach ($this->contenido as $individual) {
+            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+
+            if ($individual instanceof MetaBoxTipoTextoClonable) {
+                // Manejar campos clonables como array
+                $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : array();
+                $valores = array_map('sanitize_text_field', $valores);
+
+                // Eliminar valores existentes
+                delete_post_meta($post_id, $meta_key);
+
+                // Añadir nuevos valores
+                foreach ($valores as $valor) {
+                    if (!empty($valor)) {
+                        add_post_meta($post_id, $meta_key, $valor);
+                    }
+                }
+            } else {
+                // Manejar campo simple
+                $valor = isset($_POST[$meta_key]) ? sanitize_text_field($_POST[$meta_key]) : '';
+                update_post_meta($post_id, $meta_key, $valor);
+
+                // Actualizar título del post si es el campo nombre_de_la_carrera
+                if ($individual->get_nombre_meta() === 'nombre_de_la_carrera') {
+                    remove_action('save_post', array($this, 'guardar'));
+                    wp_update_post(array(
+                        'ID' => $post_id,
+                        'post_title' => $valor,
+                        'post_name' => sanitize_title($valor)
+                    ));
+                    add_action('save_post', array($this, 'guardar'));
+                }
+            }
         }
     }
-
 }
