@@ -1,4 +1,4 @@
-<?php
+<?php // generador_meta_box.php
 require_once dirname(__FILE__) . '/meta_box_tipo_texto.php';
 
 class TipoMetaBox
@@ -116,50 +116,55 @@ class TipoMetaBox
         <?php
     }
 
-    public function guardar($post_id)
-    {
+    public function guardar($post_id) {
         $nonce_name = $this->get_llave_meta();
-
+    
         if (!wp_verify_nonce($_POST[$nonce_name], $nonce_name))
             return;
-
+    
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             return;
-
+    
         if (!current_user_can('edit_' . $this->get_post_type_de_origen(), $post_id))
             return;
-
+    
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
-
+    
             if ($individual instanceof MetaBoxTipoTextoClonable) {
-                // Manejar campos clonables como array
+                // Manejar campos clonables
                 $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : array();
                 $valores = array_map('sanitize_text_field', $valores);
-
+                $valores = array_filter($valores, function($valor) {
+                    return !empty(trim($valor));
+                });
+    
                 // Eliminar valores existentes
                 delete_post_meta($post_id, $meta_key);
-
-                // Añadir nuevos valores
+    
+                // Añadir nuevos valores filtrados
                 foreach ($valores as $valor) {
-                    if (!empty($valor)) {
-                        add_post_meta($post_id, $meta_key, $valor);
-                    }
+                    add_post_meta($post_id, $meta_key, $valor);
                 }
             } else {
                 // Manejar campo simple
                 $valor = isset($_POST[$meta_key]) ? sanitize_text_field($_POST[$meta_key]) : '';
-                update_post_meta($post_id, $meta_key, $valor);
-
-                // Actualizar título del post si es el campo nombre_de_la_carrera
-                if ($individual->get_nombre_meta() === 'nombre_de_la_carrera') {
-                    remove_action('save_post', array($this, 'guardar'));
-                    wp_update_post(array(
-                        'ID' => $post_id,
-                        'post_title' => $valor,
-                        'post_name' => sanitize_title($valor)
-                    ));
-                    add_action('save_post', array($this, 'guardar'));
+                
+                if (!empty(trim($valor))) {
+                    update_post_meta($post_id, $meta_key, $valor);
+                    
+                    // Actualizar título del post si es el campo nombre_de_la_carrera
+                    if ($individual->get_nombre_meta() === 'nombre_de_la_carrera') {
+                        remove_action('save_post', array($this, 'guardar'));
+                        wp_update_post(array(
+                            'ID' => $post_id,
+                            'post_title' => $valor,
+                            'post_name' => sanitize_title($valor)
+                        ));
+                        add_action('save_post', array($this, 'guardar'));
+                    }
+                } else {
+                    delete_post_meta($post_id, $meta_key);
                 }
             }
         }

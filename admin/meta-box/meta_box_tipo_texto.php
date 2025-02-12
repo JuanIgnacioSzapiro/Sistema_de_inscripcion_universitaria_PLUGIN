@@ -1,4 +1,4 @@
-<?php
+<?php // meta_box_tipo_texto.php
 require_once dirname(__FILE__) . '/generador_meta_box.php';
 
 class MetaBoxTipoTexto extends TipoMetaBox

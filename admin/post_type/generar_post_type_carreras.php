@@ -1,4 +1,4 @@
-<?php
+<?php // generar_post_type_carreras.php
 require_once dirname(__FILE__) . '/../meta-box/generador_meta_box.php';
 require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto.php';
 require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto_clonable.php';
