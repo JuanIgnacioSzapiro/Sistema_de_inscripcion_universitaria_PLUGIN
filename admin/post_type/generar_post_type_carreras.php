@@ -2,6 +2,7 @@
 require_once dirname(__FILE__) . '/../meta-box/generador_meta_box.php';
 require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto.php';
 require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto_clonable.php';
+require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_drop_down_post.php';
 
 function obtener_informacion_post_type_carreras()
 {
@@ -92,12 +93,12 @@ function obtener_informacion_post_type_carreras()
                 'https://inspt.utn.edu.ar/este-es-un-ejemplo.pdf',
                 'Link de la resolución ministerial'
             ),
-            //new MetaBoxTipoTexto( //(DEBE SER MODIFICADO A TIPO SELECCIONADOR DE UN TYPE_POST)
-            //     'plan_de_estudios_y_programas_de_la_carrera',
-            //     'Plan de estudios y Programas de la carrera ',
-            //     '',
-            //     'Se selecciona un plan de estudio, previamente creado y publicado'
-            // ),
+            new MetaBoxTipoDopDownPostType(
+                'plan_de_estudios_y_programas_de_la_carrera',
+                'Plan de estudios y Programas de la carrera ',
+                'carreras',
+                'Se selecciona un plan de estudio, previamente creado y publicado'
+            ),
             // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
             //     'correlatividades_del_acarrera',
             //     'Correlatividades del acarrera', '',
@@ -169,12 +170,12 @@ function obtener_informacion_post_type_carreras()
                 'Presencial',
                 ''
             ),
-            new MetaBoxTipoTextoClonable(
-                'consultas_a',
-                'Consultas a',
-                'info@inspt.utn.edu.ar',
-                'Se ingresa un métodode contácto por cada casilla, de ser necesario se generan más'
-            ),
+            // new MetaBoxTipoDopDownPostTypeClonable(
+            //     'consultas_a',
+            //     'Consultas a',
+            //     'contactos',
+            //     'Se ingresa un métodode contácto por cada casilla, de ser necesario se generan más'
+            // ),
         )
     );
 
