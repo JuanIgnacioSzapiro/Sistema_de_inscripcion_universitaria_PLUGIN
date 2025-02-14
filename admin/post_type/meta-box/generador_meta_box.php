@@ -13,6 +13,8 @@ class TipoMetaBox
 
     protected $post_type_buscado;
 
+    protected $tipo_de_archivo;
+
     public function __construct($post_type_de_origen, $titulo, $contenido)
     {
         $this->set_post_type_de_origen($post_type_de_origen);
@@ -56,6 +58,11 @@ class TipoMetaBox
         $this->post_type_buscado = $post_type_buscado;
     }
 
+    public function set_tipo_de_archivo($tipo_de_archivo)
+    {
+        $this->tipo_de_archivo = $tipo_de_archivo;
+    }
+
     public function get_contenido()
     {
         return $this->contenido;
@@ -96,6 +103,10 @@ class TipoMetaBox
     public function get_post_type_buscado()
     {
         return $this->post_type_buscado;
+    }
+    public function get_tipo_de_archivo()
+    {
+        return $this->tipo_de_archivo;
     }
 
     public function crear_tipo_meta_box()
@@ -170,17 +181,6 @@ class TipoMetaBox
 
                 if (!empty(trim($valor))) {
                     update_post_meta($post_id, $meta_key, $valor);
-
-                    // Actualizar título del post si es el campo nombre_de_la_carrera
-                    if ($individual->get_nombre_meta() === 'nombre_de_la_carrera') {
-                        remove_action('save_post', array($this, 'guardar'));
-                        wp_update_post(array(
-                            'ID' => $post_id,
-                            'post_title' => $valor,
-                            'post_name' => sanitize_title($valor)
-                        ));
-                        add_action('save_post', array($this, 'guardar'));
-                    }
                 } else {
                     delete_post_meta($post_id, $meta_key);
                 }

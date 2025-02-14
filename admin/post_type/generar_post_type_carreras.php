@@ -1,8 +1,10 @@
 <?php // generar_post_type_carreras.php
-require_once dirname(__FILE__) . '/../meta-box/generador_meta_box.php';
-require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto.php';
-require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto_clonable.php';
-require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_drop_down_post.php';
+require_once dirname(__FILE__) . '/meta-box/generador_meta_box.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_archivo.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_drop_down_post.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_texto.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_texto_clonable.php';
+require_once dirname(__FILE__) . '/filtros/filtros.php';
 
 function obtener_informacion_post_type_carreras()
 {
@@ -96,44 +98,51 @@ function obtener_informacion_post_type_carreras()
             new MetaBoxTipoDopDownPostType(
                 'plan_de_estudios_y_programas_de_la_carrera',
                 'Plan de estudios y Programas de la carrera ',
-                'carreras',
+                'plan_de_estudios_y_programas_de_la_carrera',
                 'Se selecciona un plan de estudio, previamente creado y publicado'
             ),
-            // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
-            //     'correlatividades_del_acarrera',
-            //     'Correlatividades del acarrera', '',
-            //     ''
-            // ),
-            // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
-            //     'horarios_turno_manana_de_la_carrera',
-            //     'Horarios Turno Mañana de la carrera', '',
-            //     ''
-            // ),
-            // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
-            //     'horarios_turno_tarde_de_la_carrera',
-            //     'Horarios Turno Tarde de la carrera', '',
-            //     ''
-            // ),
-            // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
-            //     'horarios_turno_noche_de_la_carrera',
-            //     'Horarios Turno Noche de la carrera', '',
-            //     ''
-            // ),
-            // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
-            //     'mesas_de_examen_turno_manana_de_la_carrera',
-            //     'Mesas de examen turno mañana de la carrera', '',
-            //     ''
-            // ),
-            // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
-            //     'mesas_de_examen_turno_tarde_de_la_carrera',
-            //     'Mesas de examen turno tarde de la carrera', '',
-            //     ''
-            // ),
-            // new MetaBoxTipoTexto( // (DEBE SE TIPO ARCHIVO)
-            //     'mesas_de_examen_turno_noche_de_la_carrera',
-            //     'Mesas de examen turno noche de la carrera', '',
-            //     ''
-            // ),
+            new TipoMetaBoxArchivo(
+                'correlatividades_del_acarrera',
+                'Correlatividades del acarrera',
+                'application/pdf',
+                'Subir archivo .pdf'
+            ),
+            new TipoMetaBoxArchivo(
+                'horarios_turno_manana_de_la_carrera',
+                'Horarios Turno Mañana de la carrera',
+                'application/pdf',
+                'Subir archivo .pdf'
+            ),
+            new TipoMetaBoxArchivo(
+                'horarios_turno_tarde_de_la_carrera',
+                'Horarios Turno Tarde de la carrera',
+                'application/pdf',
+                'Subir archivo .pdf'
+            ),
+            new TipoMetaBoxArchivo(
+                'horarios_turno_noche_de_la_carrera',
+                'Horarios Turno Noche de la carrera',
+                'application/pdf',
+                'Subir archivo .pdf'
+            ),
+            new TipoMetaBoxArchivo(
+                'mesas_de_examen_turno_manana_de_la_carrera',
+                'Mesas de examen turno mañana de la carrera',
+                'application/pdf',
+                'Subir archivo .pdf'
+            ),
+            new TipoMetaBoxArchivo(
+                'mesas_de_examen_turno_tarde_de_la_carrera',
+                'Mesas de examen turno tarde de la carrera',
+                'application/pdf',
+                'Subir archivo .pdf'
+            ),
+            new TipoMetaBoxArchivo(
+                'mesas_de_examen_turno_noche_de_la_carrera',
+                'Mesas de examen turno noche de la carrera',
+                'application/pdf',
+                'Subir archivo .pdf'
+            ),
             new MetaBoxTipoTexto(
                 'nombre_de_la_direccion_de_la_carrera',
                 'Nombre de la dirección de la carrera',
@@ -170,12 +179,12 @@ function obtener_informacion_post_type_carreras()
                 'Presencial',
                 ''
             ),
-            // new MetaBoxTipoDopDownPostTypeClonable(
-            //     'consultas_a',
-            //     'Consultas a',
-            //     'contactos',
-            //     'Se ingresa un métodode contácto por cada casilla, de ser necesario se generan más'
-            // ),
+            new MetaBoxTipoTextoClonable(
+                'consultas_a',
+                'Consultas a',
+                'info@inspt.utn.edu.ar',
+                'Se ingresa un métodode contácto por cada casilla, de ser necesario se generan más'
+            ),
         )
     );
 
@@ -183,3 +192,101 @@ function obtener_informacion_post_type_carreras()
 
     return $carreras;
 }
+
+// Register sortable columns
+add_filter('manage_edit-carreras_sortable_columns', 'mis_columnas_sortables');
+
+function mis_columnas_sortables($columns)
+{
+    $columns['numero_de_plan_de_la_carrera'] = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera';
+    $columns['nombre_de_la_carrera'] = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_carrera';
+    $columns['creador'] = 'author';
+    $columns['fecha_de_carga'] = 'date';
+    $columns['modificador'] = 'Último modificador';
+    $columns['fecha_de_modificacion'] = 'modified';
+    return $columns;
+}
+
+// Handle custom sorting
+add_action('pre_get_posts', 'manejar_ordenamiento_columnas');
+
+function manejar_ordenamiento_columnas($query)
+{
+    if (!is_admin() || !$query->is_main_query() || 'carreras' !== $query->get('post_type')) {
+        return;
+    }
+
+    $orderby = $query->get('orderby');
+
+    switch ($orderby) {
+        case 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera':
+            $query->set('meta_key', 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera');
+            $query->set('orderby', 'meta_value_num'); // Use numeric sorting for numbers
+            break;
+        case 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_carrera':
+            $query->set('meta_key', 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_carrera');
+            $query->set('orderby', 'meta_value'); // Use alphabetical sorting for text
+            break;
+        case 'modificador':
+            $query->get_results($query->prepare("SELECT * FROM wp_postmeta ORDER BY meta_id"));
+            break;
+    }
+}
+
+
+add_filter('manage_carreras_posts_columns', 'mis_columnas');
+
+function mis_columnas($columnas)
+{
+    $columnas = array(
+        'cb' => $columnas['cb'],
+        'numero_de_plan_de_la_carrera' => ' Número de plan de la carrera ',
+        'nombre_de_la_carrera' => 'Nombre de la carrera',
+        'creador' => 'Creador',
+        'fecha_de_carga' => 'Fecha de carga',
+        'modificador' => 'Último modificador',
+        'fecha_de_modificacion' => 'Fecha de modificación',
+    );
+    return $columnas;
+}
+
+add_action('manage_carreras_posts_custom_column', 'cargar_mis_columnas', 10, 2);
+
+function cargar_mis_columnas($columnas, $post_id)
+{
+    switch ($columnas) {
+        case 'numero_de_plan_de_la_carrera':
+            echo esc_html(get_post_meta($post_id, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera', true));
+            break;
+    }
+    switch ($columnas) {
+        case 'nombre_de_la_carrera':
+            echo esc_html(get_post_meta($post_id, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_carrera', true));
+            break;
+    }
+    switch ($columnas) {
+        case 'creador':
+            echo esc_html(get_the_author($post_id));
+            break;
+    }
+    switch ($columnas) {
+        case 'fecha_de_carga':
+            echo esc_html(get_the_modified_date("", $post_id));
+            break;
+    }
+    switch ($columnas) {
+        case 'modificador':
+            echo esc_html(get_the_author($post_id));
+            break;
+    }
+    switch ($columnas) {
+        case 'fecha_de_modificacion':
+            echo esc_html(get_the_modified_date("", $post_id));
+            break;
+    }
+}
+
+
+$filtrosXcreador = new Filtros('carreras', 'filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador');
+$filtrosx_nombre_o_numero_de_carrera = new Filtros('carreras', 'filtro_x_nombre_o_numero_de_carrera', "SELECT DISTINCT wp_postmeta.post_id FROM {$wpdb->postmeta} wp_postmeta INNER JOIN {$wpdb->posts} wp_posts ON wp_postmeta.post_id = wp_posts.ID WHERE ( (wp_postmeta.meta_key = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera' AND wp_postmeta.meta_value LIKE %s) OR  (wp_postmeta.meta_key = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_carrera' AND wp_postmeta.meta_value LIKE %s))", 'post__in', 'Filtrar por número de plan o nombre de la carrera');
+
