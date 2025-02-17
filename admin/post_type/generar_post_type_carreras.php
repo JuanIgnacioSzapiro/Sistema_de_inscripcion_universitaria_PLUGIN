@@ -4,7 +4,9 @@ require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_archivo.php';
 require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_drop_down_post.php';
 require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_texto.php';
 require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_texto_clonable.php';
-require_once dirname(__FILE__) . '/filtros/filtros.php';
+require_once dirname(__FILE__) . '/filtros/creador_filtros.php';
+require_once dirname(__FILE__) . '/filtros/filro.php';
+
 
 function obtener_informacion_post_type_carreras()
 {
@@ -287,6 +289,8 @@ function cargar_mis_columnas($columnas, $post_id)
 }
 
 
-$filtrosXcreador = new Filtros('carreras', 'filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador');
-$filtrosx_nombre_o_numero_de_carrera = new Filtros('carreras', 'filtro_x_nombre_o_numero_de_carrera', "SELECT DISTINCT wp_postmeta.post_id FROM {$wpdb->postmeta} wp_postmeta INNER JOIN {$wpdb->posts} wp_posts ON wp_postmeta.post_id = wp_posts.ID WHERE ( (wp_postmeta.meta_key = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera' AND wp_postmeta.meta_value LIKE %s) OR  (wp_postmeta.meta_key = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_carrera' AND wp_postmeta.meta_value LIKE %s))", 'post__in', 'Filtrar por número de plan o nombre de la carrera');
+$filtrosXcreador = new CreadorFiltros('carreras', array(
+    new Filtro('filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador'),
+    new Filtro('filtro_x_nombre_o_numero_de_carrera', "SELECT DISTINCT wp_postmeta.post_id FROM {$wpdb->postmeta} wp_postmeta INNER JOIN {$wpdb->posts} wp_posts ON wp_postmeta.post_id = wp_posts.ID WHERE ( (wp_postmeta.meta_key = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera' AND wp_postmeta.meta_value LIKE %s) OR  (wp_postmeta.meta_key = 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_carrera' AND wp_postmeta.meta_value LIKE %s))", 'post__in', 'Filtrar por número de plan o nombre de la carrera')
+));
 
