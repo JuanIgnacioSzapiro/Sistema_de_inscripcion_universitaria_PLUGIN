@@ -1,5 +1,5 @@
 <?php //meta_box_tipo_drop_down_post.php
-class MetaBoxTipoDopDownPostType extends TipoMetaBox
+class MetaBoxTipoDropDownPostType extends TipoMetaBox
 {
     public function __construct(
         $nombre_meta,

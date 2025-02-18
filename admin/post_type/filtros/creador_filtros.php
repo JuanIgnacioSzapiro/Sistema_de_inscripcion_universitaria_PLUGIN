@@ -1,5 +1,5 @@
 <?php //creador_filtros.php
-require_once dirname(__FILE__) . '/filro.php';
+require_once dirname(__FILE__) . '/filtro.php';
 
 class CreadorFiltros
 {

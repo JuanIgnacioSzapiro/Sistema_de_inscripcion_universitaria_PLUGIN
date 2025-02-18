@@ -167,7 +167,7 @@ class TipoMetaBox
                 foreach ($valores as $valor) {
                     add_post_meta($post_id, $meta_key, $valor);
                 }
-            } elseif ($individual instanceof MetaBoxTipoDopDownPostType) {
+            } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
                 // Manejar dropdown de posts
                 $valor = isset($_POST[$meta_key]) ? (int) $_POST[$meta_key] : 0;
                 if ($valor > 0) {

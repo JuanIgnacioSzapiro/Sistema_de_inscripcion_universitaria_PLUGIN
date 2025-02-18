@@ -23,36 +23,15 @@ function desinstalar_roles()
         $objeto->borrar_rol();
     }
 
+    $carreras = new TipoDePost('carreras');
+
+
     $administrador = get_role('administrator');
 
-    $administrador->remove_cap('edit_carreras');
-    $administrador->remove_cap('read_carreras');
-    $administrador->remove_cap('delete_carreras');
-    $administrador->remove_cap('edit_multiples_carreras');
-    $administrador->remove_cap('edit_others_multiples_carreras');
-    $administrador->remove_cap('publish_multiples_carreras');
-    $administrador->remove_cap('read_private_multiples_carreras');
-    $administrador->remove_cap('delete_multiples_carreras');
-    $administrador->remove_cap('delete_private_multiples_carreras');
-    $administrador->remove_cap('delete_published_multiples_carreras');
-    $administrador->remove_cap('delete_others_multiples_carreras');
-    $administrador->remove_cap('edit_private_multiples_carreras');
-    $administrador->remove_cap('edit_published_multiples_carreras');
-    $administrador->remove_cap('create_multiples_carreras');
-
-    $administrador->remove_cap('edit_preinscriptos');
-    $administrador->remove_cap('read_preinscriptos');
-    $administrador->remove_cap('delete_preinscriptos');
-    $administrador->remove_cap('edit_multiples_preinscriptos');
-    $administrador->remove_cap('edit_others_multiples_preinscriptos');
-    $administrador->remove_cap('publish_multiples_preinscriptos');
-    $administrador->remove_cap('read_private_multiples_preinscriptos');
-    $administrador->remove_cap('delete_multiples_preinscriptos');
-    $administrador->remove_cap('delete_private_multiples_preinscriptos');
-    $administrador->remove_cap('delete_published_multiples_preinscriptos');
-    $administrador->remove_cap('delete_others_multiples_preinscriptos');
-    $administrador->remove_cap('edit_private_multiples_preinscriptos');
-    $administrador->remove_cap('edit_published_multiples_preinscriptos');
-    $administrador->remove_cap('create_multiples_preinscriptos');
-
+    foreach ($carreras->get_habilidades() as $individual) {
+        $administrador->remove_cap($individual);
+    }
+    foreach (get_role('administrator')->capabilities as $individual) {
+        print_r($individual);
+    }
 }

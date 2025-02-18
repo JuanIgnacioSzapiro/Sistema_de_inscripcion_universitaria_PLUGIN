@@ -1,6 +1,6 @@
 <?php
 require_once dirname(__FILE__) . '/../roles/generador_rol.php';
-
+require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
 function activar_roles()
 {
     $supra_apoyo_de_alumno = new TipoDeRol();
@@ -55,137 +55,31 @@ function activar_habilidades($roles)
 {
     array_push($roles, 'administrator');
 
+    $carreras = new TipoDePost('carreras');
+
     foreach ($roles as $rol) {
         $rol_obtenido = get_role(is_a($rol, 'TipoDeRol') ? $rol->get_id() : $rol);
         switch ($rol_obtenido->name) {
             case 'administrator':
-                $rol_obtenido->add_cap('edit_carreras');
-                $rol_obtenido->add_cap('read_carreras');
-                $rol_obtenido->add_cap('delete_carreras');
-                $rol_obtenido->add_cap('edit_multiples_carreras');
-                $rol_obtenido->add_cap('edit_others_multiples_carreras');
-                $rol_obtenido->add_cap('publish_multiples_carreras');
-                $rol_obtenido->add_cap('read_private_multiples_carreras');
-                $rol_obtenido->add_cap('delete_multiples_carreras');
-                $rol_obtenido->add_cap('delete_private_multiples_carreras');
-                $rol_obtenido->add_cap('delete_published_multiples_carreras');
-                $rol_obtenido->add_cap('delete_others_multiples_carreras');
-                $rol_obtenido->add_cap('edit_private_multiples_carreras');
-                $rol_obtenido->add_cap('edit_published_multiples_carreras');
-                $rol_obtenido->add_cap('create_multiples_carreras');
-
-                $rol_obtenido->add_cap('edit_preinscriptos');
-                $rol_obtenido->add_cap('read_preinscriptos');
-                $rol_obtenido->add_cap('delete_preinscriptos');
-                $rol_obtenido->add_cap('edit_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('publish_multiples_preinscriptos');
-                $rol_obtenido->add_cap('read_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_published_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_published_multiples_preinscriptos');
-                
+                foreach ($carreras->get_habilidades() as $valor) {
+                    $rol_obtenido->add_cap($valor);
+                }
                 break;
 
             case 'supra_apoyo_de_alumno':
-                $rol_obtenido->add_cap('edit_preinscriptos');
-                $rol_obtenido->add_cap('read_preinscriptos');
-                $rol_obtenido->add_cap('delete_preinscriptos');
-                $rol_obtenido->add_cap('edit_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('publish_multiples_preinscriptos');
-                $rol_obtenido->add_cap('read_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_published_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_published_multiples_preinscriptos');
-                
+
                 break;
 
             case 'apoyo_de_alumno':
-                $rol_obtenido->add_cap('edit_preinscriptos');
-                $rol_obtenido->add_cap('read_preinscriptos');
-                $rol_obtenido->add_cap('delete_preinscriptos');
-                $rol_obtenido->add_cap('edit_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('publish_multiples_preinscriptos');
-                $rol_obtenido->add_cap('read_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_published_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_published_multiples_preinscriptos');
-                
+
                 break;
 
             case 'supra_coordinador':
-                $rol_obtenido->add_cap('edit_carreras');
-                $rol_obtenido->add_cap('read_carreras');
-                $rol_obtenido->add_cap('delete_carreras');
-                $rol_obtenido->add_cap('edit_multiples_carreras');
-                $rol_obtenido->add_cap('edit_others_multiples_carreras');
-                $rol_obtenido->add_cap('publish_multiples_carreras');
-                $rol_obtenido->add_cap('read_private_multiples_carreras');
-                $rol_obtenido->add_cap('delete_multiples_carreras');
-                $rol_obtenido->add_cap('delete_private_multiples_carreras');
-                $rol_obtenido->add_cap('delete_published_multiples_carreras');
-                $rol_obtenido->add_cap('delete_others_multiples_carreras');
-                $rol_obtenido->add_cap('edit_private_multiples_carreras');
-                $rol_obtenido->add_cap('edit_published_multiples_carreras');
-                $rol_obtenido->add_cap('create_multiples_carreras');
 
-                $rol_obtenido->add_cap('edit_preinscriptos');
-                $rol_obtenido->add_cap('read_preinscriptos');
-                $rol_obtenido->add_cap('delete_preinscriptos');
-                $rol_obtenido->add_cap('edit_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('publish_multiples_preinscriptos');
-                $rol_obtenido->add_cap('read_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_published_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_published_multiples_preinscriptos');
-                
                 break;
 
             case 'coordinador':
-                $rol_obtenido->add_cap('edit_carreras');
-                $rol_obtenido->add_cap('read_carreras');
-                $rol_obtenido->add_cap('delete_carreras');
-                $rol_obtenido->add_cap('edit_multiples_carreras');
-                $rol_obtenido->add_cap('edit_others_multiples_carreras');
-                $rol_obtenido->add_cap('publish_multiples_carreras');
-                $rol_obtenido->add_cap('read_private_multiples_carreras');
-                $rol_obtenido->add_cap('delete_multiples_carreras');
-                $rol_obtenido->add_cap('delete_private_multiples_carreras');
-                $rol_obtenido->add_cap('delete_published_multiples_carreras');
-                $rol_obtenido->add_cap('delete_others_multiples_carreras');
-                $rol_obtenido->add_cap('edit_private_multiples_carreras');
-                $rol_obtenido->add_cap('edit_published_multiples_carreras');
-                $rol_obtenido->add_cap('create_multiples_carreras');
 
-                $rol_obtenido->add_cap('edit_preinscriptos');
-                $rol_obtenido->add_cap('read_preinscriptos');
-                $rol_obtenido->add_cap('delete_preinscriptos');
-                $rol_obtenido->add_cap('edit_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('publish_multiples_preinscriptos');
-                $rol_obtenido->add_cap('read_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_published_multiples_preinscriptos');
-                $rol_obtenido->add_cap('delete_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_published_multiples_preinscriptos');
-                
                 break;
 
             case 'preinscripto':
@@ -193,21 +87,11 @@ function activar_habilidades($roles)
                 break;
 
             case 'supra_profesor':
-                $rol_obtenido->add_cap('edit_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('read_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_published_multiples_preinscriptos');
-                
+
                 break;
 
             case 'profesor':
-                $rol_obtenido->add_cap('edit_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_others_multiples_preinscriptos');
-                $rol_obtenido->add_cap('read_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_private_multiples_preinscriptos');
-                $rol_obtenido->add_cap('edit_published_multiples_preinscriptos');
-                
+
                 break;
         }
     }
