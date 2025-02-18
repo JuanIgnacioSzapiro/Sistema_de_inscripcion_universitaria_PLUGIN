@@ -163,10 +163,10 @@ class CarreraTipoDePost extends TipoDePost
         $meta->crear_tipo_meta_box();
 
         // Register sortable columns
-        add_filter('manage_edit-carreras_sortable_columns', array($this, 'mis_columnas_ordenables'), 10);
+        add_filter('manage_edit-carreras_sortable_columns', array($this, 'mis_columnas_ordenables'));
         // Handle custom sorting
-        add_action('pre_get_posts', array($this, 'manejar_ordenamiento_columnas'), 10);
-        add_filter('manage_carreras_posts_columns', array($this, 'mis_columnas'), 10);
+        add_action('pre_get_posts', array($this, 'manejar_ordenamiento_columnas'));
+        add_filter('manage_carreras_posts_columns', array($this, 'mis_columnas'));
         add_action('manage_carreras_posts_custom_column', array($this, 'cargar_mis_columnas'), 10, 2);
 
         $this->mis_filtros();
@@ -180,6 +180,7 @@ class CarreraTipoDePost extends TipoDePost
         $columns['fecha_de_carga'] = 'date';
         $columns['modificador'] = 'Último modificador';
         $columns['fecha_de_modificacion'] = 'modified';
+        $columns['estado_de_publicacion'] = 'post_status';
         return $columns;
     }
 
@@ -204,6 +205,9 @@ class CarreraTipoDePost extends TipoDePost
             case 'modificador':
                 $query->get_results($query->prepare("SELECT * FROM wp_postmeta ORDER BY meta_id"));
                 break;
+            case 'estado_de_publicacion':
+                $query->set('orderby', 'post_status');
+                break;
         }
     }
 
@@ -217,6 +221,7 @@ class CarreraTipoDePost extends TipoDePost
             'fecha_de_carga' => 'Fecha de carga',
             'modificador' => 'Último modificador',
             'fecha_de_modificacion' => 'Fecha de modificación',
+            'estado_de_publicacion' => 'Estado de publicación',
         );
         return $columnas;
     }
@@ -249,12 +254,24 @@ class CarreraTipoDePost extends TipoDePost
             case 'fecha_de_modificacion':
                 echo esc_html(get_the_modified_date("", $post_id));
                 break;
+            case 'estado_de_publicacion':
+                $estado = get_post_status($post_id);
+                $estados = array(
+                    'publish' => __('Publicado', 'text-domain'),
+                    'draft' => __('Borrador', 'text-domain'),
+                    'pending' => __('Pendiente de revisión', 'text-domain'),
+                    'future' => __('Programado', 'text-domain'),
+                    'private' => __('Privado', 'text-domain')
+                );
+
+                echo esc_html($estados[$estado] ?? ucfirst($estado));
+                break;
         }
     }
 
     public function mis_filtros()
     {
-        $filtrosXcreador = new CreadorFiltros($this->get_plural_mayuscula(), array(
+        $filtrosXcreador = new CreadorFiltros($this->get_plural(), array(
             new Filtro('filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador'),
             new Filtro('filtro_x_nombre_o_numero_de_carrera', "SELECT DISTINCT wp_postmeta.post_id FROM wp_postmeta INNER JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID WHERE ( (wp_postmeta.meta_key = '" . $this->get_prefijo() . '_' . $this->get_plural() . "_numero_de_plan_de_la_carrera' AND wp_postmeta.meta_value LIKE %s) OR  (wp_postmeta.meta_key = '" . $this->get_prefijo() . '_' . $this->get_plural() . "_nombre_de_la_carrera' AND wp_postmeta.meta_value LIKE %s))", 'post__in', 'Filtrar por número de plan o nombre de la carrera')
         ));

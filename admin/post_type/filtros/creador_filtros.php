@@ -98,7 +98,6 @@ class CreadorFiltros
         </div>
         <script>
             function borrar_filtros() {
-                document.getElementById("bulk-action-selector-top").value = "-1";
                 document.getElementById("filter-by-date").value = "0";
                 <?php
                 foreach ($this->get_argumentos() as $individual) {

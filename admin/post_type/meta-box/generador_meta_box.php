@@ -20,6 +20,8 @@ class TipoMetaBox
         $this->set_post_type_de_origen($post_type_de_origen);
         $this->set_titulo($titulo);
         $this->set_contenido($contenido);
+
+        add_action('admin_notices', array($this, 'mostrar_errores'));
     }
 
     public function set_post_type_de_origen($post_type_de_origen)
@@ -149,42 +151,91 @@ class TipoMetaBox
         if (!current_user_can('edit_' . $this->get_post_type_de_origen(), $post_id))
             return;
 
+        $errors = array();
+
+        // Primera pasada: validación
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
             if ($individual instanceof MetaBoxTipoTextoClonable) {
-                // Manejar campos clonables
                 $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : array();
-                $valores = array_map('sanitize_text_field', $valores);
-                $valores = array_filter($valores, function ($valor) {
-                    return !empty(trim($valor));
-                });
-
-                // Eliminar valores existentes
-                delete_post_meta($post_id, $meta_key);
-
-                // Añadir nuevos valores filtrados
-                foreach ($valores as $valor) {
-                    add_post_meta($post_id, $meta_key, $valor);
+                $valores = array_filter(array_map('trim', $valores));
+                
+                if (empty($valores)) {
+                    $errors[] = sprintf(__('El campo "%s" debe tener al menos un valor'), $individual->get_etiqueta());
                 }
             } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
-                // Manejar dropdown de posts
                 $valor = isset($_POST[$meta_key]) ? (int) $_POST[$meta_key] : 0;
-                if ($valor > 0) {
-                    update_post_meta($post_id, $meta_key, $valor);
-                } else {
-                    delete_post_meta($post_id, $meta_key);
+                if ($valor <= 0) {
+                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             } else {
-                // Manejar campo simple
-                $valor = isset($_POST[$meta_key]) ? sanitize_text_field($_POST[$meta_key]) : '';
-
-                if (!empty(trim($valor))) {
-                    update_post_meta($post_id, $meta_key, $valor);
-                } else {
-                    delete_post_meta($post_id, $meta_key);
+                $valor = isset($_POST[$meta_key]) ? trim($_POST[$meta_key]) : '';
+                if (empty($valor)) {
+                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             }
+        }
+
+        // Si hay errores, detener el proceso
+        if (!empty($errors)) {
+            set_transient('inpsc_meta_errors_' . $post_id, $errors, 45);
+            
+            // Revertir a borrador
+            remove_action('save_post', array($this, 'guardar'));
+            wp_update_post(array(
+                'ID' => $post_id,
+                'post_status' => 'draft'
+            ));
+            add_action('save_post', array($this, 'guardar'));
+            
+            return; // Detener ejecución
+        }
+
+        // Segunda pasada: guardar datos si no hay errores
+        foreach ($this->contenido as $individual) {
+            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+
+            if ($individual instanceof MetaBoxTipoTextoClonable) {
+                $valores = array_filter(array_map('trim', (array) $_POST[$meta_key]));
+                delete_post_meta($post_id, $meta_key);
+                foreach ($valores as $valor) {
+                    add_post_meta($post_id, $meta_key, sanitize_text_field($valor));
+                }
+            } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
+                $valor = (int) $_POST[$meta_key];
+                update_post_meta($post_id, $meta_key, $valor);
+            } else {
+                $valor = sanitize_text_field($_POST[$meta_key]);
+                update_post_meta($post_id, $meta_key, $valor);
+            }
+        }
+
+        delete_transient('inpsc_meta_errors_' . $post_id);
+    }
+    public function mostrar_errores()
+    {
+        global $post;
+
+        if (!$post || $post->post_type !== $this->get_post_type_de_origen()) {
+            return;
+        }
+
+        $transient_key = 'inpsc_meta_errors_' . $post->ID;
+        $errors = get_transient($transient_key);
+
+        if ($errors) {
+            delete_transient($transient_key);
+            ?>
+            <div class="notice notice-error is-dismissible">
+                <p><strong><?php _e('Error:', 'text-domain'); ?></strong></p>
+                <ul>
+                    <?php foreach ($errors as $error): ?>
+                        <li><?php echo esc_html($error); ?></li>
+                    <?php endforeach; ?>
+                </ul>
+            </div>
+            <?php
         }
     }
 }

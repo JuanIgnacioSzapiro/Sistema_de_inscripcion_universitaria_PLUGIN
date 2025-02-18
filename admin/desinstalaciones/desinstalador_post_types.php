@@ -3,12 +3,9 @@ require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
 
 function desinstalar_post_types()
 {
-    $carreras = new TipoDePost();
-    $preinscriptos = new TipoDePost();
+    $carreras = new TipoDePost('carreras');
 
-    $carreras->set_plural('carreras');
-
-    foreach (array($carreras, $preinscriptos) as $objeto) {
+    foreach (array($carreras) as $objeto) {
         $objeto->deregistrar_post_type();
         $objeto->borrar_todos_los_post();
     }
