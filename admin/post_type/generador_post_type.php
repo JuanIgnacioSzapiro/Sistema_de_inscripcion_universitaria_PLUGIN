@@ -5,6 +5,9 @@ class TipoDePost
     private $plural;
     private $femenino;
     private $prefijo;
+    private $icono;
+    private $meta;
+    private $para_armar_columnas;
 
     public function __construct(
         $plural,
@@ -50,6 +53,25 @@ class TipoDePost
         return $this->femenino;
     }
 
+    public function set_icono($valor)
+    {
+        $this->icono = $valor;
+    }
+
+    public function get_icono()
+    {
+        return $this->icono;
+    }
+    public function set_meta($valor)
+    {
+        $this->meta = $valor;
+    }
+
+    public function get_meta()
+    {
+        return $this->meta;
+    }
+
     public function get_caracteristicas()
     {
         return array(
@@ -70,7 +92,7 @@ class TipoDePost
                 'not_found_in_trash' => __('No se encontraron ' . $this->get_plural() . ' en la basura'),
                 'parent' => __($this->get_plural_mayuscula()),
             ),
-            'menu_icon' => 'dashicons-admin-multisite',
+            'menu_icon' => $this->get_icono(),
             'show_in_rest' => true,
             'rest_base' => $this->get_plural(),
             'has_archive' => true,
@@ -125,6 +147,16 @@ class TipoDePost
     public function get_prefijo()
     {
         return $this->prefijo;
+    }
+
+    public function set_para_armar_columnas($valor)
+    {
+        $this->para_armar_columnas = $valor;
+    }
+
+    public function get_para_armar_columnas()
+    {
+        return $this->para_armar_columnas;
     }
 
     public function registrar_post_type()

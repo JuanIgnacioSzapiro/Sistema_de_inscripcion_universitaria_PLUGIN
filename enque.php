@@ -7,5 +7,4 @@ if (!function_exists("agregar_js")) {
         wp_enqueue_script('sistema_de_inscripcion_a_carreras_js');
     }
 
-    add_action('wp_enqueue_scripts', 'agregar_js');
 }

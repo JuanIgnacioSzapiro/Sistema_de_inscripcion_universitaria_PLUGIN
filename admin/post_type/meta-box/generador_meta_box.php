@@ -10,14 +10,12 @@ class TipoMetaBox
     protected $etiqueta;
     protected $texto_de_ejemplificacion;
     protected $descripcion;
-
     protected $post_type_buscado;
 
     protected $tipo_de_archivo;
 
-    public function __construct($post_type_de_origen, $titulo, $contenido)
+    public function __construct($titulo, $contenido)
     {
-        $this->set_post_type_de_origen($post_type_de_origen);
         $this->set_titulo($titulo);
         $this->set_contenido($contenido);
 
@@ -151,68 +149,74 @@ class TipoMetaBox
         if (!current_user_can('edit_' . $this->get_post_type_de_origen(), $post_id))
             return;
 
-        $errors = array();
-
-        // Primera pasada: validación
+        // Save data unconditionally first
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
             if ($individual instanceof MetaBoxTipoTextoClonable) {
                 $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : array();
                 $valores = array_filter(array_map('trim', $valores));
-                
+
+                delete_post_meta($post_id, $meta_key);
+                foreach ($valores as $valor) {
+                    if (!empty($valor)) {
+                        add_post_meta($post_id, $meta_key, sanitize_text_field($valor));
+                    }
+                }
+            } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
+                $valor = isset($_POST[$meta_key]) ? (int) $_POST[$meta_key] : 0;
+                update_post_meta($post_id, $meta_key, $valor);
+            } else {
+                $valor = isset($_POST[$meta_key]) ? trim($_POST[$meta_key]) : '';
+                update_post_meta($post_id, $meta_key, sanitize_text_field($valor));
+            }
+        }
+
+        // Only validate if publishing
+        $is_publishing = isset($_POST['post_status']) && $_POST['post_status'] === 'publish';
+        if (!$is_publishing)
+            return;
+
+        $errors = array();
+
+        // Validate required fields
+        foreach ($this->contenido as $individual) {
+            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+
+            if ($individual instanceof MetaBoxTipoTextoClonable) {
+                $valores = get_post_meta($post_id, $meta_key, false);
                 if (empty($valores)) {
                     $errors[] = sprintf(__('El campo "%s" debe tener al menos un valor'), $individual->get_etiqueta());
                 }
             } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
-                $valor = isset($_POST[$meta_key]) ? (int) $_POST[$meta_key] : 0;
-                if ($valor <= 0) {
+                $valor = get_post_meta($post_id, $meta_key, true);
+                if (empty($valor) || $valor <= 0) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             } else {
-                $valor = isset($_POST[$meta_key]) ? trim($_POST[$meta_key]) : '';
+                $valor = get_post_meta($post_id, $meta_key, true);
                 if (empty($valor)) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             }
         }
 
-        // Si hay errores, detener el proceso
+        // Handle validation errors
         if (!empty($errors)) {
             set_transient('inpsc_meta_errors_' . $post_id, $errors, 45);
-            
-            // Revertir a borrador
+
+            // Revert to draft
             remove_action('save_post', array($this, 'guardar'));
             wp_update_post(array(
                 'ID' => $post_id,
                 'post_status' => 'draft'
             ));
             add_action('save_post', array($this, 'guardar'));
-            
-            return; // Detener ejecución
+        } else {
+            delete_transient('inpsc_meta_errors_' . $post_id);
         }
-
-        // Segunda pasada: guardar datos si no hay errores
-        foreach ($this->contenido as $individual) {
-            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
-
-            if ($individual instanceof MetaBoxTipoTextoClonable) {
-                $valores = array_filter(array_map('trim', (array) $_POST[$meta_key]));
-                delete_post_meta($post_id, $meta_key);
-                foreach ($valores as $valor) {
-                    add_post_meta($post_id, $meta_key, sanitize_text_field($valor));
-                }
-            } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
-                $valor = (int) $_POST[$meta_key];
-                update_post_meta($post_id, $meta_key, $valor);
-            } else {
-                $valor = sanitize_text_field($_POST[$meta_key]);
-                update_post_meta($post_id, $meta_key, $valor);
-            }
-        }
-
-        delete_transient('inpsc_meta_errors_' . $post_id);
     }
+    
     public function mostrar_errores()
     {
         global $post;
