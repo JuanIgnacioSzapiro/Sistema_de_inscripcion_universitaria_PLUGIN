@@ -140,9 +140,12 @@ class TipoMetaBox
     {
         $nonce_name = $this->get_llave_meta();
 
-        if (!wp_verify_nonce($_POST[$nonce_name], $nonce_name))
+        // Verificar si el nonce existe y es válido
+        if (!isset($_POST[$nonce_name]) || !wp_verify_nonce($_POST[$nonce_name], $nonce_name)) {
             return;
+        }
 
+        // Resto del código sin cambios...
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             return;
 
@@ -216,7 +219,7 @@ class TipoMetaBox
             delete_transient('inpsc_meta_errors_' . $post_id);
         }
     }
-    
+
     public function mostrar_errores()
     {
         global $post;

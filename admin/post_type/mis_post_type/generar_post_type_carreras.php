@@ -62,6 +62,8 @@ class CreadorTipoDePost extends TipoDePost
 
     public function manejar_ordenamiento_columnas($query)
     {
+        global $wpdb;
+
         if (!is_admin() || !$query->is_main_query() || $this->get_plural() !== $query->get('post_type')) {
             return;
         }
@@ -72,7 +74,6 @@ class CreadorTipoDePost extends TipoDePost
             foreach ($this->get_para_armar_columnas() as $columna_para_armar) {
                 if ($orderby == $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar) {
                     // Obtener el valor del meta_key para determinar si es numérico o no
-                    global $wpdb;
                     $meta_key = $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar;
                     $meta_value = $wpdb->get_var($wpdb->prepare(
                         "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key = %s LIMIT 1",
@@ -99,8 +100,8 @@ class CreadorTipoDePost extends TipoDePost
 
     public function mis_columnas($columnas)
     {
-        $contador = 0;
-        $columnas = array(
+        $contador = 1;
+        $nuevas_columnas = array(
             'cb' => $columnas['cb'],
             'creador' => 'Creador',
             'fecha_de_carga' => 'Fecha de carga',
@@ -111,16 +112,17 @@ class CreadorTipoDePost extends TipoDePost
 
         if (!empty($this->get_para_armar_columnas())) {
             foreach ($this->get_para_armar_columnas() as $columnas_para_armar) {
-                $columnas = array_merge(
-                    array_slice($columnas, (0 + $contador), 1, true),
+                $nuevas_columnas = array_merge(
+                    array('cb' => $nuevas_columnas['cb']),
+                    array_slice($nuevas_columnas, 0, $contador, true),
                     array($columnas_para_armar => str_replace('_', ' ', ucfirst($columnas_para_armar))),
-                    array_slice($columnas, 1, null, true)
+                    array_slice($nuevas_columnas, $contador, null, true)
                 );
                 $contador += 1;
             }
         }
 
-        return $columnas;
+        return $nuevas_columnas;
     }
 
 
