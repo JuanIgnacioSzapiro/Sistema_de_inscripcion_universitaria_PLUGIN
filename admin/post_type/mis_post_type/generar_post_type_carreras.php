@@ -1,0 +1,195 @@
+<?php // generar_post_type_carreras.php
+require_once dirname(__FILE__) . '/../meta-box/generador_meta_box.php';
+require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_archivo.php';
+require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_drop_down_post.php';
+require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto.php';
+require_once dirname(__FILE__) . '/../filtros/creador_filtros.php';
+require_once dirname(__FILE__) . '/../filtros/filtro.php';
+require_once dirname(__FILE__) . '/../generador_post_type.php';
+
+class CreadorTipoDePost extends TipoDePost
+{
+    public function __construct(
+        $singular,
+        $plural,
+        $femenino,
+        $prefijo,
+        $icono,
+        $meta,
+        $para_armar_columnas,
+    ) {
+        $this->set_singular($singular);
+        $this->set_plural($plural);
+        $this->set_femenino($femenino);
+        $this->set_prefijo($prefijo);
+        $this->set_icono($icono);
+        $this->set_meta($meta);
+        $this->set_para_armar_columnas($para_armar_columnas);
+
+        $meta = $this->get_meta();
+        $meta->set_post_type_de_origen($this->get_plural());
+
+        $meta->crear_tipo_meta_box();
+
+        // Register sortable columns
+        add_filter('manage_edit-' . $this->get_plural() . '_sortable_columns', array($this, 'mis_columnas_ordenables'));
+        // Handle custom sorting
+        add_action('pre_get_posts', array($this, 'manejar_ordenamiento_columnas'));
+        add_filter('manage_' . $this->get_plural() . '_posts_columns', array($this, 'mis_columnas'));
+        add_action('manage_' . $this->get_plural() . '_posts_custom_column', array($this, 'cargar_mis_columnas'), 10, 2);
+
+        $this->mis_filtros();
+
+        $this->registrar_post_type();
+    }
+    public function mis_columnas_ordenables($columns)
+    {
+        if (!empty($this->get_para_armar_columnas())) {
+            foreach ($this->get_para_armar_columnas() as $columna_para_armar) {
+                $columns[$columna_para_armar] = $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar;
+            }
+        }
+        $columns['creador'] = 'author';
+        $columns['fecha_de_carga'] = 'date';
+        $columns['modificador'] = 'Último modificador';
+        $columns['fecha_de_modificacion'] = 'modified';
+        $columns['estado_de_publicacion'] = 'post_status';
+        return $columns;
+    }
+
+
+    public function manejar_ordenamiento_columnas($query)
+    {
+        global $wpdb;
+
+        // if (!is_admin() || !$query->is_main_query() || $this->get_plural() !== $query->get('post_type')) {
+        //     return;
+        // }
+
+        $orderby = $query->get('orderby');
+
+        if (!empty($this->get_para_armar_columnas())) {
+            foreach ($this->get_para_armar_columnas() as $columna_para_armar) {
+                if ($orderby == $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar) {
+                    // Obtener el valor del meta_key para determinar si es numérico o no
+                    $meta_key = $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar;
+                    $meta_value = $wpdb->get_var($wpdb->prepare(
+                        "SELECT meta_value FROM $wpdb->postmeta WHERE meta_key = %s LIMIT 1",
+                        $meta_key
+                    ));
+
+                    // Determinar si el valor es numérico
+                    if (is_numeric($meta_value)) {
+                        $query->set('meta_key', $meta_key);
+                        $query->set('orderby', 'meta_value_num'); // Ordenar numéricamente
+                    } else {
+                        $query->set('meta_key', $meta_key);
+                        $query->set('orderby', 'meta_value'); // Ordenar alfabéticamente
+                    }
+                }
+            }
+        } elseif ($orderby == 'modificador') {
+            $query->get_results($query->prepare("SELECT * FROM wp_postmeta ORDER BY meta_id"));
+        } elseif ($orderby == 'estado_de_publicacion') {
+            $query->set('orderby', 'post_status');
+
+        }
+    }
+
+    public function mis_columnas($columnas)
+    {
+        $contador = 1;
+        $nuevas_columnas = array(
+            'cb' => $columnas['cb'],
+            'creador' => 'Creador',
+            'fecha_de_carga' => 'Fecha de carga',
+            'modificador' => 'Último modificador',
+            'fecha_de_modificacion' => 'Fecha de modificación',
+            'estado_de_publicacion' => 'Estado de publicación',
+        );
+
+        if (!empty($this->get_para_armar_columnas())) {
+            foreach ($this->get_para_armar_columnas() as $columnas_para_armar) {
+                $nuevas_columnas = array_merge(
+                    array('cb' => $nuevas_columnas['cb']),
+                    array_slice($nuevas_columnas, 0, $contador, true),
+                    array($columnas_para_armar => str_replace('_', ' ', ucfirst($columnas_para_armar))),
+                    array_slice($nuevas_columnas, $contador, null, true)
+                );
+                $contador += 1;
+            }
+        }
+
+        return $nuevas_columnas;
+    }
+
+
+    public function cargar_mis_columnas($columnas, $post_id)
+    {
+        if (!empty($this->get_para_armar_columnas())) {
+            foreach ($this->get_para_armar_columnas() as $columna_para_armar) {
+                if ($columnas == $columna_para_armar) {
+                    echo esc_html(get_post_meta($post_id, $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar, true));
+                }
+            }
+        }
+        if ($columnas == 'creador') {
+            echo esc_html(get_the_author());
+        } elseif ($columnas == 'fecha_de_carga') {
+            echo esc_html(get_the_date("", $post_id));
+        } elseif ($columnas == 'modificador') {
+            $last_id = get_post_meta($post_id, '_edit_last', true);
+            if ($last_id) {
+                $user = get_userdata($last_id);
+                echo esc_html($user->display_name);
+            } else {
+                echo esc_html__('N/A', 'textdomain');
+            }
+        } elseif ($columnas == 'fecha_de_modificacion') {
+            echo esc_html(get_the_modified_date("", $post_id));
+        } elseif ($columnas == 'estado_de_publicacion') {
+            $estado = get_post_status($post_id);
+            $estados = array(
+                'publish' => __('Publicado', 'text-domain'),
+                'draft' => __('Borrador', 'text-domain'),
+                'pending' => __('Pendiente de revisión', 'text-domain'),
+                'future' => __('Programado', 'text-domain'),
+                'private' => __('Privado', 'text-domain')
+            );
+            echo esc_html($estados[$estado] ?? ucfirst($estado));
+        }
+    }
+
+    public function mis_filtros()
+    {
+        $id_filtro = '';
+        $la_query = '';
+
+        if (!empty($this->get_para_armar_columnas())) {
+            foreach ($this->get_para_armar_columnas() as $key => $columna_para_armar) {
+                // Construir $id_filtro
+                $id_filtro .= '_' . $columna_para_armar;
+                if ($key < count($this->get_para_armar_columnas()) - 1) {
+                    $id_filtro .= '_o_';
+                }
+
+                // Construir $la_query
+                $la_query .= "(wp_postmeta.meta_key = '" . $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar . "' AND wp_postmeta.meta_value LIKE %s)";
+                if ($key < count($this->get_para_armar_columnas()) - 1) {
+                    $la_query .= ' OR ';
+                }
+            }
+
+            // Crear los filtros
+            $filtrosXcreador = new CreadorFiltros($this->get_plural(), array(
+                new Filtro('filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador'),
+                new Filtro('filtrar_x' . $id_filtro, "SELECT DISTINCT wp_postmeta.post_id FROM wp_postmeta INNER JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID WHERE (" . $la_query . ")", 'post__in', 'Filtrar por número de plan o nombre de la carrera')
+            ));
+        } else {
+            // Si no hay columnas para armar, solo se crea el filtro por creador
+            $filtrosXcreador = new CreadorFiltros($this->get_plural(), array(
+                new Filtro('filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador'),
+            ));
+        }
+    }
+}
