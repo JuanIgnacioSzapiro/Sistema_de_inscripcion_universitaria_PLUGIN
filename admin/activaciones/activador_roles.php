@@ -57,6 +57,8 @@ function activar_habilidades($roles)
 
     $total = array(
         new TipoDePost('carreras'),
+        new TipoDePost('tipos_de_carrera'),
+        new TipoDePost('materias'),
         new TipoDePost('tests'),
     );
 

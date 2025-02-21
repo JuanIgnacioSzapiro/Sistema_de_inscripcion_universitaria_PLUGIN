@@ -1,6 +1,7 @@
 <?php //activador_post_types.php
 require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
-require_once dirname(__FILE__) . '/../post_type/mis_post_type/generar_post_type_carreras.php';
+require_once dirname(__FILE__) . '/../post_type/mis_post_type/generar_post_type_general.php';
+require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_predeterminado.php';
 
 
 function activar_post_types()
@@ -29,7 +30,7 @@ function activar_post_types()
                 new CampoDropDownTipoPost(
                     'tipo_de_carrera',
                     'Tipo de carrera',
-                    'tipo_de_carrera',
+                    'tipos_de_carrera',
                     'Se selecciona el tipo de carrera'
                 ),
                 new CampoTexto(
@@ -60,7 +61,7 @@ function activar_post_types()
                 new CampoDropDownTipoPost(
                     'plan_de_estudios_y_programas_de_la_carrera',
                     'Plan de estudios y Programas de la carrera ',
-                    'plan_de_estudios_y_programas_de_la_carrera',
+                    'materias',
                     'Se selecciona un plan de estudio, previamente creado y publicado'
                 ),
                 new CampoArchivo(
@@ -148,34 +149,95 @@ function activar_post_types()
                     'Se ingresa un métodode contácto por cada casilla, de ser necesario se generan más',
                     true
                 ),
-            )
+            ),
+            'nombre_de_la_carrera'
         ),
         array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera', ),
     );
-    $tests = new CreadorTipoDePost(
-        'test',
-        'tests',
+    $tipo_de_carrera = new CreadorTipoDePost(
+        'tipo_de_carrera',
+        'tipos_de_carrera',
         true,
         'INSPT_SISTEMA_DE_INSCRIPCIONES',
         'dashicons-bank',
         new TipoMetaBox(
-            'Editor de tests',
+            'Editor de tipos de carrera',
             array(
                 new CampoTexto(
-                    'no_clonable',
-                    'No clonable',
-                    'Ejemplo',
-                    'Descripcion'
+                    'nombre_tipo_de_carrera',
+                    'Nombre tipo del tipo de carrera',
+                    'Profesorado',
+                    'Se ingresa el nombre del tipo de la carrera'
+                ),
+            ),
+            'nombre_tipo_de_carrera',
+        ),
+        array('nombre_tipo_de_carrera'),
+    );
+    $materias = new CreadorTipoDePost(
+        'materia',
+        'materias',
+        true,
+        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        'dashicons-bank',
+        new TipoMetaBox(
+            'Editor de materias',
+            array(
+                new CampoTexto(
+                    'codigo_de_materia',
+                    'Código de la materia',
+                    '60101',
+                    'Se ingresa el código de la materia'
                 ),
                 new CampoTexto(
-                   'Clonable',
-                    'clonable',
-                    'Ejemplo',
-                    'Descripcion',
+                    'asginatura',
+                    'Asignatura',
+                    'Análisis Matemático I',
+                    'Se ingresa el código de la asginatura'
+                ),
+                new CampoDropDownPredeterminado(
+                    'tipo_de_cursada',
+                    'Tipo de cursada',
+                    array('Cuatrimestral', 'Anual'),
+                    'Se ingresa el tipo de cursada de la asginatura',
+                ),
+                new CampoTexto(
+                    'horas',
+                    'Horas por cuatrimestre o año',
+                    '4',
+                    'Se ingresa la cantidad de horas por cuatrimestre o año, si se agregan más campos implica que la asignatura sigue y tiene más cantidad de horas en el perído siguiente',
                     true
                 ),
-            )
+            ),
+            array('codigo_de_materia','asginatura'),
         ),
-        array('no_clonable'),
+        array('codigo_de_materia','asginatura'),
     );
+    // $tests = new CreadorTipoDePost(
+    //     'test',
+    //     'tests',
+    //     true,
+    //     'INSPT_SISTEMA_DE_INSCRIPCIONES',
+    //     'dashicons-bank',
+    //     new TipoMetaBox(
+    //         'Editor de tests',
+    //         array(
+    //             new CampoTexto(
+    //                 'no_clonable',
+    //                 'No clonable',
+    //                 'Ejemplo',
+    //                 'Descripcion'
+    //             ),
+    //             new CampoTexto(
+    //                'Clonable',
+    //                 'clonable',
+    //                 'Ejemplo',
+    //                 'Descripcion',
+    //                 true
+    //             ),
+    //         ),
+    // 'no_clonable'
+    //     ),
+    //     array('no_clonable'),
+    // );
 }

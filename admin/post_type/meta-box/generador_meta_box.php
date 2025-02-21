@@ -2,9 +2,9 @@
 
 class TipoMetaBox
 {
-    protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES_';
+    protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES';
     protected $post_type_de_origen; //post_type al que pertenece
-    protected $titulo;
+    protected $titulo_de_editor;
     protected $contenido;
     protected $nombre_meta;
     protected $etiqueta;
@@ -13,11 +13,14 @@ class TipoMetaBox
     protected $post_type_buscado;
     protected $tipo_de_archivo;
     protected $clonable;
+    protected $opciones;
+    protected $titulo;
 
-    public function __construct($titulo, $contenido)
+    public function __construct($titulo_de_editor, $contenido, $titulo)
     {
-        $this->set_titulo($titulo);
+        $this->set_titulo_de_editor($titulo_de_editor);
         $this->set_contenido($contenido);
+        $this->set_titulo($titulo);
 
         add_action('admin_notices', array($this, 'mostrar_errores'));
     }
@@ -27,9 +30,9 @@ class TipoMetaBox
         $this->post_type_de_origen = $post_type_de_origen;
     }
 
-    public function set_titulo($titulo)
+    public function set_titulo_de_editor($titulo_de_editor)
     {
-        $this->titulo = $titulo;
+        $this->titulo_de_editor = $titulo_de_editor;
     }
     public function set_contenido($contenido)
     {
@@ -70,7 +73,7 @@ class TipoMetaBox
 
     public function get_llave_meta()
     {
-        return $this->prefijo . $this->get_post_type_de_origen();
+        return $this->prefijo . '_' . $this->get_post_type_de_origen();
     }
 
     public function get_post_type_de_origen()
@@ -78,9 +81,9 @@ class TipoMetaBox
         return $this->post_type_de_origen;
     }
 
-    public function get_titulo()
+    public function get_titulo_de_editor()
     {
-        return $this->titulo;
+        return $this->titulo_de_editor;
     }
 
     public function get_nombre_meta()
@@ -116,6 +119,22 @@ class TipoMetaBox
     {
         return $this->clonable;
     }
+    public function set_opciones($opciones)
+    {
+        $this->opciones = $opciones;
+    }
+    public function get_opciones()
+    {
+        return $this->opciones;
+    }
+    public function set_titulo($valor)
+    {
+        $this->titulo = $valor;
+    }
+    public function get_titulo()
+    {
+        return $this->titulo;
+    }
 
     public function crear_tipo_meta_box()
     {
@@ -125,7 +144,7 @@ class TipoMetaBox
 
     public function crear_metadata()
     {
-        add_meta_box($this->get_llave_meta(), $this->get_titulo(), array($this, 'mostrar'), $this->get_post_type_de_origen());
+        add_meta_box($this->get_llave_meta(), $this->get_titulo_de_editor(), array($this, 'mostrar'), $this->get_post_type_de_origen());
     }
 
     public function mostrar($post)
@@ -146,6 +165,7 @@ class TipoMetaBox
 
     public function guardar($post_id)
     {
+        $nuevo_titulo = '';
         $nonce_name = $this->get_llave_meta();
 
         // Verificar si el nonce existe y es válido
@@ -179,11 +199,39 @@ class TipoMetaBox
             elseif ($individual instanceof CampoDropDownTipoPost) {
                 $valor = isset($_POST[$meta_key]) ? (int) $_POST[$meta_key] : 0;
                 update_post_meta($post_id, $meta_key, $valor);
+            } elseif ($individual instanceof CampoDropDownPredeterminado) {
+                $valor = isset($_POST[$meta_key]) ? sanitize_text_field($_POST[$meta_key]) : '';
+                update_post_meta($post_id, $meta_key, $valor);
             }
             // Para campos de texto simples u otros
             else {
                 $valor = isset($_POST[$meta_key]) ? trim($_POST[$meta_key]) : '';
                 update_post_meta($post_id, $meta_key, sanitize_text_field($valor));
+            }
+        }
+
+        // Actualizar el título y slug del post basado en el campo especificado
+        if (!empty($this->get_titulo())) {
+            if (!is_array($this->get_titulo())) {
+                $meta_key_titulo = $this->get_llave_meta() . '_' . $this->get_titulo();
+                $nuevo_titulo = get_post_meta($post_id, $meta_key_titulo, true);
+            } else {
+                foreach ($this->get_titulo() as $key => $cada_campo) {
+                    $meta_key_titulo = $this->get_llave_meta() . '_' . $cada_campo;
+                    $nuevo_titulo .= get_post_meta($post_id, $meta_key_titulo, true) . (($key < count($this->get_titulo()) - 1) ? ' - ' : '');
+                }
+            }
+            if (!empty($nuevo_titulo)) {
+                $post = get_post($post_id);
+                if ($post->post_title !== $nuevo_titulo) {
+                    remove_action('save_post', array($this, 'guardar'));
+                    wp_update_post(array(
+                        'ID' => $post_id,
+                        'post_title' => $nuevo_titulo,
+                        'post_name' => sanitize_title($nuevo_titulo)
+                    ));
+                    add_action('save_post', array($this, 'guardar'));
+                }
             }
         }
 
@@ -206,6 +254,11 @@ class TipoMetaBox
             } elseif ($individual instanceof CampoDropDownTipoPost) {
                 $valor = get_post_meta($post_id, $meta_key, true);
                 if (empty($valor) || $valor <= 0) {
+                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
+                }
+            } elseif ($individual instanceof CampoDropDownPredeterminado) {
+                $valor = get_post_meta($post_id, $meta_key, true);
+                if (empty($valor)) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             } else {

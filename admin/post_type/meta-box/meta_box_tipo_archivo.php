@@ -26,6 +26,7 @@ class CampoArchivo extends TipoMetaBox
         <label for="<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($this->etiqueta); ?></label>
         <input type="hidden" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
             value="<?php echo esc_attr($current_file_id); ?>" />
+        <br>
         <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
             <?php esc_html_e('Subir archivo', 'text-domain'); ?>
         </button>

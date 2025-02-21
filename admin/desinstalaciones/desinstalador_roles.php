@@ -27,7 +27,10 @@ function desinstalar_roles()
 
     $total = array(
         new TipoDePost('carreras'),
+        new TipoDePost('tipos_de_carrera'),
+        new TipoDePost('materias'),        
         new TipoDePost('tests'),
+
     );
     foreach($total as $individual){
         foreach ($individual->get_habilidades() as $valor) {
