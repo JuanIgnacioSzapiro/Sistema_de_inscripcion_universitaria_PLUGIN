@@ -55,30 +55,21 @@ function activar_habilidades($roles)
 {
     array_push($roles, 'administrator');
 
-<<<<<<< HEAD
     $total = array(
         new TipoDePost('carreras'),
         new TipoDePost('tipos_de_carrera'),
         new TipoDePost('materias'),
         new TipoDePost('tests'),
     );
-=======
-    $carreras = new TipoDePost('carreras');
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
 
     foreach ($roles as $rol) {
         $rol_obtenido = get_role(is_a($rol, 'TipoDeRol') ? $rol->get_id() : $rol);
         switch ($rol_obtenido->name) {
             case 'administrator':
-<<<<<<< HEAD
                 foreach($total as $individual){
                     foreach ($individual->get_habilidades() as $valor) {
                         $rol_obtenido->add_cap($valor);
                     }
-=======
-                foreach ($carreras->get_habilidades() as $valor) {
-                    $rol_obtenido->add_cap($valor);
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
                 }
                 break;
 

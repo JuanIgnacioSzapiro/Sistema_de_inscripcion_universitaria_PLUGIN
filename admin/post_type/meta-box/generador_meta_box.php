@@ -2,22 +2,15 @@
 
 class TipoMetaBox
 {
-<<<<<<< HEAD
     protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES';
     protected $post_type_de_origen; //post_type al que pertenece
     protected $titulo_de_editor;
-=======
-    protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES_';
-    protected $post_type_de_origen; //post_type al que pertenece
-    protected $titulo;
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     protected $contenido;
     protected $nombre_meta;
     protected $etiqueta;
     protected $texto_de_ejemplificacion;
     protected $descripcion;
     protected $post_type_buscado;
-<<<<<<< HEAD
     protected $tipo_de_archivo;
     protected $clonable;
     protected $opciones;
@@ -28,15 +21,6 @@ class TipoMetaBox
         $this->set_titulo_de_editor($titulo_de_editor);
         $this->set_contenido($contenido);
         $this->set_titulo($titulo);
-=======
-
-    protected $tipo_de_archivo;
-
-    public function __construct($titulo, $contenido)
-    {
-        $this->set_titulo($titulo);
-        $this->set_contenido($contenido);
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
 
         add_action('admin_notices', array($this, 'mostrar_errores'));
     }
@@ -46,15 +30,9 @@ class TipoMetaBox
         $this->post_type_de_origen = $post_type_de_origen;
     }
 
-<<<<<<< HEAD
     public function set_titulo_de_editor($titulo_de_editor)
     {
         $this->titulo_de_editor = $titulo_de_editor;
-=======
-    public function set_titulo($titulo)
-    {
-        $this->titulo = $titulo;
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     }
     public function set_contenido($contenido)
     {
@@ -95,11 +73,7 @@ class TipoMetaBox
 
     public function get_llave_meta()
     {
-<<<<<<< HEAD
         return $this->prefijo . '_' . $this->get_post_type_de_origen();
-=======
-        return $this->prefijo . $this->get_post_type_de_origen();
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     }
 
     public function get_post_type_de_origen()
@@ -107,15 +81,9 @@ class TipoMetaBox
         return $this->post_type_de_origen;
     }
 
-<<<<<<< HEAD
     public function get_titulo_de_editor()
     {
         return $this->titulo_de_editor;
-=======
-    public function get_titulo()
-    {
-        return $this->titulo;
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     }
 
     public function get_nombre_meta()
@@ -143,7 +111,6 @@ class TipoMetaBox
     {
         return $this->tipo_de_archivo;
     }
-<<<<<<< HEAD
     public function set_clonable($clonable)
     {
         $this->clonable = $clonable;
@@ -168,8 +135,6 @@ class TipoMetaBox
     {
         return $this->titulo;
     }
-=======
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
 
     public function crear_tipo_meta_box()
     {
@@ -179,11 +144,7 @@ class TipoMetaBox
 
     public function crear_metadata()
     {
-<<<<<<< HEAD
         add_meta_box($this->get_llave_meta(), $this->get_titulo_de_editor(), array($this, 'mostrar'), $this->get_post_type_de_origen());
-=======
-        add_meta_box($this->get_llave_meta(), $this->get_titulo(), array($this, 'mostrar'), $this->get_post_type_de_origen());
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     }
 
     public function mostrar($post)
@@ -204,10 +165,7 @@ class TipoMetaBox
 
     public function guardar($post_id)
     {
-<<<<<<< HEAD
         $nuevo_titulo = '';
-=======
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
         $nonce_name = $this->get_llave_meta();
 
         // Verificar si el nonce existe y es válido
@@ -215,30 +173,18 @@ class TipoMetaBox
             return;
         }
 
-<<<<<<< HEAD
-=======
-        // Resto del código sin cambios...
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             return;
 
         if (!current_user_can('edit_' . $this->get_post_type_de_origen(), $post_id))
             return;
 
-<<<<<<< HEAD
         // Guardar los datos sin condiciones
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
             // Si el campo es clonable
             if (method_exists($individual, 'get_clonable') && $individual->get_clonable()) {
-=======
-        // Save data unconditionally first
-        foreach ($this->contenido as $individual) {
-            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
-
-            if ($individual instanceof MetaBoxTipoTextoClonable) {
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
                 $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : array();
                 $valores = array_filter(array_map('trim', $valores));
 
@@ -248,7 +194,6 @@ class TipoMetaBox
                         add_post_meta($post_id, $meta_key, sanitize_text_field($valor));
                     }
                 }
-<<<<<<< HEAD
             }
             // Para campos de tipo dropdown
             elseif ($individual instanceof CampoDropDownTipoPost) {
@@ -260,18 +205,11 @@ class TipoMetaBox
             }
             // Para campos de texto simples u otros
             else {
-=======
-            } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
-                $valor = isset($_POST[$meta_key]) ? (int) $_POST[$meta_key] : 0;
-                update_post_meta($post_id, $meta_key, $valor);
-            } else {
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
                 $valor = isset($_POST[$meta_key]) ? trim($_POST[$meta_key]) : '';
                 update_post_meta($post_id, $meta_key, sanitize_text_field($valor));
             }
         }
 
-<<<<<<< HEAD
         // Actualizar el título y slug del post basado en el campo especificado
         if (!empty($this->get_titulo())) {
             if (!is_array($this->get_titulo())) {
@@ -298,49 +236,31 @@ class TipoMetaBox
         }
 
         // Solo validar si se está publicando
-=======
-        // Only validate if publishing
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
         $is_publishing = isset($_POST['post_status']) && $_POST['post_status'] === 'publish';
         if (!$is_publishing)
             return;
 
         $errors = array();
 
-<<<<<<< HEAD
         // Validar campos requeridos
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
             if (method_exists($individual, 'get_clonable') && $individual->get_clonable()) {
-=======
-        // Validate required fields
-        foreach ($this->contenido as $individual) {
-            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
-
-            if ($individual instanceof MetaBoxTipoTextoClonable) {
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
                 $valores = get_post_meta($post_id, $meta_key, false);
                 if (empty($valores)) {
                     $errors[] = sprintf(__('El campo "%s" debe tener al menos un valor'), $individual->get_etiqueta());
                 }
-<<<<<<< HEAD
             } elseif ($individual instanceof CampoDropDownTipoPost) {
-=======
-            } elseif ($individual instanceof MetaBoxTipoDropDownPostType) {
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
                 $valor = get_post_meta($post_id, $meta_key, true);
                 if (empty($valor) || $valor <= 0) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
-<<<<<<< HEAD
             } elseif ($individual instanceof CampoDropDownPredeterminado) {
                 $valor = get_post_meta($post_id, $meta_key, true);
                 if (empty($valor)) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
-=======
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
             } else {
                 $valor = get_post_meta($post_id, $meta_key, true);
                 if (empty($valor)) {
@@ -349,19 +269,11 @@ class TipoMetaBox
             }
         }
 
-<<<<<<< HEAD
         // Manejar errores de validación
         if (!empty($errors)) {
             set_transient('inpsc_meta_errors_' . $post_id, $errors, 45);
 
             // Revertir a borrador
-=======
-        // Handle validation errors
-        if (!empty($errors)) {
-            set_transient('inpsc_meta_errors_' . $post_id, $errors, 45);
-
-            // Revert to draft
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
             remove_action('save_post', array($this, 'guardar'));
             wp_update_post(array(
                 'ID' => $post_id,
@@ -373,10 +285,6 @@ class TipoMetaBox
         }
     }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     public function mostrar_errores()
     {
         global $post;

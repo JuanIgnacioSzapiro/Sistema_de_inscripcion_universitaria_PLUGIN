@@ -1,29 +1,18 @@
 <?php //meta_box_tipo_drop_down_post.php
-<<<<<<< HEAD
 class CampoDropDownTipoPost extends TipoMetaBox
-=======
-class MetaBoxTipoDropDownPostType extends TipoMetaBox
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
 {
     public function __construct(
         $nombre_meta,
         $etiqueta,
         $post_type_buscado,
-<<<<<<< HEAD
         $descripcion,
         $clonable = false
-=======
-        $descripcion
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     ) {
         $this->set_nombre_meta($nombre_meta);
         $this->set_etiqueta($etiqueta);
         $this->set_post_type_buscado($post_type_buscado);
         $this->set_descripcion($descripcion);
-<<<<<<< HEAD
         $this->set_clonable($clonable);
-=======
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     }
 
     public function generar_fragmento_html($post, $llave_meta)
@@ -44,12 +33,8 @@ class MetaBoxTipoDropDownPostType extends TipoMetaBox
             <label for="<?php echo esc_attr($meta_key); ?>">
                 <?php echo esc_html($this->get_etiqueta()); ?>
             </label>
-<<<<<<< HEAD
             <br>
             <select name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
-=======
-            <select name="<?php $meta_key ?>" id="<?php $meta_key ?>">
->>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
                 <option value="">Seleccionar...</option>
                 <?php foreach ($posts as $post_option): ?>
                     <option value="<?php echo esc_attr($post_option->ID); ?>" <?php selected($selected_value, $post_option->ID); ?>>
