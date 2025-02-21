@@ -23,6 +23,7 @@ function desinstalar_roles()
         $objeto->borrar_rol();
     }
 
+<<<<<<< HEAD
     $rol_obtenido = get_role('administrator');
 
     $total = array(
@@ -36,5 +37,17 @@ function desinstalar_roles()
         foreach ($individual->get_habilidades() as $valor) {
             $rol_obtenido->remove_cap($valor);
         }
+=======
+    $carreras = new TipoDePost('carreras');
+
+
+    $administrador = get_role('administrator');
+
+    foreach ($carreras->get_habilidades() as $individual) {
+        $administrador->remove_cap($individual);
+    }
+    foreach (get_role('administrator')->capabilities as $individual) {
+        print_r($individual);
+>>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     }
 }

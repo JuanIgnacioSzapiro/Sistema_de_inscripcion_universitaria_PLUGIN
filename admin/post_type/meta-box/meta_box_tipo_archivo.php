@@ -1,18 +1,29 @@
 <?php //meta_box_tipo_archivo.php
+<<<<<<< HEAD
 class CampoArchivo extends TipoMetaBox
+=======
+class TipoMetaBoxArchivo extends TipoMetaBox
+>>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
 {
     public function __construct(
         $nombre_meta,
         $etiqueta,
         $tipo_de_archivo,
+<<<<<<< HEAD
         $descripcion,
         $clonable = false
+=======
+        $descripcion
+>>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     ) {
         $this->set_nombre_meta($nombre_meta);
         $this->set_etiqueta($etiqueta);
         $this->set_tipo_de_archivo($tipo_de_archivo);
         $this->set_descripcion($descripcion);
+<<<<<<< HEAD
         $this->set_clonable($clonable);
+=======
+>>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
     }
 
     public function generar_fragmento_html($post, $llave)
@@ -26,7 +37,10 @@ class CampoArchivo extends TipoMetaBox
         <label for="<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($this->etiqueta); ?></label>
         <input type="hidden" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
             value="<?php echo esc_attr($current_file_id); ?>" />
+<<<<<<< HEAD
         <br>
+=======
+>>>>>>> 47a81b82f6c18c6434dce33803420df8b08c5c5e
         <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
             <?php esc_html_e('Subir archivo', 'text-domain'); ?>
         </button>
