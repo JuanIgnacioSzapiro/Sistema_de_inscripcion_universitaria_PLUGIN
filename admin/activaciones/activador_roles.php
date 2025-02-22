@@ -59,6 +59,7 @@ function activar_habilidades($roles)
         new TipoDePost('carreras'),
         new TipoDePost('tipos_de_carrera'),
         new TipoDePost('materias'),
+        new TipoDePost('planes_y_programas'),
         new TipoDePost('tests'),
     );
 

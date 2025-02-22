@@ -1,4 +1,4 @@
-<?php //activador_post_types.php
+<?php 
 require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
 require_once dirname(__FILE__) . '/../post_type/mis_post_type/generar_post_type_general.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_predeterminado.php';
@@ -6,6 +6,92 @@ require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_pred
 
 function activar_post_types()
 {
+    $materias = new CreadorTipoDePost(
+        'materia',
+        'materias',
+        true,
+        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        'dashicons-bank',
+        new TipoMetaBox(
+            'Editor de materias',
+            array(
+                new CampoTexto(
+                    'codigo_de_materia',
+                    'Código de la materia',
+                    '60101',
+                    'Se ingresa el código de la materia'
+                ),
+                new CampoTexto(
+                    'asginatura',
+                    'Asignatura',
+                    'Análisis Matemático I',
+                    'Se ingresa el código de la asginatura'
+                ),
+                new CampoDropDownPredeterminado(
+                    'tipo_de_cursada',
+                    'Tipo de cursada',
+                    array('Cuatrimestral', 'Anual'),
+                    'Se ingresa el tipo de cursada de la asginatura',
+                ),
+                new CampoTexto(
+                    'horas',
+                    'Horas por cuatrimestre o año',
+                    '4',
+                    'Se ingresa la cantidad de horas por cuatrimestre o año. Según el año o cuatrimestre se crean más campos. Ejemplo: en 1er año -1, 2do 4, 3er -1',
+                    true
+                ),
+            ),
+            array('codigo_de_materia', 'asginatura'),
+        ),
+        array('codigo_de_materia', 'asginatura'),
+    );
+    $planes_y_programas = new CreadorTipoDePost(
+        'plan_y_programa',
+        'planes_y_programas',
+        false,
+        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        'dashicons-bank',
+        new TipoMetaBox(
+            'Editor de planes y programas',
+            array(
+                new CampoTexto(
+                    'nombre_de_plan_y_programa',
+                    'Nombre de planes de estudios y programas de la carrera',
+                    'Informática Aplicada 2025',
+                    'Se ingresa el nombre del plane de estudios y programas de la carrera'
+                ),
+                new CampoDropDownTipoPost(
+                    'materias_de_plan_y_programa',
+                    'Materias',
+                    'materias',
+                    'Seleccionar las materias',
+                    true
+                ),
+            ),
+            array('nombre_de_plan_y_programa'),
+        ),
+        array('nombre_de_plan_y_programa'),
+    );
+    $tipo_de_carrera = new CreadorTipoDePost(
+        'tipo_de_carrera',
+        'tipos_de_carrera',
+        false,
+        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        'dashicons-bank',
+        new TipoMetaBox(
+            'Editor de tipos de carrera',
+            array(
+                new CampoTexto(
+                    'nombre_tipo_de_carrera',
+                    'Nombre tipo del tipo de carrera',
+                    'Profesorado',
+                    'Se ingresa el nombre del tipo de la carrera'
+                ),
+            ),
+            array('nombre_tipo_de_carrera'),
+        ),
+        array('nombre_tipo_de_carrera'),
+    );
     $carreras = new CreadorTipoDePost(
         'carrera',
         'carreras',
@@ -59,10 +145,10 @@ function activar_post_types()
                     'Link de la resolución ministerial'
                 ),
                 new CampoDropDownTipoPost(
-                    'plan_de_estudios_y_programas_de_la_carrera',
+                    'campo_plan_y_programa',
                     'Plan de estudios y Programas de la carrera ',
-                    'materias',
-                    'Se selecciona un plan de estudio, previamente creado y publicado'
+                    'planes_y_programas',
+                    'Se selecciona un plan de estudio, previamente creado y publicado',
                 ),
                 new CampoArchivo(
                     'correlatividades_del_acarrera',
@@ -150,94 +236,8 @@ function activar_post_types()
                     true
                 ),
             ),
-            'nombre_de_la_carrera'
+            array('nombre_de_la_carrera')
         ),
-        array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera', ),
+        array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera'),
     );
-    $tipo_de_carrera = new CreadorTipoDePost(
-        'tipo_de_carrera',
-        'tipos_de_carrera',
-        true,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
-        'dashicons-bank',
-        new TipoMetaBox(
-            'Editor de tipos de carrera',
-            array(
-                new CampoTexto(
-                    'nombre_tipo_de_carrera',
-                    'Nombre tipo del tipo de carrera',
-                    'Profesorado',
-                    'Se ingresa el nombre del tipo de la carrera'
-                ),
-            ),
-            'nombre_tipo_de_carrera',
-        ),
-        array('nombre_tipo_de_carrera'),
-    );
-    $materias = new CreadorTipoDePost(
-        'materia',
-        'materias',
-        true,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
-        'dashicons-bank',
-        new TipoMetaBox(
-            'Editor de materias',
-            array(
-                new CampoTexto(
-                    'codigo_de_materia',
-                    'Código de la materia',
-                    '60101',
-                    'Se ingresa el código de la materia'
-                ),
-                new CampoTexto(
-                    'asginatura',
-                    'Asignatura',
-                    'Análisis Matemático I',
-                    'Se ingresa el código de la asginatura'
-                ),
-                new CampoDropDownPredeterminado(
-                    'tipo_de_cursada',
-                    'Tipo de cursada',
-                    array('Cuatrimestral', 'Anual'),
-                    'Se ingresa el tipo de cursada de la asginatura',
-                ),
-                new CampoTexto(
-                    'horas',
-                    'Horas por cuatrimestre o año',
-                    '4',
-                    'Se ingresa la cantidad de horas por cuatrimestre o año, si se agregan más campos implica que la asignatura sigue y tiene más cantidad de horas en el perído siguiente',
-                    true
-                ),
-            ),
-            array('codigo_de_materia','asginatura'),
-        ),
-        array('codigo_de_materia','asginatura'),
-    );
-    // $tests = new CreadorTipoDePost(
-    //     'test',
-    //     'tests',
-    //     true,
-    //     'INSPT_SISTEMA_DE_INSCRIPCIONES',
-    //     'dashicons-bank',
-    //     new TipoMetaBox(
-    //         'Editor de tests',
-    //         array(
-    //             new CampoTexto(
-    //                 'no_clonable',
-    //                 'No clonable',
-    //                 'Ejemplo',
-    //                 'Descripcion'
-    //             ),
-    //             new CampoTexto(
-    //                'Clonable',
-    //                 'clonable',
-    //                 'Ejemplo',
-    //                 'Descripcion',
-    //                 true
-    //             ),
-    //         ),
-    // 'no_clonable'
-    //     ),
-    //     array('no_clonable'),
-    // );
 }

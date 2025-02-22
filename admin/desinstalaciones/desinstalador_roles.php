@@ -28,7 +28,8 @@ function desinstalar_roles()
     $total = array(
         new TipoDePost('carreras'),
         new TipoDePost('tipos_de_carrera'),
-        new TipoDePost('materias'),        
+        new TipoDePost('materias'),       
+        new TipoDePost('planes_y_programas'), 
         new TipoDePost('tests'),
 
     );

@@ -1,4 +1,4 @@
-<?php // generar_post_type_carreras.php
+<?php 
 require_once dirname(__FILE__) . '/../meta-box/generador_meta_box.php';
 require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_archivo.php';
 require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_drop_down_post.php';
@@ -161,35 +161,48 @@ class CreadorTipoDePost extends TipoDePost
     }
 
     public function mis_filtros()
-    {
-        $id_filtro = '';
-        $la_query = '';
+{
+    $id_filtro = '';
+    $la_query = '';
+    $post_type = $this->get_plural();
 
-        if (!empty($this->get_para_armar_columnas())) {
-            foreach ($this->get_para_armar_columnas() as $key => $columna_para_armar) {
-                // Construir $id_filtro
-                $id_filtro .= '_' . $columna_para_armar;
-                if ($key < count($this->get_para_armar_columnas()) - 1) {
-                    $id_filtro .= '_o_';
-                }
-
-                // Construir $la_query
-                $la_query .= "(wp_postmeta.meta_key = '" . $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar . "' AND wp_postmeta.meta_value LIKE %s)";
-                if ($key < count($this->get_para_armar_columnas()) - 1) {
-                    $la_query .= ' OR ';
-                }
+    if (!empty($this->get_para_armar_columnas())) {
+        foreach ($this->get_para_armar_columnas() as $key => $columna_para_armar) {
+            $id_filtro .= '_' . $columna_para_armar;
+            if ($key < count($this->get_para_armar_columnas()) - 1) {
+                $id_filtro .= '_o_';
             }
 
-            // Crear los filtros
-            $filtrosXcreador = new CreadorFiltros($this->get_plural(), array(
-                new Filtro('filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador'),
-                new Filtro('filtrar_x' . $id_filtro, "SELECT DISTINCT wp_postmeta.post_id FROM wp_postmeta INNER JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID WHERE (" . $la_query . ")", 'post__in', 'Filtrar por número de plan o nombre de la carrera')
-            ));
-        } else {
-            // Si no hay columnas para armar, solo se crea el filtro por creador
-            $filtrosXcreador = new CreadorFiltros($this->get_plural(), array(
-                new Filtro('filtroXcreador', "SELECT ID FROM wp_users WHERE user_login LIKE %s", 'author__in', 'Filtrar por creador'),
-            ));
+            $meta_key = $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar;
+            $la_query .= "(wp_postmeta.meta_key = '$meta_key' AND wp_postmeta.meta_value LIKE %s AND wp_posts.post_type = '$post_type')";
+            if ($key < count($this->get_para_armar_columnas()) - 1) {
+                $la_query .= ' OR ';
+            }
         }
+
+        $filtrosXcreador = new CreadorFiltros($post_type, array(
+            new Filtro(
+                'filtroXcreador',
+                "SELECT ID FROM wp_posts WHERE post_author IN (SELECT ID FROM wp_users WHERE user_login LIKE %s) AND post_type = '$post_type'",
+                'post__in',
+                'Filtrar por creador'
+            ),
+            new Filtro(
+                'filtrar_x' . $id_filtro,
+                "SELECT DISTINCT wp_postmeta.post_id FROM wp_postmeta INNER JOIN wp_posts ON wp_postmeta.post_id = wp_posts.ID WHERE ($la_query)",
+                'post__in',
+                'Filtrar por ' . implode(' o ', str_replace("_", " ", $this->get_para_armar_columnas()))
+            )
+        ));
+    } else {
+        $filtrosXcreador = new CreadorFiltros($post_type, array(
+            new Filtro(
+                'filtroXcreador',
+                "SELECT ID FROM wp_posts WHERE post_author IN (SELECT ID FROM wp_users WHERE user_login LIKE %s) AND post_type = '$post_type'",
+                'post__in',
+                'Filtrar por creador'
+            ),
+        ));
     }
+}
 }

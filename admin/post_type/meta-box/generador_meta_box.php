@@ -168,45 +168,50 @@ class TipoMetaBox
         $nuevo_titulo = '';
         $nonce_name = $this->get_llave_meta();
 
-        // Verificar si el nonce existe y es válido
-        if (!isset($_POST[$nonce_name]) || !wp_verify_nonce($_POST[$nonce_name], $nonce_name)) {
+        if (!isset($_POST[$nonce_name]))
             return;
-        }
-
+        if (!wp_verify_nonce($_POST[$nonce_name], $nonce_name))
+            return;
         if (defined('DOING_AUTOSAVE') && DOING_AUTOSAVE)
             return;
-
         if (!current_user_can('edit_' . $this->get_post_type_de_origen(), $post_id))
             return;
 
-        // Guardar los datos sin condiciones
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
-            // Si el campo es clonable
-            if (method_exists($individual, 'get_clonable') && $individual->get_clonable()) {
-                $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : array();
-                $valores = array_filter(array_map('trim', $valores));
+            // 1. Manejo de campos clonables (incluyendo dropdowns)
+            if ($individual->get_clonable()) {
+                $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
 
-                delete_post_meta($post_id, $meta_key);
+                // Sanitización específica por tipo de campo
+                $sanitized_values = [];
                 foreach ($valores as $valor) {
-                    if (!empty($valor)) {
-                        add_post_meta($post_id, $meta_key, sanitize_text_field($valor));
+                    if ($individual instanceof CampoDropDownTipoPost) {
+                        $clean_value = intval($valor);
+                        if ($clean_value > 0)
+                            $sanitized_values[] = $clean_value;
+                    } else {
+                        $clean_value = sanitize_text_field(trim($valor));
+                        if (!empty($clean_value))
+                            $sanitized_values[] = $clean_value;
                     }
                 }
+
+                delete_post_meta($post_id, $meta_key);
+                foreach ($sanitized_values as $value) {
+                    add_post_meta($post_id, $meta_key, $value);
+                }
             }
-            // Para campos de tipo dropdown
+            // 2. Campos dropdown NO clonables
             elseif ($individual instanceof CampoDropDownTipoPost) {
-                $valor = isset($_POST[$meta_key]) ? (int) $_POST[$meta_key] : 0;
-                update_post_meta($post_id, $meta_key, $valor);
-            } elseif ($individual instanceof CampoDropDownPredeterminado) {
-                $valor = isset($_POST[$meta_key]) ? sanitize_text_field($_POST[$meta_key]) : '';
+                $valor = isset($_POST[$meta_key]) ? intval($_POST[$meta_key]) : 0;
                 update_post_meta($post_id, $meta_key, $valor);
             }
-            // Para campos de texto simples u otros
+            // 3. Otros tipos de campos
             else {
-                $valor = isset($_POST[$meta_key]) ? trim($_POST[$meta_key]) : '';
-                update_post_meta($post_id, $meta_key, sanitize_text_field($valor));
+                $valor = isset($_POST[$meta_key]) ? sanitize_text_field(trim($_POST[$meta_key])) : '';
+                update_post_meta($post_id, $meta_key, $valor);
             }
         }
 
@@ -235,51 +240,38 @@ class TipoMetaBox
             }
         }
 
-        // Solo validar si se está publicando
+        // Validación durante la publicación
         $is_publishing = isset($_POST['post_status']) && $_POST['post_status'] === 'publish';
         if (!$is_publishing)
             return;
 
-        $errors = array();
-
-        // Validar campos requeridos
+        $errors = [];
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+            $valores = get_post_meta($post_id, $meta_key, !$individual->get_clonable());
 
-            if (method_exists($individual, 'get_clonable') && $individual->get_clonable()) {
-                $valores = get_post_meta($post_id, $meta_key, false);
-                if (empty($valores)) {
-                    $errors[] = sprintf(__('El campo "%s" debe tener al menos un valor'), $individual->get_etiqueta());
-                }
-            } elseif ($individual instanceof CampoDropDownTipoPost) {
-                $valor = get_post_meta($post_id, $meta_key, true);
-                if (empty($valor) || $valor <= 0) {
-                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
-                }
-            } elseif ($individual instanceof CampoDropDownPredeterminado) {
-                $valor = get_post_meta($post_id, $meta_key, true);
-                if (empty($valor)) {
-                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
-                }
-            } else {
-                $valor = get_post_meta($post_id, $meta_key, true);
-                if (empty($valor)) {
-                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
+            // Validación para campos requeridos
+            if (empty($valores) || (is_array($valores) && count($valores) === 0)) {
+                $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
+                continue;
+            }
+
+            // Validación específica para dropdowns clonables
+            if ($individual->get_clonable() && $individual instanceof CampoDropDownTipoPost) {
+                foreach ((array) $valores as $valor) {
+                    if (!get_post($valor)) {
+                        $errors[] = sprintf(__('Valor inválido en "%s'), $individual->get_etiqueta());
+                        break;
+                    }
                 }
             }
         }
 
-        // Manejar errores de validación
         if (!empty($errors)) {
             set_transient('inpsc_meta_errors_' . $post_id, $errors, 45);
-
-            // Revertir a borrador
-            remove_action('save_post', array($this, 'guardar'));
-            wp_update_post(array(
-                'ID' => $post_id,
-                'post_status' => 'draft'
-            ));
-            add_action('save_post', array($this, 'guardar'));
+            remove_action('save_post', [$this, 'guardar']);
+            wp_update_post(['ID' => $post_id, 'post_status' => 'draft']);
+            add_action('save_post', [$this, 'guardar']);
         } else {
             delete_transient('inpsc_meta_errors_' . $post_id);
         }

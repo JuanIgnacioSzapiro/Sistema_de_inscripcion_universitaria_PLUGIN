@@ -8,6 +8,8 @@ class TipoDePost
     private $icono;
     private $meta;
     private $para_armar_columnas;
+    private $incrementador = 0;
+
 
     public function __construct(
         $plural,
@@ -37,12 +39,12 @@ class TipoDePost
 
     public function get_singular_mayuscula()
     {
-        return ucfirst($this->get_singular());
+        return str_replace('_', ' ', ucfirst($this->get_singular()));
     }
 
     public function get_plural_mayuscula()
     {
-        return ucfirst($this->get_plural());
+        return str_replace('_', ' ', ucfirst($this->get_plural()));
     }
     public function set_femenino($femenino)
     {
@@ -71,6 +73,11 @@ class TipoDePost
     {
         return $this->meta;
     }
+    public function get_posicion()
+    {
+        $this->incrementador += 1;
+        return 1000 + $this->incrementador;
+    }
 
     public function get_caracteristicas()
     {
@@ -79,7 +86,7 @@ class TipoDePost
             'show_ui' => true,
             'labels' => array(
                 'name' => __($this->get_plural_mayuscula()),
-                'singular_name' => __($this->get_singular_mayuscula()),
+                'singular_name' => __(str_replace("_", ' ', $this->get_singular_mayuscula())),
                 'add_new' => __('Agregar nuev' . ($this->get_femenino() ? 'a' : 'o')),
                 'add_new_item' => __('Agregar nuev' . ($this->get_femenino() ? 'a' : 'o') . ' ' . $this->get_singular()),
                 'edit' => __('Editar'),
@@ -101,6 +108,7 @@ class TipoDePost
             'exclude_from_search' => false,
             'capability_type' => $this->get_plural(),
             'map_meta_cap' => true,
+            'menu_position' => $this->get_posicion(),
             'capabilities' => [
                 'edit_post' => 'edit_' . $this->get_plural(),
                 'read_post' => 'read_' . $this->get_plural(),
