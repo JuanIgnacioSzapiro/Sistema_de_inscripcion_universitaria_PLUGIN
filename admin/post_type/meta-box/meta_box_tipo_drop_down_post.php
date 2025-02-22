@@ -1,6 +1,8 @@
 <?php //meta_box_tipo_drop_down_post.php
 class CampoDropDownTipoPost extends TipoMetaBox
 {
+    private static $js_added = false;
+
     public function __construct(
         $nombre_meta,
         $etiqueta,
@@ -29,11 +31,13 @@ class CampoDropDownTipoPost extends TipoMetaBox
         );
         $posts = get_posts($args);
         ?>
-        <div>
+        <div class="campo-dropdown-container">
             <label for="<?php echo esc_attr($meta_key); ?>">
                 <?php echo esc_html($this->get_etiqueta()); ?>
             </label>
             <br>
+            <input id="buscador_<?php echo esc_attr($meta_key); ?>" type="text" placeholder="Buscador"
+                class="buscador-dropdown">
             <select name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
                 <option value="">Seleccionar...</option>
                 <?php foreach ($posts as $post_option): ?>
@@ -47,5 +51,31 @@ class CampoDropDownTipoPost extends TipoMetaBox
             </p>
         </div>
         <?php
+
+        // Añadir script solo una vez
+        if (!self::$js_added) {
+            ?>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    document.querySelectorAll('.buscador-dropdown').forEach(function (buscador) {
+                        buscador.addEventListener('input', function (e) {
+                            const searchText = e.target.value.toLowerCase();
+                            const container = e.target.closest('.campo-dropdown-container');
+                            const select = container.querySelector('select');
+                            Array.from(select.options).forEach(option => {
+                                const text = option.textContent.toLowerCase();
+                                if (text.includes(searchText) || option.value === '') {
+                                    option.style.display = '';
+                                } else {
+                                    option.style.display = 'none';
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
+            <?php
+            self::$js_added = true;
+        }
     }
 }
