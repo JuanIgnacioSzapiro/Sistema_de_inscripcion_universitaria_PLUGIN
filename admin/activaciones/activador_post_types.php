@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
 require_once dirname(__FILE__) . '/../post_type/mis_post_type/generar_post_type_general.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_predeterminado.php';
@@ -27,17 +27,11 @@ function activar_post_types()
                     'Análisis Matemático I',
                     'Se ingresa el código de la asginatura'
                 ),
-                new CampoDropDownPredeterminado(
-                    'tipo_de_cursada',
-                    'Tipo de cursada',
-                    array('Cuatrimestral', 'Anual'),
-                    'Se ingresa el tipo de cursada de la asginatura',
-                ),
                 new CampoTexto(
                     'horas',
-                    'Horas por cuatrimestre o año',
+                    'Horas por año o cuatrimestre',
                     '4',
-                    'Se ingresa la cantidad de horas por cuatrimestre o año. Según el año o cuatrimestre se crean más campos. Ejemplo: en 1er año -1, 2do 4, 3er -1',
+                    'Se ingresa la cantidad de horas por año o cuatrimestre o -1 en caso de no tener en ese año o cuatrimestre',
                     true
                 ),
             ),
@@ -67,6 +61,12 @@ function activar_post_types()
                     'Seleccionar las materias',
                     true
                 ),
+                new CampoDropDownPredeterminado(
+                    'tipo_de_cursada',
+                    'Tipo de cursada',
+                    array('Cuatrimestral', 'Anual'),
+                    'Se ingresa el tipo de cursada de la carrera',
+                ),
             ),
             array('nombre_de_plan_y_programa'),
         ),
@@ -84,8 +84,15 @@ function activar_post_types()
                 new CampoTexto(
                     'nombre_tipo_de_carrera',
                     'Nombre tipo del tipo de carrera',
-                    'Profesorado',
+                    'Tecnicaturas Superiores',
                     'Se ingresa el nombre del tipo de la carrera'
+                ),
+                new CampoTexto(
+                    'descripcion_tipo_de_carrera',
+                    'Descripción breve del tipo del tipo de carrera',
+                    'Títulos con reconocimiento oficial y validez nacional otorgados por el Ministerio de Educación de la Nación Argentina
+con especialidad en:',
+                    'Se ingresa una descripción breve del tipo de la carrera'
                 ),
             ),
             array('nombre_tipo_de_carrera'),
