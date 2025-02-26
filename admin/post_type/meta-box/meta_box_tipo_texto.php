@@ -8,15 +8,16 @@ class CampoTexto extends TipoMetaBox
         $etiqueta,
         $texto_de_ejemplificacion,
         $descripcion,
-        $clonable = false
+        $clonable = false,
+        $tipo_de_input = 'string',
     ) {
         $this->set_nombre_meta($nombre_meta);
         $this->set_etiqueta($etiqueta);
         $this->set_texto_de_ejemplificacion($texto_de_ejemplificacion);
         $this->set_descripcion($descripcion);
         $this->set_clonable($clonable);
+        $this->set_tipo_de_input($tipo_de_input);
     }
-
     public function generar_fragmento_html($post, $llave)
     {
         if (!$this->get_clonable()) {

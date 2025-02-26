@@ -28,11 +28,20 @@ function activar_post_types()
                     'Se ingresa el código de la asginatura'
                 ),
                 new CampoTexto(
+                    'periodo_en_que_aplica',
+                    'Periodo en el que aplica',
+                    '1',
+                    'Se ingresa el periodo de la totalidad de la cursada en el que aplica. Se ingresa "1" para indicar que es para primer año 1. En caso de ser más de un periodo para el cual está la materia se agrega un campo el cual coincidirá con ',
+                    true,
+                    'int',
+                ),
+                new CampoTexto(
                     'horas',
                     'Horas por año o cuatrimestre',
                     '4',
-                    'Se ingresa la cantidad de horas por año o cuatrimestre o -1 en caso de no tener en ese año o cuatrimestre',
-                    true
+                    'Se ingresa la cantidad de horas por cursada',
+                    true,
+                    'int'
                 ),
             ),
             array('codigo_de_materia', 'asginatura'),
@@ -55,7 +64,7 @@ function activar_post_types()
                     'Se ingresa el nombre del plane de estudios y programas de la carrera'
                 ),
                 new CampoDropDownTipoPost(
-                    'materias_de_plan_y_programa',
+                    'materias',
                     'Materias',
                     'materias',
                     'Seleccionar las materias',
@@ -121,7 +130,7 @@ con especialidad en:',
                     'Se ingresa el nombre completo de la carrera'
                 ),
                 new CampoDropDownTipoPost(
-                    'tipo_de_carrera',
+                    'tipos_de_carrera',
                     'Tipo de carrera',
                     'tipos_de_carrera',
                     'Se selecciona el tipo de carrera'
@@ -152,7 +161,7 @@ con especialidad en:',
                     'Link de la resolución ministerial'
                 ),
                 new CampoDropDownTipoPost(
-                    'campo_plan_y_programa',
+                    'planes_y_programas',
                     'Plan de estudios y Programas de la carrera ',
                     'planes_y_programas',
                     'Se selecciona un plan de estudio, previamente creado y publicado',

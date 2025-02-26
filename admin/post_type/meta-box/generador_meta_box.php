@@ -15,6 +15,7 @@ class TipoMetaBox
     protected $clonable;
     protected $opciones;
     protected $titulo;
+    protected $tipo_de_input;
 
     public function __construct($titulo_de_editor, $contenido, $titulo)
     {
@@ -136,6 +137,17 @@ class TipoMetaBox
         return $this->titulo;
     }
 
+    public function set_tipo_de_input($valor)
+    {
+        $this->tipo_de_input = $valor;
+    }
+
+    public function get_tipo_de_input()
+    {
+        return $this->tipo_de_input;
+    }
+
+
     public function crear_tipo_meta_box()
     {
         add_action('add_meta_boxes', array($this, 'crear_metadata'));
@@ -163,11 +175,13 @@ class TipoMetaBox
         <?php
     }
 
+
     public function guardar($post_id)
     {
         $nuevo_titulo = '';
         $nonce_name = $this->get_llave_meta();
 
+        // Validaciones iniciales (sin cambios)
         if (!isset($_POST[$nonce_name]))
             return;
         if (!wp_verify_nonce($_POST[$nonce_name], $nonce_name))
@@ -180,16 +194,20 @@ class TipoMetaBox
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
-            // 1. Manejo de campos clonables (incluyendo dropdowns)
             if ($individual->get_clonable()) {
                 $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
 
-                // Sanitización específica por tipo de campo
                 $sanitized_values = [];
                 foreach ($valores as $valor) {
+                    // Sanitización según tipo de campo
                     if ($individual instanceof CampoDropDownTipoPost) {
                         $clean_value = intval($valor);
                         if ($clean_value > 0)
+                            $sanitized_values[] = $clean_value;
+                    } elseif ($individual instanceof CampoTexto) {
+                        $tipo = $individual->get_tipo_de_input();
+                        $clean_value = $this->sanitizar_valor($valor, $tipo);
+                        if ($clean_value !== false)
                             $sanitized_values[] = $clean_value;
                     } else {
                         $clean_value = sanitize_text_field(trim($valor));
@@ -202,41 +220,16 @@ class TipoMetaBox
                 foreach ($sanitized_values as $value) {
                     add_post_meta($post_id, $meta_key, $value);
                 }
-            }
-            // 2. Campos dropdown NO clonables
-            elseif ($individual instanceof CampoDropDownTipoPost) {
+            } elseif ($individual instanceof CampoDropDownTipoPost) {
                 $valor = isset($_POST[$meta_key]) ? intval($_POST[$meta_key]) : 0;
                 update_post_meta($post_id, $meta_key, $valor);
-            }
-            // 3. Otros tipos de campos
-            else {
+            } elseif ($individual instanceof CampoTexto) {
+                $tipo = $individual->get_tipo_de_input();
+                $valor = isset($_POST[$meta_key]) ? $this->sanitizar_valor($_POST[$meta_key], $tipo) : '';
+                update_post_meta($post_id, $meta_key, $valor);
+            } else {
                 $valor = isset($_POST[$meta_key]) ? sanitize_text_field(trim($_POST[$meta_key])) : '';
                 update_post_meta($post_id, $meta_key, $valor);
-            }
-        }
-
-        // Actualizar el título y slug del post basado en el campo especificado
-        if (!empty($this->get_titulo())) {
-            if (!is_array($this->get_titulo())) {
-                $meta_key_titulo = $this->get_llave_meta() . '_' . $this->get_titulo();
-                $nuevo_titulo = get_post_meta($post_id, $meta_key_titulo, true);
-            } else {
-                foreach ($this->get_titulo() as $key => $cada_campo) {
-                    $meta_key_titulo = $this->get_llave_meta() . '_' . $cada_campo;
-                    $nuevo_titulo .= get_post_meta($post_id, $meta_key_titulo, true) . (($key < count($this->get_titulo()) - 1) ? ' - ' : '');
-                }
-            }
-            if (!empty($nuevo_titulo)) {
-                $post = get_post($post_id);
-                if ($post->post_title !== $nuevo_titulo) {
-                    remove_action('save_post', array($this, 'guardar'));
-                    wp_update_post(array(
-                        'ID' => $post_id,
-                        'post_title' => $nuevo_titulo,
-                        'post_name' => sanitize_title($nuevo_titulo)
-                    ));
-                    add_action('save_post', array($this, 'guardar'));
-                }
             }
         }
 
@@ -248,21 +241,23 @@ class TipoMetaBox
         $errors = [];
         foreach ($this->contenido as $individual) {
             $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
-            $valores = get_post_meta($post_id, $meta_key, !$individual->get_clonable());
+            $submitted_values = $individual->get_clonable() ?
+                (isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : []) :
+                (isset($_POST[$meta_key]) ? [$_POST[$meta_key]] : []);
 
-            // Validación para campos requeridos
-            if (empty($valores) || (is_array($valores) && count($valores) === 0)) {
+            // Validación de campos requeridos
+            if (empty(array_filter($submitted_values))) {
                 $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 continue;
             }
 
-            // Validación específica para dropdowns clonables
-            if ($individual->get_clonable() && $individual instanceof CampoDropDownTipoPost) {
-                foreach ((array) $valores as $valor) {
-                    if (!get_post($valor)) {
-                        $errors[] = sprintf(__('Valor inválido en "%s'), $individual->get_etiqueta());
-                        break;
-                    }
+            // Validación específica por tipo
+            if ($individual instanceof CampoTexto) {
+                $tipo = $individual->get_tipo_de_input();
+                foreach ($submitted_values as $value) {
+                    $error = $this->validar_valor($value, $tipo, $individual->get_etiqueta());
+                    if ($error)
+                        $errors[] = $error;
                 }
             }
         }
@@ -276,6 +271,60 @@ class TipoMetaBox
             delete_transient('inpsc_meta_errors_' . $post_id);
         }
     }
+
+    private function sanitizar_valor($valor, $tipo)
+    {
+        $valor = trim($valor);
+        switch ($tipo) {
+            case 'int':
+                return filter_var($valor, FILTER_VALIDATE_INT);
+            case 'float':
+                $valor = str_replace(',', '.', $valor);
+                return filter_var($valor, FILTER_VALIDATE_FLOAT);
+            default: // string
+                return sanitize_text_field($valor);
+        }
+    }
+
+    private function validar_valor($valor, $tipo, $etiqueta)
+    {
+        $valor = trim($valor);
+        if (empty($valor))
+            return null;
+
+        switch ($tipo) {
+            case 'int':
+                if (preg_match('/\s/', $valor)) {
+                    return sprintf(__('El campo "%s" no puede contener espacios'), $etiqueta);
+                }
+                if (!ctype_digit(str_replace('-', '', $valor))) {
+                    return sprintf(__('El campo "%s" debe ser un número entero válido'), $etiqueta);
+                }
+                break;
+
+            case 'float':
+                if (preg_match('/\s/', $valor)) {
+                    return sprintf(__('El campo "%s" no puede contener espacios'), $etiqueta);
+                }
+                if (substr_count($valor, ',') > 1) {
+                    return sprintf(__('El campo "%s" debe tener máximo una coma decimal'), $etiqueta);
+                }
+                $float_val = str_replace(',', '.', $valor);
+                if (!is_numeric($float_val)) {
+                    return sprintf(__('El campo "%s" debe ser un número decimal válido'), $etiqueta);
+                }
+                break;
+
+            case 'string':
+            default:
+                // No se aplican restricciones adicionales
+                break;
+        }
+
+        return null;
+    }
+
+    // ... Resto de la clase ...
 
     public function mostrar_errores()
     {
