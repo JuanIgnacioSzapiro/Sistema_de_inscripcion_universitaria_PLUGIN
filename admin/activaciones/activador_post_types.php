@@ -2,6 +2,7 @@
 require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
 require_once dirname(__FILE__) . '/../post_type/mis_post_type/generar_post_type_general.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_predeterminado.php';
+require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_tipo_texto_asociado.php';
 
 
 function activar_post_types()
@@ -17,39 +18,36 @@ function activar_post_types()
             array(
                 new CampoTexto(
                     'codigo_de_materia',
-                    'Código de la materia',
+                    'Código de la materia:',
                     '60101',
-                    'Se ingresa el código de la materia'
+                    'Se ingresa el código de la materia.'
                 ),
                 new CampoTexto(
                     'asginatura',
-                    'Asignatura',
+                    'Asignatura:',
                     'Análisis Matemático I',
-                    'Se ingresa el código de la asginatura'
+                    'Se ingresa el código de la asginatura.'
                 ),
-                new CampoTexto(
+                new CampoTextoAsociado(
                     'periodo_en_que_aplica',
-                    'Periodo en el que aplica',
+                    'Periodo en el que aplica:',
                     '1',
-                    'Se ingresa el periodo de la totalidad de la cursada en el que aplica. Se ingresa "1" para indicar que es para primer año 1. En caso de ser más de un periodo para el cual está la materia se agrega un campo el cual coincidirá con ',
-                    true,
-                    'int',
-                ),
-                new CampoTexto(
+                    'Se ingresa el periodo.',
                     'horas',
-                    'Horas por año o cuatrimestre',
+                    'Horas por año o cuatrimestre:',
                     '4',
-                    'Se ingresa la cantidad de horas por cursada',
-                    true,
-                    'int'
-                ),
+                    'Se ingresa la cantidad.',
+                    'int',
+                    'int',
+                    true
+                )
             ),
             array('codigo_de_materia', 'asginatura'),
         ),
         array('codigo_de_materia', 'asginatura'),
     );
     $planes_y_programas = new CreadorTipoDePost(
-        'plan_y_programa',
+        'plan y programa',
         'planes_y_programas',
         false,
         'INSPT_SISTEMA_DE_INSCRIPCIONES',
@@ -82,7 +80,7 @@ function activar_post_types()
         array('nombre_de_plan_y_programa'),
     );
     $tipo_de_carrera = new CreadorTipoDePost(
-        'tipo_de_carrera',
+        'tipo de carrera',
         'tipos_de_carrera',
         false,
         'INSPT_SISTEMA_DE_INSCRIPCIONES',
@@ -167,7 +165,7 @@ con especialidad en:',
                     'Se selecciona un plan de estudio, previamente creado y publicado',
                 ),
                 new CampoArchivo(
-                    'correlatividades_del_acarrera',
+                    'correlatividades_de_la_carrera',
                     'Correlatividades del acarrera',
                     'application/pdf',
                     'Subir archivo .pdf'

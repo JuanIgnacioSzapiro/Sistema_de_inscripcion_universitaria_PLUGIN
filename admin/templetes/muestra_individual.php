@@ -22,20 +22,15 @@ while (have_posts()):
 
 get_footer();
 
-function generador($para_mostrar, $el_id, $margen, $profundidad = 0) {
-    // Prevención de recursión infinita
-    if ($profundidad > 3) {
-        echo '<!-- Profundidad máxima alcanzada -->';
-        return;
-    }
-
+function generador($para_mostrar, $el_id, $margen)
+{
     foreach ($para_mostrar as $key => $items) {
         $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES_' . get_post_type($el_id) . '_';
-        
+
         if (strpos($key, $prefijo) === 0) {
-            $campo = str_replace($prefijo, '', $key);
+            $campo = str_replace("ARCHIVO", "", str_replace($prefijo, '', $key));
             $post_types = get_post_types([], 'names');
-            
+
             ?>
             <tr>
                 <th style="padding-left: <?php echo $margen; ?>px;">
@@ -48,13 +43,33 @@ function generador($para_mostrar, $el_id, $margen, $profundidad = 0) {
                             $sub_meta = get_post_meta($item);
                             if (!empty($sub_meta)) {
                                 echo '<table><tbody>';
-                                generador($sub_meta, $item, $margen + 20, $profundidad + 1);
+                                generador($sub_meta, $item, $margen + 20);
                                 echo '</tbody></table>';
                             }
                         }
                     } else {
-                        $valores_seguros = array_map('esc_html', $items);
-                        echo implode('<br>', $valores_seguros);
+                        foreach ($items as $item) {
+                            $posible_json = json_decode($item);
+                            if (is_numeric($item) && get_post($item) && get_post($item)->post_type === 'attachment') {
+                                echo esc_html(the_attachment_link($item) . ' -> ' . size_format(wp_get_attachment_metadata($item)['filesize'], 2));
+
+                            } elseif (is_array($posible_json)) {
+                                foreach ($posible_json as $items_json) {
+                                    foreach ($items_json as $key => $item_json) {
+                                        echo '<table><tbody>';
+                                        echo '<th>' . esc_html(ucfirst(str_replace('_', ' ', $key))) . '</th>';
+                                        echo '<td>' . esc_html($item_json) . '</td>';
+                                        echo '</tbody></table>';
+                                    }
+                                }
+                            } else {
+                                if (str_contains($item, 'http')) {
+                                    echo '<a href="' . esc_html($item) . '">' . esc_html($item) . '</a>';
+                                } else {
+                                    echo '<div>' . ($item) . '</div>';
+                                }
+                            }
+                        }
                     }
                     ?>
                 </td>

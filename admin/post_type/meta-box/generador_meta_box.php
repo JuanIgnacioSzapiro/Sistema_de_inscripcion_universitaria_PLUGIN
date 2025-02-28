@@ -3,6 +3,7 @@
 class TipoMetaBox
 {
     protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES';
+    protected $prefijo_archivo = 'ARCHIVO';
     protected $post_type_de_origen; //post_type al que pertenece
     protected $titulo_de_editor;
     protected $contenido;
@@ -10,12 +11,18 @@ class TipoMetaBox
     protected $etiqueta;
     protected $texto_de_ejemplificacion;
     protected $descripcion;
+    protected $nombre_meta_asociado2;
+    protected $etiqueta_asociado2;
+    protected $texto_de_ejemplificacion_asociado2;
+    protected $descripcion_asociado2;
+    protected $tipo_de_input_asociado2;
     protected $post_type_buscado;
     protected $tipo_de_archivo;
     protected $clonable;
     protected $opciones;
     protected $titulo;
     protected $tipo_de_input;
+
 
     public function __construct($titulo_de_editor, $contenido, $titulo)
     {
@@ -147,6 +154,52 @@ class TipoMetaBox
         return $this->tipo_de_input;
     }
 
+    // Setters y Getters para asociado2
+    public function set_nombre_meta_asociado2($valor)
+    {
+        $this->nombre_meta_asociado2 = $valor;
+    }
+    public function get_nombre_meta_asociado2()
+    {
+        return $this->nombre_meta_asociado2;
+    }
+
+    public function set_etiqueta_asociado2($valor)
+    {
+        $this->etiqueta_asociado2 = $valor;
+    }
+    public function get_etiqueta_asociado2()
+    {
+        return $this->etiqueta_asociado2;
+    }
+
+    public function set_texto_de_ejemplificacion_asociado2($valor)
+    {
+        $this->texto_de_ejemplificacion_asociado2 = $valor;
+    }
+    public function get_texto_de_ejemplificacion_asociado2()
+    {
+        return $this->texto_de_ejemplificacion_asociado2;
+    }
+
+    public function set_descripcion_asociado2($valor)
+    {
+        $this->descripcion_asociado2 = $valor;
+    }
+    public function get_descripcion_asociado2()
+    {
+        return $this->descripcion_asociado2;
+    }
+
+    public function set_tipo_de_input_asociado2($valor)
+    {
+        $this->tipo_de_input_asociado2 = $valor;
+    }
+    public function get_tipo_de_input_asociado2()
+    {
+        return $this->tipo_de_input_asociado2;
+    }
+
 
     public function crear_tipo_meta_box()
     {
@@ -178,10 +231,9 @@ class TipoMetaBox
 
     public function guardar($post_id)
     {
-        $nuevo_titulo = '';
         $nonce_name = $this->get_llave_meta();
 
-        // Validaciones iniciales (sin cambios)
+        // Validaciones iniciales
         if (!isset($_POST[$nonce_name]))
             return;
         if (!wp_verify_nonce($_POST[$nonce_name], $nonce_name))
@@ -192,44 +244,133 @@ class TipoMetaBox
             return;
 
         foreach ($this->contenido as $individual) {
-            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+            if ($individual instanceof CampoTextoAsociado) {
+                // Manejar campos de texto asociados
+                if ($individual->get_clonable()) {
+                    $group_meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta() . '_' . $individual->get_nombre_meta_asociado2();
+                    $valores = isset($_POST[$group_meta_key]) ? (array) $_POST[$group_meta_key] : [];
 
-            if ($individual->get_clonable()) {
-                $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
+                    $valores_sanitizados = [];
+                    foreach ($valores as $valor) {
+                        $valor_1 = $this->sanitizar_valor(
+                            $valor[$individual->get_nombre_meta()] ?? '',
+                            $individual->get_tipo_de_input()
+                        );
 
-                $sanitized_values = [];
-                foreach ($valores as $valor) {
-                    // Sanitización según tipo de campo
-                    if ($individual instanceof CampoDropDownTipoPost) {
-                        $clean_value = intval($valor);
-                        if ($clean_value > 0)
-                            $sanitized_values[] = $clean_value;
-                    } elseif ($individual instanceof CampoTexto) {
-                        $tipo = $individual->get_tipo_de_input();
-                        $clean_value = $this->sanitizar_valor($valor, $tipo);
-                        if ($clean_value !== false)
-                            $sanitized_values[] = $clean_value;
-                    } else {
-                        $clean_value = sanitize_text_field(trim($valor));
-                        if (!empty($clean_value))
-                            $sanitized_values[] = $clean_value;
+                        $valor_2 = $this->sanitizar_valor(
+                            $valor[$individual->get_nombre_meta_asociado2()] ?? '',
+                            $individual->get_tipo_de_input_asociado2()
+                        );
+
+                        if ($valor_1 !== false && $valor_2 !== false) {
+                            $valores_sanitizados[] = [
+                                $individual->get_nombre_meta() => $valor_1,
+                                $individual->get_nombre_meta_asociado2() => $valor_2
+                            ];
+                        }
+                    }
+
+                    // Convertir a JSON y guardar
+                    update_post_meta(
+                        $post_id,
+                        $group_meta_key,
+                        wp_json_encode($valores_sanitizados) // Serializa a JSON
+                    );
+                } else {
+                    $group_meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta() . '_' . $individual->get_nombre_meta_asociado2();
+
+                    $valor_1 = $this->sanitizar_valor($_POST[$individual->get_nombre_meta()] ?? '', $individual->get_tipo_de_input());
+                    $valor_2 = $this->sanitizar_valor($_POST[$individual->get_nombre_meta_asociado2()] ?? '', $individual->get_tipo_de_input_asociado2());
+
+                    if ($valor_1 !== false && $valor_2 !== false) {
+                        // Crear un objeto asociativo y guardar como JSON
+                        $datos_json = wp_json_encode([
+                            $individual->get_nombre_meta() => $valor_1,
+                            $individual->get_nombre_meta_asociado2() => $valor_2
+                        ]);
+
+                        update_post_meta($post_id, $group_meta_key, $datos_json);
                     }
                 }
+            } elseif ($individual instanceof CampoArchivo) {
+                // Manejar CampoArchivo
+                $meta_key = $this->get_llave_meta() . '_' . 'ARCHIVO' . '_' . $individual->get_nombre_meta();
 
-                delete_post_meta($post_id, $meta_key);
-                foreach ($sanitized_values as $value) {
-                    add_post_meta($post_id, $meta_key, $value);
+                if ($individual->get_clonable()) {
+                    $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
+                    $sanitized_values = array();
+
+                    foreach ($valores as $valor) {
+                        $clean_value = absint($valor);
+                        if ($clean_value > 0) {
+                            $sanitized_values[] = $clean_value;
+                        }
+                    }
+
+                    delete_post_meta($post_id, $meta_key);
+                    foreach ($sanitized_values as $value) {
+                        add_post_meta($post_id, $meta_key, $value);
+                    }
+                } else {
+                    $valor = isset($_POST[$meta_key]) ? absint($_POST[$meta_key]) : '';
+                    update_post_meta($post_id, $meta_key, $valor);
                 }
-            } elseif ($individual instanceof CampoDropDownTipoPost) {
-                $valor = isset($_POST[$meta_key]) ? intval($_POST[$meta_key]) : 0;
-                update_post_meta($post_id, $meta_key, $valor);
-            } elseif ($individual instanceof CampoTexto) {
-                $tipo = $individual->get_tipo_de_input();
-                $valor = isset($_POST[$meta_key]) ? $this->sanitizar_valor($_POST[$meta_key], $tipo) : '';
-                update_post_meta($post_id, $meta_key, $valor);
             } else {
-                $valor = isset($_POST[$meta_key]) ? sanitize_text_field(trim($_POST[$meta_key])) : '';
-                update_post_meta($post_id, $meta_key, $valor);
+                // Lógica original para otros tipos de campos
+                $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+
+                if ($individual->get_clonable()) {
+                    $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
+
+                    $sanitized_values = [];
+                    foreach ($valores as $valor) {
+                        if ($individual instanceof CampoDropDownTipoPost) {
+                            $clean_value = intval($valor);
+                            if ($clean_value > 0)
+                                $sanitized_values[] = $clean_value;
+                        } else {
+                            $clean_value = $this->sanitizar_valor($valor, $individual->get_tipo_de_input());
+                            if ($clean_value !== false)
+                                $sanitized_values[] = $clean_value;
+                        }
+                    }
+
+                    delete_post_meta($post_id, $meta_key);
+                    foreach ($sanitized_values as $value) {
+                        add_post_meta($post_id, $meta_key, $value);
+                    }
+                } else {
+                    $valor = $this->sanitizar_valor($_POST[$meta_key] ?? '', $individual->get_tipo_de_input());
+                    update_post_meta($post_id, $meta_key, $valor);
+                }
+            }
+        }
+
+        // Asignación automática del título compuesto
+        if ($this->get_titulo() && is_array($this->get_titulo())) {
+            $partes_titulo = [];
+
+            foreach ($this->get_titulo() as $campo_titulo) {
+                $meta_key = $this->get_llave_meta() . '_' . $campo_titulo;
+                $valor = get_post_meta($post_id, $meta_key, true);
+
+                if (!empty($valor)) {
+                    // Para campos clonables tomamos el primer valor
+                    $valor = is_array($valor) ? current($valor) : $valor;
+                    $partes_titulo[] = $valor;
+                }
+            }
+
+            if (!empty($partes_titulo)) {
+                $nuevo_titulo = implode(' - ', $partes_titulo);
+
+                remove_action('save_post', [$this, 'guardar']);
+                wp_update_post([
+                    'ID' => $post_id,
+                    'post_title' => $nuevo_titulo,
+                    'post_name' => sanitize_title($nuevo_titulo)
+                ]);
+                add_action('save_post', [$this, 'guardar']);
             }
         }
 
@@ -240,24 +381,54 @@ class TipoMetaBox
 
         $errors = [];
         foreach ($this->contenido as $individual) {
-            $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
-            $submitted_values = $individual->get_clonable() ?
-                (isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : []) :
-                (isset($_POST[$meta_key]) ? [$_POST[$meta_key]] : []);
+            if ($individual instanceof CampoTextoAsociado && $individual->get_clonable()) {
+                // Validación para campos asociados clonables
+                $group_meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta() . '_' . $individual->get_nombre_meta_asociado2();
+                $valores = isset($_POST[$group_meta_key]) ? (array) $_POST[$group_meta_key] : [];
 
-            // Validación de campos requeridos
-            if (empty(array_filter($submitted_values))) {
-                $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
-                continue;
-            }
+                foreach ($valores as $index => $valor) {
+                    $valor_1 = $valor[$individual->get_nombre_meta()] ?? '';
+                    $valor_2 = $valor[$individual->get_nombre_meta_asociado2()] ?? '';
 
-            // Validación específica por tipo
-            if ($individual instanceof CampoTexto) {
-                $tipo = $individual->get_tipo_de_input();
-                foreach ($submitted_values as $value) {
-                    $error = $this->validar_valor($value, $tipo, $individual->get_etiqueta());
-                    if ($error)
-                        $errors[] = $error;
+                    $error1 = $this->validar_valor($valor_1, $individual->get_tipo_de_input(), $individual->get_etiqueta());
+                    $error2 = $this->validar_valor($valor_2, $individual->get_tipo_de_input_asociado2(), $individual->get_etiqueta_asociado2());
+
+                    if ($error1)
+                        $errors[] = $error1;
+                    if ($error2)
+                        $errors[] = $error2;
+
+                    // Validar requeridos
+                    if (empty($valor_1)) {
+                        $errors[] = sprintf(__('Campo "%s" (posición %d) es obligatorio'), $individual->get_etiqueta(), $index + 1);
+                    }
+                    if (empty($valor_2)) {
+                        $errors[] = sprintf(__('Campo "%s" (posición %d) es obligatorio'), $individual->get_etiqueta_asociado2(), $index + 1);
+                    }
+                }
+            } elseif ($individual instanceof CampoArchivo) {
+                // Validación para CampoArchivo
+                $meta_key = $this->get_llave_meta() . '_' . 'ARCHIVO' . '_' . $individual->get_nombre_meta();
+                $submitted_values = $individual->get_clonable() ?
+                    (isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : []) :
+                    (isset($_POST[$meta_key]) ? [$_POST[$meta_key]] : []);
+
+                $filtered = array_filter($submitted_values, function ($value) {
+                    return !empty($value);
+                });
+
+                if (empty($filtered)) {
+                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
+                }
+            } else {
+                // Validación original para otros campos
+                $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+                $submitted_values = $individual->get_clonable() ?
+                    (isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : []) :
+                    (isset($_POST[$meta_key]) ? [$_POST[$meta_key]] : []);
+
+                if (empty(array_filter($submitted_values))) {
+                    $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             }
         }
@@ -324,7 +495,6 @@ class TipoMetaBox
         return null;
     }
 
-    // ... Resto de la clase ...
 
     public function mostrar_errores()
     {

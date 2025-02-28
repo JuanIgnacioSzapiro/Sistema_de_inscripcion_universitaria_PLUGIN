@@ -17,9 +17,8 @@ class CampoArchivo extends TipoMetaBox
 
     public function generar_fragmento_html($post, $llave)
     {
-        $meta_key = $llave . '_' . $this->nombre_meta;
+        $meta_key = $llave . '_' . 'ARCHIVO' . '_' . $this->nombre_meta;
         $current_file_id = get_post_meta($post->ID, $meta_key, true);
-        $current_file_url = $current_file_id ? wp_get_attachment_url($current_file_id) : '';
 
         wp_enqueue_media();
         ?>
@@ -30,11 +29,30 @@ class CampoArchivo extends TipoMetaBox
         <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
             <?php esc_html_e('Subir archivo', 'text-domain'); ?>
         </button>
-        <p class="description"><?php echo esc_html($this->descripcion); ?></p>
-        <?php if ($current_file_url): ?>
-            <p><a href="<?php echo esc_url($current_file_url); ?>"
-                    target="_blank"><?php esc_html_e('Ver archivo actual', 'text-domain'); ?></a></p>
+
+        <?php if ($current_file_id):
+            $attachment = get_post($current_file_id);
+            if ($attachment && 'attachment' === $attachment->post_type):
+                $metadata = wp_get_attachment_metadata($current_file_id);
+                $file_size = 0;
+
+                if ($metadata && isset($metadata['filesize'])) {
+                    $file_size = $metadata['filesize'];
+                } else {
+                    $file_path = get_attached_file($current_file_id);
+                    if ($file_path && file_exists($file_path)) {
+                        $file_size = filesize($file_path);
+                    }
+                }
+                $file_size_formatted = $file_size ? size_format($file_size, 2) : __('No disponible', 'text-domain');
+                ?>
+                <p class="file-info">
+                    <?php echo esc_html(the_attachment_link($current_file_id) . ' -> ' . $file_size_formatted); ?>
+                </p>
+            <?php endif; ?>
         <?php endif; ?>
+
+        <p class="description"><?php echo esc_html($this->descripcion); ?></p>
         <script>
             jQuery(document).ready(function ($) {
                 if (typeof window.initArchivo !== 'function') {
