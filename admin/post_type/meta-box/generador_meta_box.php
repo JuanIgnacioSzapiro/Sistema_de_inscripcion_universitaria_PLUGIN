@@ -407,15 +407,54 @@ class TipoMetaBox
                     }
                 }
             } elseif ($individual instanceof CampoArchivo) {
-                // Validación para CampoArchivo
                 $meta_key = $this->get_llave_meta() . '_' . 'ARCHIVO' . '_' . $individual->get_nombre_meta();
                 $submitted_values = $individual->get_clonable() ?
                     (isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : []) :
                     (isset($_POST[$meta_key]) ? [$_POST[$meta_key]] : []);
 
-                $filtered = array_filter($submitted_values, function ($value) {
-                    return !empty($value);
-                });
+                $allowed_types = $individual->get_tipo_de_archivo() ?: [];
+                $filtered = [];
+                $invalid_files = [];
+
+                foreach ($submitted_values as $value) {
+                    if (empty($value))
+                        continue;
+
+                    $attachment_id = absint($value);
+                    $mime_type = get_post_mime_type($attachment_id);
+
+                    // Switch para validación de tipos MIME
+                    $is_valid = false;
+                    switch (true) {
+                        case in_array($mime_type, $allowed_types):
+                            $is_valid = true;
+                            break;
+                        case empty($allowed_types): // Si no hay restricciones
+                            $is_valid = true;
+                            break;
+                        default:
+                            $invalid_files[] = $mime_type;
+                            break;
+                    }
+
+                    if ($is_valid) {
+                        $filtered[] = $attachment_id;
+                    }
+                }
+
+                // Manejo de errores
+                if (!empty($invalid_files)) {
+                    $allowed_extensions = implode(', ', array_map(function ($mime) {
+                        return explode('/', $mime)[1]; // Ej: 'pdf' de 'application/pdf'
+                    }, $allowed_types));
+
+                    $errors[] = sprintf(
+                        __('Error en "%s": Archivos permitidos (%s). Tipos subidos: %s'),
+                        $individual->get_etiqueta(),
+                        $allowed_extensions,
+                        implode(', ', array_unique($invalid_files))
+                    );
+                }
 
                 if (empty($filtered)) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());

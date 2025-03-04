@@ -12,7 +12,7 @@ while (have_posts()):
             <table>
                 <tbody>
                     <?php
-                    generador(get_post_meta(get_the_ID()), get_the_ID(), 0);
+                    generador(get_post_meta(get_the_ID()), get_the_ID());
                     ?>
                 </tbody>
             </table>
@@ -59,7 +59,12 @@ function generador($para_mostrar, $el_id)
                     echo '</ul>';
                 } else {
                     foreach ($items as $item) {
+
                         $posible_json = json_decode($item);
+
+                        $posible_url = @get_headers($item);
+
+
                         if (is_numeric($item) && get_post($item) && get_post($item)->post_type === 'attachment') {
                             echo esc_html(the_attachment_link($item) . ' -> ' . size_format(wp_get_attachment_metadata($item)['filesize'], 2));
                         } elseif (is_array($posible_json)) {
@@ -76,7 +81,7 @@ function generador($para_mostrar, $el_id)
                                 echo '</tr></tbody></table>';
                             }
                         } else {
-                            if (str_contains($item, 'http')) {
+                            if (str_contains($item, 'http') && $posible_url && strpos( $posible_url[0], '200')) {
                                 echo '<a href="' . esc_html($item) . '">' . esc_html($item) . '</a>';
                             } else {
                                 echo '<div>' . ($item) . '</div>';

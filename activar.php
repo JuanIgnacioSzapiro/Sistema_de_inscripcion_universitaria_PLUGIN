@@ -11,5 +11,7 @@ function activar_plugin()
 
     activar_roles();
 
+    include_once dirname(__FILE__) . '/admin/shortcodes/galería.php';
+
     flush_rewrite_rules(); // limpia permalinks
 }

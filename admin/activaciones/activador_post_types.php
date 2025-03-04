@@ -1,9 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
-require_once dirname(__FILE__) . '/../post_type/mis_post_type/generar_post_type_general.php';
+require_once dirname(__FILE__) . '/../post_type/generar_post_type_general.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_predeterminado.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_tipo_texto_asociado.php';
-
 
 function activar_post_types()
 {
@@ -133,6 +132,12 @@ con especialidad en:',
                     'tipos_de_carrera',
                     'Se selecciona el tipo de carrera'
                 ),
+                new CampoArchivo(
+                    'imagen_para_galeria',
+                    'Ingresar la imágen de la carrera para la galería',
+                    ['image/jpeg', 'image/png'],
+                    'Subir imágen'
+                ),
                 new CampoTexto(
                     'descripcion_corta_de_la_carrera',
                     'Descripción corta de la carrera',
@@ -167,43 +172,43 @@ con especialidad en:',
                 new CampoArchivo(
                     'correlatividades_de_la_carrera',
                     'Correlatividades del acarrera',
-                    'application/pdf',
+                    ["application/pdf"],
                     'Subir archivo .pdf'
                 ),
                 new CampoArchivo(
                     'horarios_turno_manana_de_la_carrera',
                     'Horarios Turno Mañana de la carrera',
-                    'application/pdf',
+                    ["application/pdf"],
                     'Subir archivo .pdf'
                 ),
                 new CampoArchivo(
                     'horarios_turno_tarde_de_la_carrera',
                     'Horarios Turno Tarde de la carrera',
-                    'application/pdf',
+                    ["application/pdf"],
                     'Subir archivo .pdf'
                 ),
                 new CampoArchivo(
                     'horarios_turno_noche_de_la_carrera',
                     'Horarios Turno Noche de la carrera',
-                    'application/pdf',
+                    ["application/pdf"],
                     'Subir archivo .pdf'
                 ),
                 new CampoArchivo(
                     'mesas_de_examen_turno_manana_de_la_carrera',
                     'Mesas de examen turno mañana de la carrera',
-                    'application/pdf',
+                    ["application/pdf"],
                     'Subir archivo .pdf'
                 ),
                 new CampoArchivo(
                     'mesas_de_examen_turno_tarde_de_la_carrera',
                     'Mesas de examen turno tarde de la carrera',
-                    'application/pdf',
+                    ["application/pdf"],
                     'Subir archivo .pdf'
                 ),
                 new CampoArchivo(
                     'mesas_de_examen_turno_noche_de_la_carrera',
                     'Mesas de examen turno noche de la carrera',
-                    'application/pdf',
+                    ["application/pdf"],
                     'Subir archivo .pdf'
                 ),
                 new CampoTexto(

@@ -1,11 +1,11 @@
 <?php
-require_once dirname(__FILE__) . '/../meta-box/generador_meta_box.php';
-require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_archivo.php';
-require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_drop_down_post.php';
-require_once dirname(__FILE__) . '/../meta-box/meta_box_tipo_texto.php';
-require_once dirname(__FILE__) . '/../filtros/creador_filtros.php';
-require_once dirname(__FILE__) . '/../filtros/filtro.php';
-require_once dirname(__FILE__) . '/../generador_post_type.php';
+require_once dirname(__FILE__) . '/meta-box/generador_meta_box.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_archivo.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_drop_down_post.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_texto.php';
+require_once dirname(__FILE__) . '/filtros/creador_filtros.php';
+require_once dirname(__FILE__) . '/filtros/filtro.php';
+require_once dirname(__FILE__) . '/generador_post_type.php';
 
 class CreadorTipoDePost extends TipoDePost
 {
@@ -214,13 +214,13 @@ class CreadorTipoDePost extends TipoDePost
         add_filter("single_template", function ($template) use ($post_type) {
             global $post;
             return $post->post_type === $post_type && !locate_template("single-{$post_type}.php")
-                ? dirname(__FILE__) . '/../../templetes/muestra_individual.php'
+                ? dirname(__FILE__) . '/../templetes/muestra_individual.php'
                 : $template;
         });
 
         add_filter("archive_template", function ($template) use ($post_type) {
             return is_post_type_archive($post_type) && !locate_template("archive-{$post_type}.php")
-                ? dirname(__FILE__) . '/../../templetes/archive-default.php'
+                ? dirname(__FILE__) . '/../templetes/archive-default.php'
                 : $template;
         });
     }

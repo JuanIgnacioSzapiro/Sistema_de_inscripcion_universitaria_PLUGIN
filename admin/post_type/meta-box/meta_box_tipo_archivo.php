@@ -22,67 +22,86 @@ class CampoArchivo extends TipoMetaBox
 
         wp_enqueue_media();
         ?>
-        <label for="<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($this->etiqueta); ?></label>
-        <input type="hidden" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
-            value="<?php echo esc_attr($current_file_id); ?>" />
-        <br>
-        <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
-            <?php esc_html_e('Subir archivo', 'text-domain'); ?>
-        </button>
+        <div class="file-upload-wrapper">
+            <label for="<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($this->etiqueta); ?></label>
+            <input type="hidden" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
+                value="<?php echo esc_attr($current_file_id); ?>" />
+            <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
+                <?php esc_html_e('Subir archivo', 'text-domain'); ?>
+            </button>
 
-        <?php if ($current_file_id):
-            $attachment = get_post($current_file_id);
-            if ($attachment && 'attachment' === $attachment->post_type):
-                $metadata = wp_get_attachment_metadata($current_file_id);
-                $file_size = 0;
+            <div class="file-info-container" id="<?php echo esc_attr($meta_key); ?>-info">
+                <?php if ($current_file_id):
+                    $this->render_file_info($current_file_id);
+                endif; ?>
+            </div>
 
-                if ($metadata && isset($metadata['filesize'])) {
-                    $file_size = $metadata['filesize'];
-                } else {
-                    $file_path = get_attached_file($current_file_id);
-                    if ($file_path && file_exists($file_path)) {
-                        $file_size = filesize($file_path);
-                    }
-                }
-                $file_size_formatted = $file_size ? size_format($file_size, 2) : __('No disponible', 'text-domain');
-                ?>
-                <p class="file-info">
-                    <?php echo esc_html(the_attachment_link($current_file_id) . ' -> ' . $file_size_formatted); ?>
-                </p>
-            <?php endif; ?>
-        <?php endif; ?>
+            <p class="description"><?php echo esc_html($this->descripcion); ?></p>
+        </div>
 
-        <p class="description"><?php echo esc_html($this->descripcion); ?></p>
         <script>
             jQuery(document).ready(function ($) {
-                if (typeof window.initArchivo !== 'function') {
-                    window.initArchivo = function () {
-                        $('.upload-file-btn').click(function (e) {
-                            e.preventDefault();
-                            var target = $(this).data('target');
-                            var file_frame = wp.media.frames.file_frame = wp.media({
-                                title: '<?php esc_html_e('Seleccionar archivo', 'text-domain'); ?>',
-                                button: { text: '<?php esc_html_e('Usar este archivo', 'text-domain'); ?>' },
-                                multiple: false,
-                                library: { type: '<?php echo esc_js($this->tipo_de_archivo); ?>' }
-                            });
-                            file_frame.on('select', function () {
-                                var attachment = file_frame.state().get('selection').first().toJSON();
-                                $('#' + target).val(attachment.id);
-                            });
-                            file_frame.open();
-                        });
-                    }
+                // Función para formatear el tamaño del archivo
+                function formatFileSize(bytes) {
+                    if (typeof bytes !== 'number') return '<?php esc_html_e('No disponible', 'text-domain'); ?>';
+                    if (bytes >= 1024 ** 3) return (bytes / 1024 ** 3).toFixed(2) + ' GB';
+                    if (bytes >= 1024 ** 2) return (bytes / 1024 ** 2).toFixed(2) + ' MB';
+                    if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
+                    return bytes + ' B';
                 }
-                // Initialize when DOM is ready
-                $(document).ready(function () {
-                    if (!window.archivoInit) {
-                        window.initArchivo();
-                        window.archivoInit = true;
-                    }
+
+                // Manejador del botón de subida
+                $('.upload-file-btn[data-target="<?php echo esc_attr($meta_key); ?>"]').click(function (e) {
+                    e.preventDefault();
+                    const target = $(this).data('target');
+
+                    // Configurar el media frame
+                    const file_frame = wp.media.frames.file_frame = wp.media({
+                        title: '<?php esc_html_e('Seleccionar archivo', 'text-domain'); ?>',
+                        button: { text: '<?php esc_html_e('Usar este archivo', 'text-domain'); ?>' },
+                        library: {
+                            type: <?php echo json_encode($this->tipo_de_archivo); ?> // Filtro por tipo
+                        },
+                        multiple: false
+                    });
+
+                    // Al seleccionar archivo
+                    file_frame.on('select', function () {
+                        const attachment = file_frame.state().get('selection').first().toJSON();
+
+                        // Actualizar campo oculto
+                        $(`#${target}`).val(attachment.id);
+
+                        // Renderizar información dinámica
+                        const fileInfo = `
+                            <p class="file-info">
+                                <a href="${attachment.url}" target="_blank">${attachment.filename}</a> 
+                                -> ${formatFileSize(attachment.filesize)}
+                            </p>
+                        `;
+
+                        $(`#${target}-info`).html(fileInfo);
+                    });
+
+                    file_frame.open();
                 });
             });
         </script>
+        <?php
+    }
+
+    private function render_file_info($file_id)
+    {
+        $attachment = get_post($file_id);
+        if (!$attachment || $attachment->post_type !== 'attachment')
+            return;
+
+        $metadata = wp_get_attachment_metadata($file_id);
+        $file_size = $metadata['filesize'] ?? filesize(get_attached_file($file_id));
+        ?>
+        <p class="file-info">
+            <?php echo the_attachment_link($file_id) . ' -> ' . size_format($file_size, 2); ?>
+        </p>
         <?php
     }
 }
