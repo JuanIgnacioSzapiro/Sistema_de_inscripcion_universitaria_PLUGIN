@@ -31,7 +31,7 @@ function generador_de_galeria($atts)
             <section class="tipo-carrera">
                 <div class="titulos-y-subtitulos">
                     <h1 class="tipo-titulo"><?php echo esc_html($tipo_title); ?></h1>
-                    <?php if (!empty($tipo_descripcion)) : ?>
+                    <?php if (!empty($tipo_descripcion)): ?>
                         <h2 class="tipo-descripcion"><?php echo wp_kses_post($tipo_descripcion); ?></h2>
                     <?php endif; ?>
                 </div>
@@ -50,38 +50,46 @@ function generador_de_galeria($atts)
                     'order' => 'ASC'
                 ));
 
-                if (!empty($posts)) : ?>
-                    <div class="galeria-grid">
-                        <?php foreach ($posts as $post) :
-                            setup_postdata($post);
-                            $imagen_id = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_imagen_para_galeria', true);
-                            $descripcion = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_corta_de_la_carrera', true);
-                            $imagen_url = $imagen_id ? wp_get_attachment_image_url($imagen_id, 'medium') : '';
-                            $link = get_permalink($post->ID);
-                            ?>
-                            <article class="galeria-item">
-                                <a class="galeria-enlace" href="<?php echo esc_url($link); ?>">
-                                    <?php if ($imagen_url) : ?>
-                                        <img src="<?php echo esc_url($imagen_url); ?>" 
-                                             alt="<?php echo esc_attr(get_the_title($post)); ?>" 
-                                             class="galeria-imagen">
-                                    <?php else : ?>
-                                        <div class="galeria-imagen-placeholder">Sin imagen</div>
-                                    <?php endif; ?>
-                                    <div class="galeria-texto">
-                                        <h3 class="item-titulo"><?php echo esc_html(get_the_title($post)); ?></h3>
-                                        <?php if (!empty($descripcion)) : ?>
-                                            <div class="item-descripcion"><?php echo wp_kses_post($descripcion); ?></div>
+                if (!empty($posts)):
+                    if (count($posts) == 1) {
+                        ?>
+                        <div class="galeria-grid-sin-gap">
+                            <?php
+                    } else {
+                        ?>
+                            <div class="galeria-grid">
+                                <?php
+                    }
+                    ?>
+                            <?php foreach ($posts as $post):
+                                setup_postdata($post);
+                                $imagen_id = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_imagen_para_galeria', true);
+                                $descripcion = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_corta_de_la_carrera', true);
+                                $imagen_url = $imagen_id ? wp_get_attachment_image_url($imagen_id, 'medium') : '';
+                                $link = get_permalink($post->ID);
+                                ?>
+                                <article class="galeria-item">
+                                    <a class="galeria-enlace" href="<?php echo esc_url($link); ?>">
+                                        <?php if ($imagen_url): ?>
+                                            <img src="<?php echo esc_url($imagen_url); ?>" alt="<?php echo esc_attr(get_the_title($post)); ?>"
+                                                class="galeria-imagen">
+                                        <?php else: ?>
+                                            <div class="galeria-imagen-placeholder">Sin imagen</div>
                                         <?php endif; ?>
-                                    </div>
-                                </a>
-                            </article>
-                        <?php endforeach;
-                        wp_reset_postdata(); ?>
-                    </div>
-                <?php else : ?>
-                    <p class="sin-elementos">No se encontraron elementos para este tipo.</p>
-                <?php endif; ?>
+                                        <div class="galeria-texto">
+                                            <h3 class="item-titulo"><?php echo esc_html(get_the_title($post)); ?></h3>
+                                            <?php if (!empty($descripcion)): ?>
+                                                <div class="item-descripcion"><?php echo wp_kses_post($descripcion); ?></div>
+                                            <?php endif; ?>
+                                        </div>
+                                    </a>
+                                </article>
+                            <?php endforeach;
+                            wp_reset_postdata(); ?>
+                        </div>
+                    <?php else: ?>
+                        <p class="sin-elementos">No se encontraron elementos para este tipo.</p>
+                    <?php endif; ?>
             </section>
             <?php
         }
