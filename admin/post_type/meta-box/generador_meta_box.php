@@ -3,7 +3,6 @@
 class TipoMetaBox
 {
     protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES';
-    protected $prefijo_archivo = 'ARCHIVO';
     protected $post_type_de_origen; //post_type al que pertenece
     protected $titulo_de_editor;
     protected $contenido;
@@ -294,7 +293,7 @@ class TipoMetaBox
                 }
             } elseif ($individual instanceof CampoArchivo) {
                 // Manejar CampoArchivo
-                $meta_key = $this->get_llave_meta() . '_' . 'ARCHIVO' . '_' . $individual->get_nombre_meta();
+                $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
                 if ($individual->get_clonable()) {
                     $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
@@ -407,7 +406,7 @@ class TipoMetaBox
                     }
                 }
             } elseif ($individual instanceof CampoArchivo) {
-                $meta_key = $this->get_llave_meta() . '_' . 'ARCHIVO' . '_' . $individual->get_nombre_meta();
+                $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
                 $submitted_values = $individual->get_clonable() ?
                     (isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : []) :
                     (isset($_POST[$meta_key]) ? [$_POST[$meta_key]] : []);

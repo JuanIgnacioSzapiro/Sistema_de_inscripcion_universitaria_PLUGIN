@@ -17,7 +17,7 @@ class CampoArchivo extends TipoMetaBox
 
     public function generar_fragmento_html($post, $llave)
     {
-        $meta_key = $llave . '_' . 'ARCHIVO' . '_' . $this->nombre_meta;
+        $meta_key = $llave . '_' . $this->nombre_meta;
         $current_file_id = get_post_meta($post->ID, $meta_key, true);
 
         wp_enqueue_media();
@@ -26,6 +26,7 @@ class CampoArchivo extends TipoMetaBox
             <label for="<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($this->etiqueta); ?></label>
             <input type="hidden" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
                 value="<?php echo esc_attr($current_file_id); ?>" />
+            <br>
             <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
                 <?php esc_html_e('Subir archivo', 'text-domain'); ?>
             </button>

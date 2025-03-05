@@ -27,7 +27,7 @@ function generador($para_mostrar, $el_id)
     foreach ($para_mostrar as $key => $items) {
         $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES_' . get_post_type($el_id) . '_';
         if (strpos($key, $prefijo) === 0) {
-            $campo = str_replace("ARCHIVO_", "", str_replace($prefijo, '', $key));
+            $campo = str_replace($prefijo, '', $key);
             $post_types = get_post_types([], 'names');
             ob_start(); // Inicia el buffer de salida
             ?>
@@ -63,7 +63,6 @@ function generador($para_mostrar, $el_id)
                         $posible_json = json_decode($item);
 
                         $posible_url = @get_headers($item);
-
 
                         if (is_numeric($item) && get_post($item) && get_post($item)->post_type === 'attachment') {
                             echo esc_html(the_attachment_link($item) . ' -> ' . size_format(wp_get_attachment_metadata($item)['filesize'], 2));
