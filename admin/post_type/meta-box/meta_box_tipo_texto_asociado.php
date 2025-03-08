@@ -14,7 +14,8 @@ class CampoTextoAsociado extends TipoMetaBox
         $descripcion_2,
         $tipo_de_input_1 = 'string',
         $tipo_de_input_2 = 'string',
-        $clonable = false
+        $clonable = false,
+        $es_campo_opcional = false,
     ) {
         $this->set_nombre_meta($nombre_meta_1);
         $this->set_etiqueta($etiqueta_1);
@@ -27,6 +28,7 @@ class CampoTextoAsociado extends TipoMetaBox
         $this->set_descripcion_asociado2($descripcion_2);
         $this->set_tipo_de_input_asociado2($tipo_de_input_2);
         $this->set_clonable($clonable);
+        $this->set_es_campo_opcional($es_campo_opcional);
     }
 
     public function generar_fragmento_html($post, $llave)

@@ -19,7 +19,7 @@ function activar_post_types()
                     'codigo_de_materia',
                     'Código de la materia:',
                     '60101',
-                    'Se ingresa el código de la materia.'
+                    'Se ingresa el código de la materia.',
                 ),
                 new CampoTexto(
                     'asginatura',
@@ -38,7 +38,7 @@ function activar_post_types()
                     'Se ingresa la cantidad.',
                     'int',
                     'int',
-                    true
+                    true,
                 )
             ),
             array('codigo_de_materia', 'asginatura'),
@@ -170,10 +170,20 @@ con especialidad en:',
                     'Se selecciona un plan de estudio, previamente creado y publicado',
                 ),
                 new CampoArchivo(
-                    'correlatividades_de_la_carrera',
-                    'Correlatividades del acarrera',
+                    'reconocimiento_CABA',
+                    'Reconocimiento CABA',
                     ["application/pdf"],
-                    'Subir archivo .pdf'
+                    'Subir archivo .pdf',
+                    false,
+                    true,
+                ),
+                new CampoArchivo(
+                    'reconocimiento_PBA',
+                    'Reconocimiento PBA',
+                    ["application/pdf"],
+                    'Subir archivo .pdf',
+                    false,
+                    true,
                 ),
                 new CampoArchivo(
                     'horarios_turno_manana_de_la_carrera',
@@ -259,4 +269,5 @@ con especialidad en:',
         ),
         array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera'),
     );
+    
 }

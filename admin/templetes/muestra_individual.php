@@ -139,6 +139,8 @@ function generador_carreras($post)
         href="<?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_resolucion_ministerial_de_la_carrera', true)); ?>">
         Resolución ministerial
     </a>
+
+
     <?php
     foreach (get_post_meta(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_planes_y_programas', true), 'INSPT_SISTEMA_DE_INSCRIPCIONES_planes_y_programas_materias', false) as $programa) {
         $sub_materia = array();
@@ -158,9 +160,20 @@ function generador_carreras($post)
 
         array_push($total_materias, $sub_materia);
     }
+    $horas_periodo = array();
+    $horas_totales = 0;
     ?>
     <table class="tabla-materias">
         <tbody>
+            <tr>
+                <th colspan="<?php echo esc_html($periodo_mayor + 2) ?>">
+                    <span>Período:
+                        <?php
+                        echo esc_html(get_post_meta(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_planes_y_programas', true), 'INSPT_SISTEMA_DE_INSCRIPCIONES_planes_y_programas_tipo_de_cursada', true));
+                        ?>
+                    </span>
+                </th>
+            </tr>
             <tr>
                 <th>
                     Código de materia
@@ -182,28 +195,23 @@ function generador_carreras($post)
             </tr>
             <?php
             foreach ($total_materias as $materia) {
-                $contador_periodo = 0;
                 ?>
                 <tr>
-                    <td>
-                        <?php
-                        echo esc_html($materia[0]); //código de materia
-                        ?>
-                    </td>
-                    <td>
-                        <?php
-                        echo esc_html($materia[1]); //nombre de materia
-                        ?>
-                    </td>
+                    <td><?php echo esc_html($materia[0]); ?></td>
+                    <td><?php echo esc_html($materia[1]); ?></td>
                     <?php
                     for ($contador_periodo = 1; $contador_periodo <= $periodo_mayor; $contador_periodo++) {
-                        $horario = $materia[2][$contador_periodo];
+                        $horario = isset($materia[2][$contador_periodo]) ? $materia[2][$contador_periodo] : 0;
+                        // Acumular horas por período
+                        if (isset($horas_periodo[$contador_periodo])) {
+                            $horas_periodo[$contador_periodo] += $horario;
+                        } else {
+                            $horas_periodo[$contador_periodo] = $horario;
+                        }
+                        // Acumular total general
+                        $horas_totales += $horario;
                         ?>
-                        <td>
-                            <?php
-                            echo esc_html(!empty($horario) ? $horario : ''); //nombre de materia
-                            ?>
-                        </td>
+                        <td><?php echo esc_html($horario !== 0 ? $horario : ''); ?></td>
                         <?php
                     }
                     ?>
@@ -211,6 +219,31 @@ function generador_carreras($post)
                 <?php
             }
             ?>
+            <tr>
+                <td colspan="2"><span>Horas por período:</span>
+                </td>
+                <?php
+                for ($contador_periodo = 1; $contador_periodo <= $periodo_mayor; $contador_periodo++) {
+                    ?>
+                    <td>
+                        <?php
+                        echo esc_html($horas_periodo[$contador_periodo]);
+                        ?>
+                    </td>
+                    <?php
+                }
+                ?>
+            </tr>
+            <tr>
+                <td colspan="2"><span>Horas totales:</span></td>
+                <td colspan="<?php echo esc_html($periodo_mayor) ?>">
+                    <span>
+                        <?php
+                        echo esc_html($horas_totales);
+                        ?>
+                    </span>
+                </td>
+            </tr>
         </tbody>
     </table>
     <a class="link carreras"

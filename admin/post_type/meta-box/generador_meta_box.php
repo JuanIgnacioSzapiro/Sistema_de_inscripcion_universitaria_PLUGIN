@@ -22,6 +22,7 @@ class TipoMetaBox
     protected $titulo;
     protected $tipo_de_input;
 
+    protected $es_campo_opcional;
 
     public function __construct($titulo_de_editor, $contenido, $titulo)
     {
@@ -197,6 +198,14 @@ class TipoMetaBox
     public function get_tipo_de_input_asociado2()
     {
         return $this->tipo_de_input_asociado2;
+    }
+    public function set_es_campo_opcional($valor)
+    {
+        $this->es_campo_opcional = $valor;
+    }
+    public function get_es_campo_opcional()
+    {
+        return $this->es_campo_opcional;
     }
 
 
@@ -398,10 +407,10 @@ class TipoMetaBox
                         $errors[] = $error2;
 
                     // Validar requeridos
-                    if (empty($valor_1)) {
+                    if (empty($valor_1) && !$individual->get_es_campo_opcional()) {
                         $errors[] = sprintf(__('Campo "%s" (posición %d) es obligatorio'), $individual->get_etiqueta(), $index + 1);
                     }
-                    if (empty($valor_2)) {
+                    if (empty($valor_2) && !$individual->get_es_campo_opcional()) {
                         $errors[] = sprintf(__('Campo "%s" (posición %d) es obligatorio'), $individual->get_etiqueta_asociado2(), $index + 1);
                     }
                 }
@@ -455,7 +464,7 @@ class TipoMetaBox
                     );
                 }
 
-                if (empty($filtered)) {
+                if (empty($filtered) && !$individual->get_es_campo_opcional()) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             } else {
@@ -465,7 +474,7 @@ class TipoMetaBox
                     (isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : []) :
                     (isset($_POST[$meta_key]) ? [$_POST[$meta_key]] : []);
 
-                if (empty(array_filter($submitted_values))) {
+                if (empty(array_filter($submitted_values)) && !$individual->get_es_campo_opcional()) {
                     $errors[] = sprintf(__('El campo "%s" es obligatorio'), $individual->get_etiqueta());
                 }
             }

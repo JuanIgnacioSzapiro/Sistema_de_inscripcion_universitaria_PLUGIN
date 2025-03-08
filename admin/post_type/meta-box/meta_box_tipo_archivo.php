@@ -6,13 +6,15 @@ class CampoArchivo extends TipoMetaBox
         $etiqueta,
         $tipo_de_archivo,
         $descripcion,
-        $clonable = false
+        $clonable = false,
+        $es_campo_opcional = false,
     ) {
         $this->set_nombre_meta($nombre_meta);
         $this->set_etiqueta($etiqueta);
         $this->set_tipo_de_archivo($tipo_de_archivo);
         $this->set_descripcion($descripcion);
         $this->set_clonable($clonable);
+        $this->set_es_campo_opcional($es_campo_opcional);
     }
 
     public function generar_fragmento_html($post, $llave)

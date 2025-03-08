@@ -6,13 +6,15 @@ class CampoDropDownPredeterminado extends TipoMetaBox
         $etiqueta,
         $opciones,
         $descripcion,
-        $clonable = false
+        $clonable = false,
+        $es_campo_opcional = false,
     ) {
         $this->set_nombre_meta($nombre_meta);
         $this->set_etiqueta($etiqueta);
         $this->set_opciones($opciones);
         $this->set_descripcion($descripcion);
         $this->set_clonable($clonable);
+        $this->set_es_campo_opcional($es_campo_opcional);
     }
 
     public function generar_fragmento_html($post, $llave_meta)
