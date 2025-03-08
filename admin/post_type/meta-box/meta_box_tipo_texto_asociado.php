@@ -1,4 +1,4 @@
-<?php // meta_box_tipo_texto.php
+<?php
 require_once dirname(__FILE__) . '/generador_meta_box.php';
 
 class CampoTextoAsociado extends TipoMetaBox
@@ -29,41 +29,74 @@ class CampoTextoAsociado extends TipoMetaBox
         $this->set_clonable($clonable);
     }
 
-
     public function generar_fragmento_html($post, $llave)
     {
         if (!$this->get_clonable()) {
-            // ... (código para campos no clonables igual)
+            // Campos no clonables
+            $meta_llave1 = $llave . '_' . $this->get_nombre_meta();
+            $meta_llave2 = $llave . '_' . $this->get_nombre_meta_asociado2();
+            $value1 = get_post_meta($post->ID, $meta_llave1, true);
+            $value2 = get_post_meta($post->ID, $meta_llave2, true);
+            ?>
+            <div style="margin-bottom: 20px;">
+                <label for="<?php echo esc_attr($meta_llave1); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?>
+                </label>
+                <input type="text" id="<?php echo esc_attr($meta_llave1); ?>" name="<?php echo esc_attr($meta_llave1); ?>"
+                    value="<?php echo esc_attr($value1); ?>"
+                    placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>" style="width: 100%;" />
+                <p class="description">
+                    <?php echo esc_html($this->get_descripcion()); ?>
+                </p>
+
+                <label for="<?php echo esc_attr($meta_llave2); ?>">
+                    <?php echo esc_html($this->get_etiqueta_asociado2()); ?>
+                </label>
+                <input type="text" id="<?php echo esc_attr($meta_llave2); ?>" name="<?php echo esc_attr($meta_llave2); ?>"
+                    value="<?php echo esc_attr($value2); ?>"
+                    placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion_asociado2()); ?>" style="width: 100%;" />
+                <p class="description">
+                    <?php echo esc_html($this->get_descripcion_asociado2()); ?>
+                </p>
+            </div>
+            <?php
         } else {
-            // Campos clonables con nueva estructura de clave
             $group_meta_key = $llave . '_' . $this->get_nombre_meta() . '_' . $this->get_nombre_meta_asociado2();
-            $group_values = get_post_meta($post->ID, $group_meta_key, true);
+            $group_values = get_post_meta($post->ID, $group_meta_key, false);
+            $posible_json = array();
 
             if (!is_array($group_values)) {
                 $group_values = array();
             }
 
             if (empty($group_values)) {
-                $group_values = array(
-                    array(
-                        $this->get_nombre_meta() => '',
-                        $this->get_nombre_meta_asociado2() => ''
-                    )
+                // Inicializar con un par vacío
+                $posible_json = array(
+                    array(array())
                 );
+            } else {
+                // Decodificar cada valor como array asociativo
+                foreach ($group_values as $item) {
+                    $decoded = json_decode($item, true);
+                    if (is_array($decoded)) {
+                        $posible_json[] = $decoded;
+                    }
+                }
             }
+
             ?>
             <div class="clonable-container">
                 <div class="clonable-fields">
-                    <?php foreach ($group_values as $i => $pair): ?>
-                        <div class="clonable-field" style="margin-bottom: 15px; border-bottom: 1px solid #ddd; padding-bottom: 15px;">
+                    <?php foreach ($posible_json[0] as $i => $pair): ?>
+                        <div class="clonable-field" style="margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:15px;">
                             <label>
                                 <?php echo esc_html($this->get_etiqueta()); ?>
                             </label>
                             <input type="text"
                                 name="<?php echo esc_attr($group_meta_key); ?>[<?php echo $i; ?>][<?php echo esc_attr($this->get_nombre_meta()); ?>]"
-                                value="<?php echo esc_attr($pair[$this->get_nombre_meta()]); ?>"
+                                value="<?php echo esc_attr(isset($pair[$this->get_nombre_meta()]) ? $pair[$this->get_nombre_meta()] : ''); ?>"
                                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>"
-                                style="width: 100%; margin-bottom: 5px;" />
+                                style="width:100%; margin-bottom:5px;" />
                             <p class="description">
                                 <?php echo esc_html($this->get_descripcion()); ?>
                             </p>
@@ -73,9 +106,9 @@ class CampoTextoAsociado extends TipoMetaBox
                             </label>
                             <input type="text"
                                 name="<?php echo esc_attr($group_meta_key); ?>[<?php echo $i; ?>][<?php echo esc_attr($this->get_nombre_meta_asociado2()); ?>]"
-                                value="<?php echo esc_attr($pair[$this->get_nombre_meta_asociado2()]); ?>"
+                                value="<?php echo esc_attr(isset($pair[$this->get_nombre_meta_asociado2()]) ? $pair[$this->get_nombre_meta_asociado2()] : ''); ?>"
                                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion_asociado2()); ?>"
-                                style="width: 100%; margin-bottom: 5px;" />
+                                style="width:100%; margin-bottom:5px;" />
                             <p class="description">
                                 <?php echo esc_html($this->get_descripcion_asociado2()); ?>
                             </p>
@@ -83,7 +116,7 @@ class CampoTextoAsociado extends TipoMetaBox
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <button type="button" class="button add-field" style="margin-top: 10px;">Agregar más</button>
+                <button type="button" class="button add-field" style="margin-top:10px;">Agregar más</button>
             </div>
             <script>
                 (function ($) {
@@ -99,9 +132,9 @@ class CampoTextoAsociado extends TipoMetaBox
                                 const index = container.find('.clonable-field').length;
 
                                 newField.find('input').each(function () {
-                                    const name = $(this).attr('name');
-                                    const newName = name.replace(/\[\d+\]\[/, '[' + index + '][');
-                                    $(this).attr('name', newName).val('');
+                                    const name = $(this).attr('name')
+                                        .replace(/\[\d+\]\[/, '[' + index + '][');
+                                    $(this).attr('name', name).val('');
                                 });
 
                                 container.find('.clonable-fields').append(newField);
@@ -113,9 +146,9 @@ class CampoTextoAsociado extends TipoMetaBox
                                     $(this).closest('.clonable-field').remove();
                                     container.find('.clonable-field').each(function (i) {
                                         $(this).find('input').each(function () {
-                                            const name = $(this).attr('name');
-                                            const newName = name.replace(/\[\d+\]\[/, '[' + i + '][');
-                                            $(this).attr('name', newName);
+                                            const name = $(this).attr('name')
+                                                .replace(/\[\d+\]\[/, '[' + i + '][');
+                                            $(this).attr('name', name);
                                         });
                                     });
                                 }

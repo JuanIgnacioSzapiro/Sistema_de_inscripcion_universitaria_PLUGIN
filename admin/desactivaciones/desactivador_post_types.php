@@ -2,9 +2,16 @@
 require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
 function desactivar_post_types()
 {
-    $carreras = new TipoDePost('carreras');
+    $post = array(
+        new TipoDePost('carreras'),
+        new TipoDePost('tipos_de_carrera'),
+        new TipoDePost('materias'),
+        new TipoDePost('planes_y_programas'),
+    );
 
-    foreach (array($carreras) as $objeto) {
-        $objeto->deregistrar_post_type();
+    if (!empty($post)) {
+        foreach ($post as $objeto) {
+            $objeto->deregistrar_post_type();
+        }
     }
 }
