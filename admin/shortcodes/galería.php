@@ -63,6 +63,7 @@ function generador_de_galeria($atts)
                     ?>
                             <?php foreach ($posts as $post):
                                 setup_postdata($post);
+                                $plan = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera', true);
                                 $imagen_id = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_imagen_para_galeria', true);
                                 $descripcion = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_corta_de_la_carrera', true);
                                 $imagen_url = $imagen_id ? wp_get_attachment_image_url($imagen_id, 'medium') : '';
@@ -73,6 +74,7 @@ function generador_de_galeria($atts)
                                         <?php if ($imagen_url): ?>
                                             <img src="<?php echo esc_url($imagen_url); ?>" alt="<?php echo esc_attr(get_the_title($post)); ?>"
                                                 class="galeria-imagen">
+                                            <div class="plan-de-carrera">Nro. de plan: <?php echo esc_attr($plan); ?></div>
                                         <?php else: ?>
                                             <div class="galeria-imagen-placeholder">Sin imagen</div>
                                         <?php endif; ?>
@@ -91,6 +93,8 @@ function generador_de_galeria($atts)
                         <p class="sin-elementos">No se encontraron elementos para este tipo.</p>
                     <?php endif; ?>
             </section>
+            <script>
+            </script>
             <?php
         }
     } else {
