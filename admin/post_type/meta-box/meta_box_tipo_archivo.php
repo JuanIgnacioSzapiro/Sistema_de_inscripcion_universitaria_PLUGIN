@@ -32,6 +32,9 @@ class CampoArchivo extends TipoMetaBox
             <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
                 <?php esc_html_e('Subir archivo', 'text-domain'); ?>
             </button>
+            <button type="button" class="button deseleccionar-btn" data-target="<?php echo esc_attr($meta_key); ?>">
+                Deseleccionar el archivo
+            </button>
 
             <div class="file-info-container" id="<?php echo esc_attr($meta_key); ?>-info">
                 <?php if ($current_file_id):
@@ -87,6 +90,13 @@ class CampoArchivo extends TipoMetaBox
                     });
 
                     file_frame.open();
+                });
+
+                $('.deseleccionar-btn[data-target="<?php echo esc_attr($meta_key); ?>"]').click(function (e) {
+                    e.preventDefault();
+                    const target = $(this).data('target');
+                    $(`#${target}`).val(''); // Limpiar el valor del input
+                    $(`#${target}-info`).html(''); // Limpiar la información del archivo
                 });
             });
         </script>

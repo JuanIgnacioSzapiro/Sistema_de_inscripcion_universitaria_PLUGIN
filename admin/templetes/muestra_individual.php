@@ -139,9 +139,27 @@ function generador_carreras($post)
         href="<?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_resolucion_ministerial_de_la_carrera', true)); ?>">
         Resolución ministerial
     </a>
-
-
     <?php
+    $reconocimiento_CABA = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_reconocimiento_CABA', true);
+    $reconocimiento_PBA = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_reconocimiento_PBA', true);
+
+    if (!empty($reconocimiento_CABA) || !empty($reconocimiento_CABA)) {
+        ?>
+        <p>Resoluciones de reconocimiento en AMBA:</p>
+        <?php
+        if (!empty($reconocimiento_CABA)) {
+            ?>
+            <a class="link carreras" href="<?php echo esc_html(get_post($reconocimiento_CABA)->guid) ?>">
+                Reconocimiento CABA </a>
+            <?php
+        }
+        if (!empty($reconocimiento_PBA)) {
+            ?>
+            <a class="link carreras" href="<?php echo esc_html(get_post($reconocimiento_PBA)->guid) ?>">
+                Reconocimiento PBA </a>
+            <?php
+        }
+    }
     foreach (get_post_meta(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_planes_y_programas', true), 'INSPT_SISTEMA_DE_INSCRIPCIONES_planes_y_programas_materias', false) as $programa) {
         $sub_materia = array();
         $sub_codigo_materia = get_post_meta($programa, 'INSPT_SISTEMA_DE_INSCRIPCIONES_materias_codigo_de_materia', true);
