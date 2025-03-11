@@ -64,10 +64,6 @@ class CreadorTipoDePost extends TipoDePost
     {
         global $wpdb;
 
-        // if (!is_admin() || !$query->is_main_query() || $this->get_plural() !== $query->get('post_type')) {
-        //     return;
-        // }
-
         $orderby = $query->get('orderby');
 
         if (!empty($this->get_para_armar_columnas())) {

@@ -98,7 +98,10 @@ function activar_post_types()
                     'Descripción breve del tipo del tipo de carrera',
                     'Títulos con reconocimiento oficial y validez nacional otorgados por el Ministerio de Educación de la Nación Argentina
 con especialidad en:',
-                    'Se ingresa una descripción breve del tipo de la carrera'
+                    'Se ingresa una descripción breve del tipo de la carrera',
+                    false,
+                    'string',
+                    true
                 ),
             ),
             array('nombre_tipo_de_carrera'),
@@ -258,10 +261,16 @@ con especialidad en:',
                     ''
                 ),
                 new CampoTexto(
+                    'mail_de_la_carrera',
+                    'Mail de la carrera',
+                    'informatica.aplicada@inspt.utn.edu.ar',
+                    'Se ingresa el mail de la carrera',
+                ),
+                new CampoTexto(
                     'consultas_a',
                     'Consultas a',
                     'info@inspt.utn.edu.ar',
-                    'Se ingresa un métodode contácto por cada casilla, de ser necesario se generan más',
+                    'Se ingresa el texto correspondiente y agregan líneas a medida que se necesitan más párrafos',
                     true
                 ),
             ),
@@ -269,5 +278,75 @@ con especialidad en:',
         ),
         array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera'),
     );
-    
+    $documentacion = new CreadorTipoDePost(
+        'documentacion requerida',
+        'documentacion',
+        true,
+        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        'dashicons-bank',
+        new TipoMetaBox(
+            'Editor de documentacion requerida',
+            array(
+                new CampoDropDownTipoPost(
+                    'carreras',
+                    'Carreras que requieren la misma documentación',
+                    'carreras',
+                    'Se selecciona las carreras, previamente creadas y publicadas',
+                    true
+                ),
+                new CampoTexto(
+                    'documentacion_necesaria',
+                    'Documentación necesaria para la inscripción',
+                    '- Título secundario original legalizado (*) y fotocopia (frente y dorso).',
+                    'Se ingresa el texto correspondiente y agregan líneas a medida que se necesitan más párrafos',
+                    true
+                ),
+                new CampoTexto(
+                    'tipo_de_ingreso',
+                    'Tipo de ingreso',
+                    'https://inspt.utn.edu.ar/wp-content/uploads/2024/07/TALLERES-DE-NIVELACION-COMPLETO.pdf',
+                    'Se ingresa un enlace en caso de ser un archivo o líneas de texto',
+                    true
+                ),
+                new CampoArchivo(
+                    'modelos_de_examen',
+                    'Modelos de examen',
+                    ["application/pdf"],
+                    'Subir archivo .pdf',
+                    true,
+                    true
+                ),
+                new CampoTexto(
+                    'condiciones_de_ingreso',
+                    ' Condiciones de ingreso',
+                    'Poseer título profesional universitario con título de grado de cuatro (4) años de duración y una carga mínima de 2.600 horas reloj, en las áres de la Ciencia y de la Técnica',
+                    'Se ingresa el texto correspondiente y agregan líneas a medida que se necesitan más párrafos',
+                    true,
+                    'string',
+                    true
+                ),
+                new CampoTexto(
+                    'costos',
+                    'Costos',
+                    'Carrera NO ARANCELADA',
+                    'Se ingresa el monto o "Carrera NO ARANCELADA respectivamente"',
+                ),
+                new CampoTexto(
+                    'condiciones_de_asistencia',
+                    'Condiciones de asistencia',
+                    'Es necesario el 75% (setenta y cinco por ciento) de asistencia para ser alumno regular',
+                    'Se ingresa un texto con el porcentaje de asistencia para regularizar la carrera',
+                ),
+                new CampoTexto(
+                    'equivalencias',
+                    'Equivalencias',
+                    'Si querés solicitar equivalencias comunícate vía mail a equivalencias@inspt.utn.edu.ar',
+                    'Se ingresa el texto correspondiente y agregan líneas a medida que se necesitan más párrafos',
+                    true
+                ),
+            ),
+            array('carreras'),
+        ),
+        array(),
+    );
 }

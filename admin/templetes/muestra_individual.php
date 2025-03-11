@@ -58,38 +58,38 @@ function generador_general($para_mostrar, $el_id)
                             echo '</tbody></table>';
                         }
                     }
-                } elseif (count($items) > 1) {
-                    foreach ($items as $item) {
-                        echo '<p>' . ($item) . '</p>';
-                    }
                 } else {
                     foreach ($items as $item) {
 
                         $posible_json = json_decode($item);
 
-                        $posible_url = @get_headers($item);
+                        $posible_url = (filter_var($item, FILTER_VALIDATE_URL) ? @get_headers($item) : '');
 
-                        if (is_numeric($item) && get_post($item) && get_post($item)->post_type === 'attachment') {
-                            echo esc_html(the_attachment_link($item) . ' -> ' . size_format(wp_get_attachment_metadata($item)['filesize'], 2));
-                        } elseif (is_array($posible_json)) {
-                            foreach ($posible_json as $key => $items_json) {
-                                if ($key != count($posible_json) - 1) {
-                                    echo '<table class="borde_inferior_rojo"><tbody>';
+                        if (!empty($item)) {
+                            if (is_numeric($item) && get_post($item) && get_post($item)->post_type === 'attachment') {
+                                echo esc_html(the_attachment_link($item) . ' -> ' . size_format(wp_get_attachment_metadata($item)['filesize'], 2));
+                            } elseif (is_array($posible_json)) {
+                                foreach ($posible_json as $key => $items_json) {
+                                    if ($key != count($posible_json) - 1) {
+                                        echo '<table class="borde_inferior_rojo"><tbody>';
+                                    } else {
+                                        echo '<table class=""><tbody>';
+                                    }
+                                    foreach ($items_json as $key => $item_json) {
+                                        echo '<tr><th>' . esc_html(ucfirst(str_replace('_', ' ', $key))) . '</th>';
+                                        echo '<td>' . esc_html($item_json) . '</td>';
+                                    }
+                                    echo '</tr></tbody></table>';
+                                }
+                            } else {
+                                if (!empty($posible_url)) {
+                                    echo '<a href="' . esc_html($item) . '">' . esc_html($item) . '</a>';
                                 } else {
-                                    echo '<table class=""><tbody>';
+                                    echo '<div>' . ($item) . '</div>';
                                 }
-                                foreach ($items_json as $key => $item_json) {
-                                    echo '<tr><th>' . esc_html(ucfirst(str_replace('_', ' ', $key))) . '</th>';
-                                    echo '<td>' . esc_html($item_json) . '</td>';
-                                }
-                                echo '</tr></tbody></table>';
                             }
                         } else {
-                            if (str_contains($item, 'http') && $posible_url && strpos($posible_url[0], '200')) {
-                                echo '<a href="' . esc_html($item) . '">' . esc_html($item) . '</a>';
-                            } else {
-                                echo '<div>' . ($item) . '</div>';
-                            }
+                            echo '<td>' . '</td>';
                         }
                     }
                 }
@@ -320,12 +320,22 @@ function generador_carreras($post)
     <p class="modalidad">Modalidad:
         <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_modalidad', true)); ?>
     </p>
+    <div class="contactos">
+        <p class="titulo-contactos">Contactanos a través de:</p>
+        <div class="metodos-contacto">
+            <p class="contacto">
+                <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_mail_de_la_carrera', true)); ?>
+            </p>
+            <?php
+            foreach (get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_consultas_a', false) as $contacto) {
+                ?>
+                <p class="contacto">
+                    <?php echo esc_html($contacto); ?>
+                </p>
+                <?php
+            }
+            ?>
+        </div>
+    </div>
     <?php
-    foreach (get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_consultas_a', false) as $contacto) {
-        ?>
-        <p class="contacto">
-            <?php echo esc_html($contacto); ?>
-        </p>
-        <?php
-    }
 }
