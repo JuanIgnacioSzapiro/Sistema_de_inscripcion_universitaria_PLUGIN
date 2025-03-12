@@ -3,7 +3,7 @@ function activar_paginas()
 {
     $title_of_the_page = array(
         'Demostración shortcodes' => "[mostrar_galeria post_type='carreras']",
-        'Inscripción a Carreras 2025' => "[doc_insc_2025]",
+        'Documentación para la inscripción a carreras 2025' => "[doc_insc_2025]",
     );
 
     foreach ($title_of_the_page as $key => $item) {
@@ -21,7 +21,7 @@ function create_page($title_of_the_page, $content, $parent_id = NULL)
             'comment_status' => 'close',
             'ping_status' => 'close',
             'post_author' => 1,
-            'post_title' => ucwords($title_of_the_page),
+            'post_title' => $title_of_the_page,
             'post_name' => strtolower(str_replace(' ', '-', trim($title_of_the_page))),
             'post_status' => 'publish',
             'post_content' => $content,

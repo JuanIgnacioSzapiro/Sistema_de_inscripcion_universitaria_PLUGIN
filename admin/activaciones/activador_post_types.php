@@ -301,11 +301,12 @@ con especialidad en:',
                     'Se ingresa el texto correspondiente y agregan líneas a medida que se necesitan más párrafos',
                     true
                 ),
-                new CampoTexto(
+                new CampoArchivo(
                     'tipo_de_ingreso',
                     'Tipo de ingreso',
-                    'https://inspt.utn.edu.ar/wp-content/uploads/2024/07/TALLERES-DE-NIVELACION-COMPLETO.pdf',
-                    'Se ingresa un enlace en caso de ser un archivo o líneas de texto',
+                    ["application/pdf"],
+                    'Subir archivo .pdf',
+                    false,
                     true
                 ),
                 new CampoArchivo(

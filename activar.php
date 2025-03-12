@@ -17,7 +17,7 @@ function activar_plugin()
 
     include_once dirname(__FILE__) . '/admin/shortcodes/galería.php';
 
-    include_once dirname(__FILE__) . '/admin/shortcodes/contenido_inscripción_a_carreras_2025.php';
+    include_once dirname(__FILE__) . '/admin/shortcodes/documentacion_inscripcion_a_carreras_2025.php';
 
 
     flush_rewrite_rules(); // limpia permalinks
