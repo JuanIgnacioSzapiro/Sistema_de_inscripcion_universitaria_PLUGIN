@@ -22,7 +22,13 @@ while (have_posts()):
         </article>
         <?php
     } elseif (get_post_type() === 'carreras') {
-        generador_carreras($post);
+        ?>
+        <div class="muesta-individual-sin-registro">
+            <?php
+            generador_carreras($post);
+            ?>
+        </div>
+        <?php
     }
 
 endwhile;
@@ -114,15 +120,17 @@ function generador_carreras($post)
     <img class="imagen-carrera"
         src="<?php echo esc_html(wp_get_attachment_image_url(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_imagen_para_galeria', true))) ?>"
         alt="imagen-carrera">
-    <h1 class="titulo-carrera">
-        <?php echo get_the_title() ?>
-    </h1>
-    <h6 class="plan-carrera">Número de plan:
-        <?php echo get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera', true); ?>
-    </h6>
-    <h2 class="tipos-de-carrera">
-        <?php echo get_the_title(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_tipos_de_carrera', true))); ?>
-    </h2>
+    <div class="centrado">
+        <h1 class="titulo-carrera">
+            <?php echo get_the_title() ?>
+        </h1>
+        <h6 class="plan-carrera">Número de plan:
+            <?php echo get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera', true); ?>
+        </h6>
+        <h2 class="tipos-de-carrera">
+            <?php echo get_the_title(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_tipos_de_carrera', true))); ?>
+        </h2>
+    </div>
     <p class="descripcion-carrera">
         <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_de_la_carrera', true)); ?>
     </p>

@@ -26,12 +26,11 @@ function desinstalar_roles()
     $rol_obtenido = get_role('administrator');
 
     $total = array(
-        new TipoDePost('carreras'),
-        new TipoDePost('tipos_de_carrera'),
-        new TipoDePost('materias'),       
-        new TipoDePost('planes_y_programas'), 
-        new TipoDePost('tests'),
-
+        // new TipoDePost('carreras'),
+        // new TipoDePost('tipos_de_carrera'),
+        // new TipoDePost('materias'),       
+        // new TipoDePost('planes_y_programas'), 
+        // new TipoDePost('documentacion'), 
     );
     foreach($total as $individual){
         foreach ($individual->get_habilidades() as $valor) {

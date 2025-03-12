@@ -116,6 +116,12 @@ class CreadorTipoDePost extends TipoDePost
                 );
                 $contador += 1;
             }
+        } else {
+            // Agregar la columna 'title' después de 'cb'
+            $nuevas_columnas = array_merge(
+                array('cb' => $nuevas_columnas['cb'], 'title' => 'Título'),
+                array_slice($nuevas_columnas, 1, null, true)
+            );
         }
 
         return $nuevas_columnas;
@@ -200,6 +206,12 @@ class CreadorTipoDePost extends TipoDePost
                     'post__in',
                     'Filtrar por creador'
                 ),
+                new Filtro(
+                    'buscar_x_titulo',
+                    "SELECT ID FROM wp_posts WHERE post_title LIKE %s AND post_type = '$post_type'",
+                    'post__in',
+                    'Buscar por título'
+                )
             ));
         }
     }

@@ -362,11 +362,51 @@ class TipoMetaBox
                 $meta_key = $this->get_llave_meta() . '_' . $campo_titulo;
                 $valor = get_post_meta($post_id, $meta_key, true);
 
-                if (!empty($valor)) {
-                    // Para campos clonables tomamos el primer valor
-                    $valor = is_array($valor) ? current($valor) : $valor;
-                    $partes_titulo[] = $valor;
+                $partes_titulo = [];
+
+                foreach ($this->get_titulo() as $campo_titulo) {
+                    $meta_key = $this->get_llave_meta() . '_' . $campo_titulo;
+
+                    // Check if the current campo is a CampoDropDownTipoPost
+                    $current_campo = null;
+                    foreach ($this->contenido as $campo) {
+                        if ($campo->get_nombre_meta() === $campo_titulo) {
+                            $current_campo = $campo;
+                            break;
+                        }
+                    }
+
+                    if ($current_campo instanceof CampoDropDownTipoPost) {
+                        $partes_titulo = ['Documentacion requerida'];
+                        // Handle dropdown post type
+                        $clonable = $current_campo->get_clonable();
+                        $ids = $clonable
+                            ? get_post_meta($post_id, $meta_key, false)
+                            : [get_post_meta($post_id, $meta_key, true)];
+
+                        $titles = [];
+                        foreach ($ids as $id) {
+                            if ($id) {
+                                $title = get_the_title($id);
+                                if ($title) {
+                                    $titles[] = $title;
+                                }
+                            }
+                        }
+
+                        if (!empty($titles)) {
+                            $partes_titulo[] = implode(' - ', $titles);
+                        }
+                    } else {
+                        // Original logic for other fields
+                        $valor = get_post_meta($post_id, $meta_key, true);
+                        if (!empty($valor)) {
+                            $valor = is_array($valor) ? current($valor) : $valor;
+                            $partes_titulo[] = $valor;
+                        }
+                    }
                 }
+
             }
 
             if (!empty($partes_titulo)) {

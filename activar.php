@@ -1,6 +1,8 @@
 <?php
 require_once dirname(__FILE__) . '/admin/activaciones/activador_post_types.php';
 require_once dirname(__FILE__) . '/admin/activaciones/activador_roles.php';
+require_once dirname(__FILE__) . '/admin/activaciones/activador_paginas.php';
+
 
 function activar_plugin()
 {
@@ -11,7 +13,12 @@ function activar_plugin()
 
     activar_roles();
 
+    activar_paginas();
+
     include_once dirname(__FILE__) . '/admin/shortcodes/galería.php';
+
+    include_once dirname(__FILE__) . '/admin/shortcodes/contenido_inscripción_a_carreras_2025.php';
+
 
     flush_rewrite_rules(); // limpia permalinks
 }
