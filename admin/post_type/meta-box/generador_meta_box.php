@@ -21,7 +21,6 @@ class TipoMetaBox
     protected $opciones;
     protected $titulo;
     protected $tipo_de_input;
-
     protected $es_campo_opcional;
 
     public function __construct($titulo_de_editor, $contenido, $titulo)

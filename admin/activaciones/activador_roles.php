@@ -16,31 +16,24 @@ function activar_roles()
 
     $supra_apoyo_de_alumno->set_id('supra_apoyo_de_alumno');
     $supra_apoyo_de_alumno->set_nombre_para_mostrar('Supra Apoyo de Alumno');
-    $supra_apoyo_de_alumno->set_habilidades(array('read' => true));
 
     $apoyo_de_alumno->set_id('apoyo_de_alumno');
     $apoyo_de_alumno->set_nombre_para_mostrar('Apoyo de Alumno');
-    $apoyo_de_alumno->set_habilidades(array('read' => true));
 
     $supra_coordinador->set_id('supra_coordinador');
     $supra_coordinador->set_nombre_para_mostrar('Supra Coordinador');
-    $supra_coordinador->set_habilidades(array('read' => true));
 
     $coordinador->set_id('coordinador');
     $coordinador->set_nombre_para_mostrar('Coordinador');
-    $coordinador->set_habilidades(array('read' => true));
 
     $preinscripto->set_id('preinscripto');
     $preinscripto->set_nombre_para_mostrar('Preinscripto');
-    $preinscripto->set_habilidades(array('read' => true));
 
     $supra_profesor->set_id('supra_profesor');
     $supra_profesor->set_nombre_para_mostrar('Supra Profesor');
-    $supra_profesor->set_habilidades(array('read' => true));
 
     $profesor->set_id('profesor');
     $profesor->set_nombre_para_mostrar('Profesor');
-    $profesor->set_habilidades(array('read' => true));
 
     $roles = array($supra_apoyo_de_alumno, $apoyo_de_alumno, $supra_coordinador, $coordinador, $supra_profesor, $profesor, $preinscripto, );
 
@@ -49,6 +42,8 @@ function activar_roles()
     }
 
     activar_habilidades($roles);
+
+    activacion_registro_nuevo_usuario();
 }
 
 function activar_habilidades($roles)
@@ -67,7 +62,7 @@ function activar_habilidades($roles)
         $rol_obtenido = get_role(is_a($rol, 'TipoDeRol') ? $rol->get_id() : $rol);
         switch ($rol_obtenido->name) {
             case 'administrator':
-                foreach($total as $individual){
+                foreach ($total as $individual) {
                     foreach ($individual->get_habilidades() as $valor) {
                         $rol_obtenido->add_cap($valor);
                     }
@@ -103,4 +98,13 @@ function activar_habilidades($roles)
                 break;
         }
     }
+}
+
+function activacion_registro_nuevo_usuario()
+{
+    // 1. Permitir que cualquiera se registre
+    update_option('users_can_register', 1);
+
+    // 2. Establecer rol por defecto (elige uno: subscriber, contributor, author)
+    update_option('default_role', 'preinscripto');
 }

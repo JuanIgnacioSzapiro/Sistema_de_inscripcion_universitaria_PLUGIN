@@ -225,11 +225,5 @@ class CreadorTipoDePost extends TipoDePost
                 ? dirname(__FILE__) . '/../templetes/muestra_individual.php'
                 : $template;
         });
-
-        add_filter("archive_template", function ($template) use ($post_type) {
-            return is_post_type_archive($post_type) && !locate_template("archive-{$post_type}.php")
-                ? dirname(__FILE__) . '/../templetes/archive-default.php'
-                : $template;
-        });
     }
 }
