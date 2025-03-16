@@ -7,6 +7,8 @@ require_once dirname(__FILE__) . '/admin/activaciones/activar_campo_registrar_us
 
 function activar_plugin()
 {
+    include_once dirname(__FILE__) . '/constantes.php';
+
     activar_post_types();
 
     activar_roles();
@@ -19,5 +21,5 @@ function activar_plugin()
 
     include_once dirname(__FILE__) . '/admin/shortcodes/documentacion_inscripcion_a_carreras_2025.php';
 
-    flush_rewrite_rules(); // limpia permalinks
+    flush_rewrite_rules();
 }

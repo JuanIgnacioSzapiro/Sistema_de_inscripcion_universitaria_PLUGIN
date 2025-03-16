@@ -1,4 +1,6 @@
 <?php
+require_once dirname(__FILE__) . '/../mailing/mailing.php';
+
 class CamposPersonalizados
 {
     private $campos;
