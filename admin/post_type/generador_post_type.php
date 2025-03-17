@@ -147,6 +147,15 @@ class TipoDePost
             'create_posts' => 'create_multiples_' . $this->get_plural(),
         ];
     }
+
+    public function get_habilidades_de_visualizacion()
+    {
+        return [
+            'read_post' => 'read_' . $this->get_plural(),
+            'read_private_posts' => 'read_private_multiples_' . $this->get_plural(),
+        ];
+    }
+
     public function set_prefijo($valor)
     {
         $this->prefijo = $valor;
