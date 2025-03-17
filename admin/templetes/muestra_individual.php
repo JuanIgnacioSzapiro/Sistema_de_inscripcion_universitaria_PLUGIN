@@ -91,11 +91,10 @@ function generador_general($para_mostrar, $el_id)
                                 if (!empty($posible_url)) {
                                     echo '<a href="' . esc_html($item) . '">' . esc_html($item) . '</a>';
                                 } else {
-                                    echo '<div>' . ($item) . '</div>';
+                                    echo '<div>' . $item . '</div>';
                                 }
                             }
                         } else {
-                            echo '<td>' . '</td>';
                         }
                     }
                 }
@@ -150,10 +149,11 @@ function generador_carreras($post)
     <?php
     $reconocimiento_CABA = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_reconocimiento_CABA', true);
     $reconocimiento_PBA = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_reconocimiento_PBA', true);
+    $perfiles_del_egresado = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_perfil_del_egresado', false);
 
     if (!empty($reconocimiento_CABA) || !empty($reconocimiento_CABA)) {
         ?>
-        <p>Resoluciones de reconocimiento en AMBA:</p>
+        <h4>Resoluciones de reconocimiento en AMBA:</h4>
         <?php
         if (!empty($reconocimiento_CABA)) {
             ?>
@@ -165,6 +165,18 @@ function generador_carreras($post)
             ?>
             <a class="link carreras" href="<?php echo esc_html(get_post($reconocimiento_PBA)->guid) ?>">
                 Reconocimiento PBA </a>
+            <?php
+        }
+    }
+    if (!empty($perfiles_del_egresado)) {
+        ?>
+        <h4>Perfil del egresado</h4>
+        <?php
+        foreach ($perfiles_del_egresado as $perfil_del_egresado) {
+            ?>
+            <p class="perfil_del_egresado">
+                <?php echo esc_html($perfil_del_egresado); ?>
+            </p>
             <?php
         }
     }

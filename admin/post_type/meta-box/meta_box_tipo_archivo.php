@@ -64,7 +64,7 @@ class CampoArchivo extends TipoMetaBox
             jQuery(document).ready(function ($) {
                 // Función para formatear el tamaño del archivo
                 function formatFileSize(bytes) {
-                    if (typeof bytes !== 'number') return '<?php esc_html_e('No disponible', 'text-domain'); ?>';
+                    if (typeof bytes !== 'number') return '<?php esc_html_e('Tamaño aún no disponible', 'text-domain'); ?>';
                     if (bytes >= 1024 ** 3) return (bytes / 1024 ** 3).toFixed(2) + ' GB';
                     if (bytes >= 1024 ** 2) return (bytes / 1024 ** 2).toFixed(2) + ' MB';
                     if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';

@@ -3,6 +3,8 @@ require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
 require_once dirname(__FILE__) . '/../post_type/generar_cuerpo_post_type.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_predeterminado.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_tipo_texto_asociado.php';
+require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_area_de_texto.php';
+
 
 function activar_post_types()
 {
@@ -145,19 +147,22 @@ con especialidad en:',
                     'descripcion_corta_de_la_carrera',
                     'Descripción corta de la carrera',
                     'Tecnicatura Superior + un año de formación Docente',
-                    'Se ingresa una descripción de la carrera que aparece en la galería de carreras'
+                    'Se ingresa una descripción de la carrera que aparece en la galería de carreras',
+                    false,
+                    'string',
+                    true
                 ),
-                new CampoTexto(
+                new CampoAreaDeTexto(
                     'descripcion_de_la_carrera',
                     'Descripción de la carrera',
                     'El/la Técnico/a Superior en Informática Aplicada tendrá como área de acción principal la problemática de la construcción de software, que se corresponde con las tareas tradicionalmente conocidas como análisis, diseño y programación (...)',
                     'Se ingresa una descripción de la carrera'
                 ),
-                new CampoTexto(
+                new CampoAreaDeTexto(
                     'profesional_en_condiciones_de_la_carrera',
                     'Profesional en condiciones de la carrera',
                     'Realizar el análisis y especificación formal, diseño, codificación, implementación, prueba, verificación, documentación, mantenimiento y (...)',
-                    'Se ingresa una por cada ítem en su respectiva casilla, de ser necesario se generan más',
+                    'Se ingresa un párrafo por cada ítem en su respectiva casilla, de ser necesario se generan más',
                     true
                 ),
                 new CampoTexto(
@@ -187,6 +192,13 @@ con especialidad en:',
                     'Subir archivo .pdf',
                     false,
                     true,
+                ),
+                new CampoAreaDeTexto(
+                    'perfil_del_egresado',
+                    'Perfil del egresado',
+                    'El egresado del PDI Presencial podrá ejercer la docencia desplegando enfoques pedagógicos, políticos y filosóficos (...)',
+                    'Se ingresa un párrafo por cada ítem en su respectiva casilla, de ser necesario se generan más',
+                    true
                 ),
                 new CampoArchivo(
                     'horarios_turno_manana_de_la_carrera',
@@ -230,11 +242,14 @@ con especialidad en:',
                     'Dra. Paula Ithurralde',
                     ''
                 ),
-                new CampoTexto(
+                new CampoAreaDeTexto(
                     'descripcion_de_la_direccion_de_la_carrera',
                     'Descripción de la dirección de la carrera',
                     'Paula Ithurralde es técnica en administración y gestión universitaria, titulación otorgada (...)',
-                    ''
+                    '',
+                    false,
+                    'string',
+                    true
                 ),
                 new CampoTexto(
                     'nombre_del_referente_de_laboratorio',
@@ -242,11 +257,14 @@ con especialidad en:',
                     'Prof. Matías Garcia',
                     ''
                 ),
-                new CampoTexto(
+                new CampoAreaDeTexto(
                     'descripcion_del_referente_de_laboratorio',
                     'Descripción del referente de laboratorio',
                     'Profesor y Técnico en Informática Aplicada, egresado del Instituto Nacional Superior del (...)',
-                    ''
+                    '',
+                    false,
+                    'string',
+                    true
                 ),
                 new CampoTexto(
                     'grado_academico',
@@ -265,6 +283,9 @@ con especialidad en:',
                     'Mail de la carrera',
                     'informatica.aplicada@inspt.utn.edu.ar',
                     'Se ingresa el mail de la carrera',
+                    false,
+                    'string',
+                    true
                 ),
                 new CampoTexto(
                     'consultas_a',
@@ -276,7 +297,7 @@ con especialidad en:',
             ),
             array('nombre_de_la_carrera')
         ),
-        array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera'),
+        array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera', 'tipos_de_carrera'),
     );
     $documentacion = new CuerpoPostType(
         'documentacion requerida',

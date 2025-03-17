@@ -152,10 +152,18 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
 
     public function cargar_mis_columnas($columnas, $post_id)
     {
+        $nombres_post_types = get_post_types([], 'names');
         if (!empty($this->get_para_armar_columnas())) {
             foreach ($this->get_para_armar_columnas() as $columna_para_armar) {
+                $post_meta = get_post_meta($post_id, $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar, true);
                 if ($columnas == $columna_para_armar) {
-                    echo esc_html(get_post_meta($post_id, $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar, true));
+                    if (in_array($columna_para_armar, $nombres_post_types)) {
+                        $debug = get_post_meta($post_meta, 'INSPT_SISTEMA_DE_INSCRIPCIONES_tipos_de_carrera_nombre_tipo_de_carrera', true);
+                    } else {
+                        $debug = $post_meta;
+                    }
+
+                    echo esc_html($debug);
                 }
             }
         }

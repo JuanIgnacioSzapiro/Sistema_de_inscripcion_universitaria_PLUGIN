@@ -16,7 +16,7 @@ class TipoMetaBox
     protected $tipo_de_input_asociado2;
     protected $post_type_buscado;
     protected $tipo_de_archivo;
-    protected $clonable;
+    protected $clonable = false;
     protected $opciones;
     protected $titulo;
     protected $tipo_de_input;
@@ -234,11 +234,16 @@ class TipoMetaBox
                 /* Se coloca justo debajo del elemento .no-opcional */
                 z-index: 1000;
                 width: max-content;
+                background-color: rgb(255, 0, 0);
+                color: crimson;
             }
 
             .no-opcional:hover+.no-opcional-comentario {
                 position: relative;
                 display: contents;
+            }
+            textarea{
+                height: fit-content;
             }
         </style>
         <div class="meta-box">

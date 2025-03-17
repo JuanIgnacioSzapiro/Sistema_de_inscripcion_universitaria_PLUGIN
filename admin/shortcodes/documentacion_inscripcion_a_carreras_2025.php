@@ -70,11 +70,15 @@ function documentacion_inscripciones_a_carreras_2025()
                 ?>
                 <div class="carrera">
                     <?php
-                    foreach ($carreras_documento as $carrera_documento) {
+                    $max = count($carreras_documento);
+                    foreach ($carreras_documento as $key => $carrera_documento) {
                         ?>
                         <a href="<?php echo esc_html($carrera_documento->guid) ?>">
-                            <h4><?php echo esc_html($carrera_documento->post_title) ?></h4>
+                            <h4><?php echo esc_html($carrera_documento->post_title)?></h4>
                         </a>
+                        <?php
+                        echo (($key < $max - 1) ? ('<h4>&darr;</h4>') : '')
+                        ?>
                         <?php
                     }
                     if (!empty($documentaciones)) {
