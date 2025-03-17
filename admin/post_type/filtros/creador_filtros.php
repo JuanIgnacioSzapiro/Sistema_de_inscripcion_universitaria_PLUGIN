@@ -4,10 +4,6 @@ require_once dirname(__FILE__) . '/filtro.php';
 class CreadorFiltros
 {
     protected $post_type_padre;
-    protected $id_filtro;
-    protected $query;
-    protected $ids;
-    protected $texto;
     private $argumentos;
 
     public function __construct($post_type_padre, $argumentos)
@@ -41,22 +37,6 @@ class CreadorFiltros
     {
         return $this->post_type_padre;
     }
-    public function get_id_filtro()
-    {
-        return $this->id_filtro;
-    }
-    public function get_query()
-    {
-        return $this->query;
-    }
-    public function get_ids()
-    {
-        return $this->ids;
-    }
-    public function get_texto()
-    {
-        return $this->texto;
-    }
     public function get_argumentos()
     {
         return $this->argumentos;
@@ -64,22 +44,6 @@ class CreadorFiltros
     public function set_post_type_padre($valor)
     {
         $this->post_type_padre = $valor;
-    }
-    public function set_id_filtro($valor)
-    {
-        $this->id_filtro = $valor;
-    }
-    public function set_query($valor)
-    {
-        $this->query = $valor;
-    }
-    public function set_ids($valor)
-    {
-        $this->ids = $valor;
-    }
-    public function set_texto($valor)
-    {
-        $this->texto = $valor;
     }
     public function set_argumentos($valor)
     {

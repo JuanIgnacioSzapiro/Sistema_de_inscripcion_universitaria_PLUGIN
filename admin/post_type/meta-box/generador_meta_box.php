@@ -2,7 +2,6 @@
 
 class TipoMetaBox
 {
-    protected $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES';
     protected $post_type_de_origen; //post_type al que pertenece
     protected $titulo_de_editor;
     protected $contenido;
@@ -80,7 +79,7 @@ class TipoMetaBox
 
     public function get_llave_meta()
     {
-        return $this->prefijo . '_' . $this->get_post_type_de_origen();
+        return $GLOBALS['prefijo_variables_sql'] . '_' . $this->get_post_type_de_origen();
     }
 
     public function get_post_type_de_origen()
@@ -225,6 +224,23 @@ class TipoMetaBox
 
         wp_nonce_field($llave_meta, $llave_meta);
         ?>
+        <style>
+            .no-opcional-comentario {
+                display: none;
+                position: absolute;
+                /* Posición absoluta respecto al padre */
+                left: 0;
+                top: 100%;
+                /* Se coloca justo debajo del elemento .no-opcional */
+                z-index: 1000;
+                width: max-content;
+            }
+
+            .no-opcional:hover+.no-opcional-comentario {
+                position: relative;
+                display: contents;
+            }
+        </style>
         <div class="meta-box">
             <?php
             foreach ($this->contenido as $individual) {

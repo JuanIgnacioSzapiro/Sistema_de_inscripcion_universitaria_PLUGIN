@@ -91,9 +91,23 @@ class CampoTextoAsociado extends TipoMetaBox
                 <div class="clonable-fields">
                     <?php foreach ($posible_json[0] as $i => $pair): ?>
                         <div class="clonable-field" style="margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:15px;">
-                            <label>
-                                <?php echo esc_html($this->get_etiqueta()); ?>
-                            </label>
+                            <?php
+                            if ($this->get_es_campo_opcional()) {
+                                ?>
+                                <label for="<?php echo esc_attr($group_meta_key); ?>">
+                                    <?php echo esc_html($this->get_etiqueta()); ?>
+                                </label>
+                                <?php
+                            } else {
+                                ?>
+                                <label class="no-opcional" for="<?php echo esc_attr($group_meta_key); ?>">
+                                    <?php echo esc_html($this->get_etiqueta()); ?> *
+                                </label>
+                                <div class="no-opcional-comentario">Este campo es OBLIGATORIO
+                                </div>
+                                <?php
+                            }
+                            ?>
                             <input type="text"
                                 name="<?php echo esc_attr($group_meta_key); ?>[<?php echo $i; ?>][<?php echo esc_attr($this->get_nombre_meta()); ?>]"
                                 value="<?php echo esc_attr(isset($pair[$this->get_nombre_meta()]) ? $pair[$this->get_nombre_meta()] : ''); ?>"
@@ -102,10 +116,23 @@ class CampoTextoAsociado extends TipoMetaBox
                             <p class="description">
                                 <?php echo esc_html($this->get_descripcion()); ?>
                             </p>
-
-                            <label>
-                                <?php echo esc_html($this->get_etiqueta_asociado2()); ?>
-                            </label>
+                            <?php
+                            if ($this->get_es_campo_opcional()) {
+                                ?>
+                                <label for="<?php echo esc_attr($group_meta_key); ?>">
+                                    <?php echo esc_html($this->get_etiqueta_asociado2()); ?>
+                                </label>
+                                <?php
+                            } else {
+                                ?>
+                                <label class="no-opcional" for="<?php echo esc_attr($group_meta_key); ?>">
+                                    <?php echo esc_html($this->get_etiqueta_asociado2()); ?> *
+                                </label>
+                                <div class="no-opcional-comentario">Este campo es OBLIGATORIO
+                                </div>
+                                <?php
+                            }
+                            ?>
                             <input type="text"
                                 name="<?php echo esc_attr($group_meta_key); ?>[<?php echo $i; ?>][<?php echo esc_attr($this->get_nombre_meta_asociado2()); ?>]"
                                 value="<?php echo esc_attr(isset($pair[$this->get_nombre_meta_asociado2()]) ? $pair[$this->get_nombre_meta_asociado2()] : ''); ?>"

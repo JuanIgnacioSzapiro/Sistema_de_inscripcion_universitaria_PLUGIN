@@ -1,13 +1,11 @@
 <?php
-class TipoDePost
+class CaracteristicasBasicasPostType
 {
     private $singular;
     private $plural;
     private $femenino;
-    private $prefijo;
     private $icono;
     private $meta;
-    private $para_armar_columnas;
     private $incrementador = 0;
 
 
@@ -148,34 +146,6 @@ class TipoDePost
         ];
     }
 
-    public function get_habilidades_de_visualizacion()
-    {
-        return [
-            'read_post' => 'read_' . $this->get_plural(),
-            'read_private_posts' => 'read_private_multiples_' . $this->get_plural(),
-        ];
-    }
-
-    public function set_prefijo($valor)
-    {
-        $this->prefijo = $valor;
-    }
-
-    public function get_prefijo()
-    {
-        return $this->prefijo;
-    }
-
-    public function set_para_armar_columnas($valor)
-    {
-        $this->para_armar_columnas = $valor;
-    }
-
-    public function get_para_armar_columnas()
-    {
-        return $this->para_armar_columnas;
-    }
-
     public function registrar_post_type()
     {
         register_post_type($this->get_plural(), $this->get_caracteristicas());
@@ -200,10 +170,5 @@ class TipoDePost
         foreach ($this->obtener_todos_los_post() as $objeto) {
             wp_delete_post($objeto->ID, true);
         }
-    }
-
-    public function hacer_backup($objetos)
-    {
-
     }
 }

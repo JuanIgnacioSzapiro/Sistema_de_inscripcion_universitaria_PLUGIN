@@ -1,12 +1,12 @@
 <?php
 require_once dirname(__FILE__) . '/../post_type/generador_post_type.php';
-require_once dirname(__FILE__) . '/../post_type/generar_post_type_general.php';
+require_once dirname(__FILE__) . '/../post_type/generar_cuerpo_post_type.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_drop_down_predeterminado.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_tipo_texto_asociado.php';
 
 function activar_post_types()
 {
-    $materias = new CreadorTipoDePost(
+    $materias = new CuerpoPostType(
         'materia',
         'materias',
         true,
@@ -45,7 +45,7 @@ function activar_post_types()
         ),
         array('codigo_de_materia', 'asginatura'),
     );
-    $planes_y_programas = new CreadorTipoDePost(
+    $planes_y_programas = new CuerpoPostType(
         'plan y programa',
         'planes_y_programas',
         false,
@@ -78,7 +78,7 @@ function activar_post_types()
         ),
         array('nombre_de_plan_y_programa'),
     );
-    $tipo_de_carrera = new CreadorTipoDePost(
+    $tipo_de_carrera = new CuerpoPostType(
         'tipo de carrera',
         'tipos_de_carrera',
         false,
@@ -108,7 +108,7 @@ con especialidad en:',
         ),
         array('nombre_tipo_de_carrera'),
     );
-    $carreras = new CreadorTipoDePost(
+    $carreras = new CuerpoPostType(
         'carrera',
         'carreras',
         true,
@@ -278,7 +278,7 @@ con especialidad en:',
         ),
         array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera'),
     );
-    $documentacion = new CreadorTipoDePost(
+    $documentacion = new CuerpoPostType(
         'documentacion requerida',
         'documentacion',
         true,

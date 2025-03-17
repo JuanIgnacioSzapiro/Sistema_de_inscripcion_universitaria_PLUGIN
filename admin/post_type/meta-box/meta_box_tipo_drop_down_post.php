@@ -29,7 +29,22 @@ class CampoDropDownTipoPost extends TipoMetaBox
             $posts = $this->obtener_posts();
             ?>
             <div class="campo-dropdown-container">
-                <label><?php echo esc_html($this->get_etiqueta()); ?></label>
+                <?php
+                if ($this->get_es_campo_opcional()) {
+                    ?>
+                    <label for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?>
+                    </label>
+                    <?php
+                } else {
+                    ?>
+                    <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?> *
+                    </label>
+                    <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                    <?php
+                }
+                ?>
                 <br>
                 <?php $this->generar_buscador_y_select($meta_key, $posts, $selected_value); ?>
                 <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
@@ -40,7 +55,22 @@ class CampoDropDownTipoPost extends TipoMetaBox
             $values = get_post_meta($post->ID, $meta_key);
             ?>
             <div class="clonable-container">
-                <label><?php echo esc_html($this->get_etiqueta()); ?></label>
+                <?php
+                if ($this->get_es_campo_opcional()) {
+                    ?>
+                    <label for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?>
+                    </label>
+                    <?php
+                } else {
+                    ?>
+                    <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?> *
+                    </label>
+                    <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                    <?php
+                }
+                ?>
                 <br>
                 <div class="clonable-fields">
                     <?php

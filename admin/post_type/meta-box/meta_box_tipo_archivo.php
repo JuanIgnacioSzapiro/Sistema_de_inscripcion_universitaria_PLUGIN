@@ -25,7 +25,22 @@ class CampoArchivo extends TipoMetaBox
         wp_enqueue_media();
         ?>
         <div class="file-upload-wrapper">
-            <label for="<?php echo esc_attr($meta_key); ?>"><?php echo esc_html($this->etiqueta); ?></label>
+            <?php
+            if ($this->get_es_campo_opcional()) {
+                ?>
+                <label for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?>
+                </label>
+                <?php
+            } else {
+                ?>
+                <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?> *
+                </label>
+                <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                <?php
+            }
+            ?>
             <input type="hidden" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
                 value="<?php echo esc_attr($current_file_id); ?>" />
             <br>

@@ -23,13 +23,24 @@ class CampoTexto extends TipoMetaBox
     public function generar_fragmento_html($post, $llave)
     {
         if (!$this->get_clonable()) {
-            $meta_llave = $llave . '_' . $this->get_nombre_meta();
-            $custom_field_value = get_post_meta($post->ID, $meta_llave, true);
+            $meta_key = $llave . '_' . $this->get_nombre_meta();
+            $custom_field_value = get_post_meta($post->ID, $meta_key, true);
+            if ($this->get_es_campo_opcional()) {
+                ?>
+                <label for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?>
+                </label>
+                <?php
+            } else {
+                ?>
+                <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?> *
+                </label>
+                <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                <?php
+            }
             ?>
-            <label for="<?php echo esc_attr($meta_llave); ?>">
-                <?php echo esc_html($this->get_etiqueta()); ?>
-            </label>
-            <input type="text" id="<?php echo esc_attr($meta_llave); ?>" name="<?php echo esc_attr($meta_llave); ?>"
+            <input type="text" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
                 value="<?php echo esc_attr($custom_field_value); ?>"
                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>" style="width: 100%;" />
             <p class="description">
@@ -37,13 +48,26 @@ class CampoTexto extends TipoMetaBox
             </p>
             <?php
         } else {
-            $meta_llave = $llave . '_' . $this->get_nombre_meta();
-            $values = get_post_meta($post->ID, $meta_llave);
+            $meta_key = $llave . '_' . $this->get_nombre_meta();
+            $values = get_post_meta($post->ID, $meta_key);
             ?>
             <div class="clonable-container">
-                <label for="<?php echo esc_attr($meta_llave); ?>">
-                    <?php echo esc_html($this->get_etiqueta()); ?>
-                </label>
+                <?php
+                if ($this->get_es_campo_opcional()) {
+                    ?>
+                    <label for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?>
+                    </label>
+                    <?php
+                } else {
+                    ?>
+                    <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?> *
+                    </label>
+                    <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                    <?php
+                }
+                ?>
                 <div class="clonable-fields">
                     <?php
                     // Always render at least ONE field (even if empty)
@@ -52,7 +76,7 @@ class CampoTexto extends TipoMetaBox
                     }
                     foreach ($values as $value) { ?>
                         <div class="clonable-field">
-                            <input type="text" name="<?php echo esc_attr($meta_llave); ?>[]" value="<?php echo esc_attr($value); ?>"
+                            <input type="text" name="<?php echo esc_attr($meta_key); ?>[]" value="<?php echo esc_attr($value); ?>"
                                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>"
                                 style="width: 100%; margin-bottom: 5px;" />
                             <button type="button" class="button remove-field">Eliminar</button>

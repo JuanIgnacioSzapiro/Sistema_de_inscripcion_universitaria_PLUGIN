@@ -51,11 +51,11 @@ function activar_habilidades($roles)
     array_push($roles, 'administrator');
 
     $total = array(
-        new TipoDePost('carreras'),
-        new TipoDePost('documentacion'),
-        new TipoDePost('tipos_de_carrera'),
-        new TipoDePost('materias'),
-        new TipoDePost('planes_y_programas'),
+        new CaracteristicasBasicasPostType('carreras'),
+        new CaracteristicasBasicasPostType('documentacion'),
+        new CaracteristicasBasicasPostType('tipos_de_carrera'),
+        new CaracteristicasBasicasPostType('materias'),
+        new CaracteristicasBasicasPostType('planes_y_programas'),
     );
 
     foreach ($roles as $rol) {

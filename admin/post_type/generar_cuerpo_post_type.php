@@ -7,8 +7,11 @@ require_once dirname(__FILE__) . '/filtros/creador_filtros.php';
 require_once dirname(__FILE__) . '/filtros/filtro.php';
 require_once dirname(__FILE__) . '/generador_post_type.php';
 
-class CreadorTipoDePost extends TipoDePost
+class CuerpoPostType extends CaracteristicasBasicasPostType
 {
+    private $prefijo;
+    private $para_armar_columnas;
+
     public function __construct(
         $singular,
         $plural,
@@ -43,6 +46,25 @@ class CreadorTipoDePost extends TipoDePost
         add_action('template_redirect', array($this, 'add_template_support'));
 
         $this->registrar_post_type();
+    }
+    public function set_prefijo($valor)
+    {
+        $this->prefijo = $valor;
+    }
+
+    public function get_prefijo()
+    {
+        return $this->prefijo;
+    }
+
+    public function set_para_armar_columnas($valor)
+    {
+        $this->para_armar_columnas = $valor;
+    }
+
+    public function get_para_armar_columnas()
+    {
+        return $this->para_armar_columnas;
     }
     public function mis_columnas_ordenables($columns)
     {

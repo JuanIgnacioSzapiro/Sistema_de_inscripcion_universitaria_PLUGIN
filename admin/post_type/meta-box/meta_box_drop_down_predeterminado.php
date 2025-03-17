@@ -25,9 +25,22 @@ class CampoDropDownPredeterminado extends TipoMetaBox
         $argumentos = $this->get_opciones();
         ?>
         <div>
-            <label for="<?php echo esc_attr($meta_key); ?>">
-                <?php echo esc_html($this->get_etiqueta()); ?>
-            </label>
+            <?php
+            if ($this->get_es_campo_opcional()) {
+                ?>
+                <label for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?>
+                </label>
+                <?php
+            } else {
+                ?>
+                <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?> *
+                </label>
+                <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                <?php
+            }
+            ?>
             <br>
             <select name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
                 <option value="">Seleccionar...</option>
