@@ -13,7 +13,7 @@ function activar_post_types()
         'materias',
         true,
         'INSPT_SISTEMA_DE_INSCRIPCIONES',
-        'dashicons-bank',
+        'dashicons-text-page',
         new TipoMetaBox(
             'Editor de materias',
             array(
@@ -52,7 +52,7 @@ function activar_post_types()
         'planes_y_programas',
         false,
         'INSPT_SISTEMA_DE_INSCRIPCIONES',
-        'dashicons-bank',
+        'dashicons-book',
         new TipoMetaBox(
             'Editor de planes y programas',
             array(
@@ -85,7 +85,7 @@ function activar_post_types()
         'tipos_de_carrera',
         false,
         'INSPT_SISTEMA_DE_INSCRIPCIONES',
-        'dashicons-bank',
+        'dashicons-book-alt',
         new TipoMetaBox(
             'Editor de tipos de carrera',
             array(
@@ -304,7 +304,7 @@ con especialidad en:',
         'documentacion',
         true,
         'INSPT_SISTEMA_DE_INSCRIPCIONES',
-        'dashicons-bank',
+        'dashicons-media-document',
         new TipoMetaBox(
             'Editor de documentacion requerida',
             array(
