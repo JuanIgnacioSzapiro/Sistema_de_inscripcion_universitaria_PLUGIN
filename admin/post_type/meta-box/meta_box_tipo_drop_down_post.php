@@ -45,16 +45,15 @@ class CampoDropDownTipoPost extends TipoMetaBox
                     <?php
                 }
                 ?>
-                <br>
-                <?php $this->generar_buscador_y_select($meta_key, $posts, $selected_value); ?>
                 <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <?php $this->generar_buscador_y_select($meta_key, $posts, $selected_value); ?>
             </div>
             <?php
         } else {
             // Lógica CLONABLE (nueva)
             $values = get_post_meta($post->ID, $meta_key);
             ?>
-            <div class="clonable-container">
+            <div class="clonable-container-drop-down">
                 <?php
                 if ($this->get_es_campo_opcional()) {
                     ?>
@@ -71,8 +70,8 @@ class CampoDropDownTipoPost extends TipoMetaBox
                     <?php
                 }
                 ?>
-                <br>
-                <div class="clonable-fields">
+                <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <div class="clonable-fields-drop-down">
                     <?php
                     if (empty($values))
                         $values = [''];
@@ -81,8 +80,7 @@ class CampoDropDownTipoPost extends TipoMetaBox
                     }
                     ?>
                 </div>
-                <button type="button" class="button add-field">Agregar más</button>
-                <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <button type="button" class="button add-field-drop-down">Agregar más</button>
             </div>
             <?php
         }
@@ -122,11 +120,11 @@ class CampoDropDownTipoPost extends TipoMetaBox
     {
         $posts = $this->obtener_posts();
         ?>
-        <div class="clonable-field">
+        <div class="clonable-field-drop-down">
             <div class="campo-dropdown-container">
                 <?php $this->generar_buscador_y_select($meta_key, $posts, $selected_value, true); ?>
                 <br>
-                <button type="button" class="button remove-field">Eliminar</button>
+                <button type="button" class="button remove-field-drop-down">Eliminar</button>
             </div>
         </div>
         <?php
@@ -144,15 +142,15 @@ class CampoDropDownTipoPost extends TipoMetaBox
                             init: function () {
                                 // Eventos para clonado
                                 $(document)
-                                    .on('click', '.clonable-container .add-field', function (e) {
-                                        const container = $(this).closest('.clonable-container');
-                                        const newField = container.find('.clonable-field:last').clone();
+                                    .on('click', '.clonable-container-drop-down .add-field-drop-down', function (e) {
+                                        const container = $(this).closest('.clonable-container-drop-down');
+                                        const newField = container.find('.clonable-field-drop-down:last').clone();
                                         newField.find('select, input').val('');
-                                        container.find('.clonable-fields').append(newField);
+                                        container.find('.clonable-fields-drop-down').append(newField);
                                     })
-                                    .on('click', '.clonable-container .remove-field', function (e) {
-                                        if ($(this).closest('.clonable-fields').find('.clonable-field').length > 1) {
-                                            $(this).closest('.clonable-field').remove();
+                                    .on('click', '.clonable-container-drop-down .remove-field-drop-down', function (e) {
+                                        if ($(this).closest('.clonable-fields-drop-down').find('.clonable-field-drop-down').length > 1) {
+                                            $(this).closest('.clonable-field-drop-down').remove();
                                         }
                                     });
 

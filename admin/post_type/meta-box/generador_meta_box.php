@@ -234,7 +234,6 @@ class TipoMetaBox
                 /* Se coloca justo debajo del elemento .no-opcional */
                 z-index: 1000;
                 width: max-content;
-                background-color: rgb(255, 0, 0);
                 color: crimson;
             }
 
@@ -242,14 +241,21 @@ class TipoMetaBox
                 position: relative;
                 display: contents;
             }
-            textarea{
-                height: fit-content;
+
+            .en-meta-box {
+                margin-top: 1.5%;
             }
         </style>
         <div class="meta-box">
             <?php
             foreach ($this->contenido as $individual) {
-                $individual->generar_fragmento_html($post, $this->get_llave_meta());
+                ?>
+                <div class="en-meta-box">
+                    <?php
+                    $individual->generar_fragmento_html($post, $this->get_llave_meta());
+                    ?>
+                </div>
+                <?php
             }
             ?>
         </div>
@@ -341,6 +347,49 @@ class TipoMetaBox
                     }
                 } else {
                     $valor = isset($_POST[$meta_key]) ? absint($_POST[$meta_key]) : '';
+                    update_post_meta($post_id, $meta_key, $valor);
+                }
+            } elseif ($individual instanceof CampoCheckbox) {
+                $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+
+                // Checkbox simple o múltiple no clonable
+                if (!empty($individual->get_opciones())) {
+                    // Múltiples checkboxes (valores como array)
+                    $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
+                    $sanitized_values = array_map('sanitize_text_field', $valores);
+                    update_post_meta($post_id, $meta_key, $sanitized_values);
+                } else {
+                    // Checkbox único (valor 1/0)
+                    $valor = isset($_POST[$meta_key]) ? 'true' : 'false';
+                    update_post_meta($post_id, $meta_key, $valor);
+                }
+            } elseif ($individual instanceof CampoFecha) { // Nuevo caso para CampoFecha
+                $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
+
+                if ($individual->get_clonable()) {
+                    $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
+                    $sanitized_values = [];
+                    foreach ($valores as $valor) {
+                        $clean_value = sanitize_text_field($valor);
+                        if (!empty($clean_value)) {
+                            $sanitized_values[] = $clean_value;
+                        }
+                    }
+                    delete_post_meta($post_id, $meta_key);
+                    foreach ($sanitized_values as $value) {
+                        add_post_meta($post_id, $meta_key, $value);
+                    }
+                } else {
+                    $valor = sanitize_text_field($_POST[$meta_key] ?? '');
+                    // Convertir a dd/mm/yyyy si es válido
+                    if (!empty($valor)) {
+                        $fecha = DateTime::createFromFormat('Y-m-d', $valor);
+                        if ($fecha) {
+                            $valor = $fecha->format('d/m/Y');
+                        } else {
+                            $valor = ''; // Si la fecha es inválida, se trata como vacío
+                        }
+                    }
                     update_post_meta($post_id, $meta_key, $valor);
                 }
             } else {

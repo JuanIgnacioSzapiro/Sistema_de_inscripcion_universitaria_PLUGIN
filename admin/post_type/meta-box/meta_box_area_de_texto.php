@@ -40,18 +40,18 @@ class CampoAreaDeTexto extends TipoMetaBox
                 <?php
             }
             ?>
-            <textarea id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
+            <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+            <textarea onfocus="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'" id="<?php echo esc_attr($meta_key); ?>"
+                name="<?php echo esc_attr($meta_key); ?>"
                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>"
-                style="width: 100%;"><?php echo esc_attr($custom_field_value); ?></textarea>
-            <p class="description">
-                <?php echo esc_html($this->get_descripcion()); ?>
-            </p>
+                style="width: 100%;"><?php echo esc_textarea($custom_field_value); ?></textarea>
             <?php
         } else {
             $meta_key = $llave . '_' . $this->get_nombre_meta();
             $values = get_post_meta($post->ID, $meta_key);
             ?>
-            <div class="clonable-container">
+            <div class="clonable-container-area-de-texto">
                 <?php
                 if ($this->get_es_campo_opcional()) {
                     ?>
@@ -68,25 +68,25 @@ class CampoAreaDeTexto extends TipoMetaBox
                     <?php
                 }
                 ?>
-                <div class="clonable-fields">
+                <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <div class="clonable-fields-area-de-texto">
                     <?php
                     // Always render at least ONE field (even if empty)
                     if (empty($values)) {
                         $values = [''];
                     }
                     foreach ($values as $value) { ?>
-                        <div class="clonable-field">
-                            <textarea name="<?php echo esc_attr($meta_key); ?>[]"
+                        <div class="clonable-field-area-de-texto">
+                            <textarea onfocus="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                                oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                                name="<?php echo esc_attr($meta_key); ?>[]"
                                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>"
-                                style="width: 100%;"><?php echo esc_attr($value); ?></textarea>
-                            <button type="button" class="button remove-field">Eliminar</button>
+                                style="width: 100%;"><?php echo esc_textarea($value); ?></textarea>
+                            <button type="button" class="button remove-field-area-de-texto">Eliminar</button>
                         </div>
                     <?php } ?>
                 </div>
                 <button type="button" class="button add-field">Agregar más</button>
-                <p class="description">
-                    <?php echo esc_html($this->get_descripcion()); ?>
-                </p>
             </div>
             <script>
                 (function ($) {
@@ -94,20 +94,20 @@ class CampoAreaDeTexto extends TipoMetaBox
                     if (typeof window.initClonableFields !== 'function') {
                         window.initClonableFields = function () {
                             $(document)
-                                .off('click', '.clonable-container .add-field') // Prevent duplicate bindings
-                                .on('click', '.clonable-container .add-field', function (e) {
+                                .off('click', '.clonable-container-area-de-texto .add-field') // Prevent duplicate bindings
+                                .on('click', '.clonable-container-area-de-texto .add-field', function (e) {
                                     e.preventDefault();
-                                    const container = $(this).closest('.clonable-container');
-                                    const newField = container.find('.clonable-field:last').clone();
+                                    const container = $(this).closest('.clonable-container-area-de-texto');
+                                    const newField = container.find('.clonable-field-area-de-texto:last').clone();
                                     newField.find('textarea').val('');
-                                    container.find('.clonable-fields').append(newField);
+                                    container.find('.clonable-fields-area-de-texto').append(newField);
                                 })
-                                .off('click', '.clonable-container .remove-field')
-                                .on('click', '.clonable-container .remove-field', function (e) {
+                                .off('click', '.clonable-container-area-de-texto .remove-field-area-de-texto')
+                                .on('click', '.clonable-container-area-de-texto .remove-field-area-de-texto', function (e) {
                                     e.preventDefault();
-                                    const container = $(this).closest('.clonable-container');
-                                    if (container.find('.clonable-field').length > 1) {
-                                        $(this).closest('.clonable-field').remove();
+                                    const container = $(this).closest('.clonable-container-area-de-texto');
+                                    if (container.find('.clonable-field-area-de-texto').length > 1) {
+                                        $(this).closest('.clonable-field-area-de-texto').remove();
                                     }
                                 });
                         };

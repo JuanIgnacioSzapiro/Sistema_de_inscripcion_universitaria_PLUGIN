@@ -87,10 +87,10 @@ class CampoTextoAsociado extends TipoMetaBox
             }
 
             ?>
-            <div class="clonable-container">
-                <div class="clonable-fields">
+            <div class="clonable-container-texto-asociado">
+                <div class="clonable-fields-texto-asociado">
                     <?php foreach ($posible_json[0] as $i => $pair): ?>
-                        <div class="clonable-field" style="margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:15px;">
+                        <div class="clonable-field-texto-asociado" style="margin-bottom:15px; border-bottom:1px solid #ddd; padding-bottom:15px;">
                             <?php
                             if ($this->get_es_campo_opcional()) {
                                 ?>
@@ -141,24 +141,24 @@ class CampoTextoAsociado extends TipoMetaBox
                             <p class="description">
                                 <?php echo esc_html($this->get_descripcion_asociado2()); ?>
                             </p>
-                            <button type="button" class="button remove-field">Eliminar</button>
+                            <button type="button" class="button remove-field-texto-asociado">Eliminar</button>
                         </div>
                     <?php endforeach; ?>
                 </div>
-                <button type="button" class="button add-field" style="margin-top:10px;">Agregar más</button>
+                <button type="button" class="button add-field-texto-asociado" style="margin-top:10px;">Agregar más</button>
             </div>
             <script>
                 (function ($) {
                     $(document).ready(function () {
-                        $('.clonable-container').each(function () {
+                        $('.clonable-container-texto-asociado').each(function () {
                             const container = $(this);
                             const groupMetaKey = '<?php echo esc_js($group_meta_key); ?>';
 
-                            container.on('click', '.add-field', function (e) {
+                            container.on('click', '.add-field-texto-asociado', function (e) {
                                 e.preventDefault();
-                                const lastField = container.find('.clonable-field:last');
+                                const lastField = container.find('.clonable-field-texto-asociado:last');
                                 const newField = lastField.clone();
-                                const index = container.find('.clonable-field').length;
+                                const index = container.find('.clonable-field-texto-asociado').length;
 
                                 newField.find('input').each(function () {
                                     const name = $(this).attr('name')
@@ -166,14 +166,14 @@ class CampoTextoAsociado extends TipoMetaBox
                                     $(this).attr('name', name).val('');
                                 });
 
-                                container.find('.clonable-fields').append(newField);
+                                container.find('.clonable-fields-texto-asociado').append(newField);
                             });
 
-                            container.on('click', '.remove-field', function (e) {
+                            container.on('click', '.remove-field-texto-asociado', function (e) {
                                 e.preventDefault();
-                                if (container.find('.clonable-field').length > 1) {
-                                    $(this).closest('.clonable-field').remove();
-                                    container.find('.clonable-field').each(function (i) {
+                                if (container.find('.clonable-field-texto-asociado').length > 1) {
+                                    $(this).closest('.clonable-field-texto-asociado').remove();
+                                    container.find('.clonable-field-texto-asociado').each(function (i) {
                                         $(this).find('input').each(function () {
                                             const name = $(this).attr('name')
                                                 .replace(/\[\d+\]\[/, '[' + i + '][');

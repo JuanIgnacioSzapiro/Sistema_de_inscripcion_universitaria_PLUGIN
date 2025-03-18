@@ -7,7 +7,7 @@ class CaracteristicasBasicasPostType
     private $icono;
     private $meta;
     private $incrementador = 0;
-
+    private $nombre_para_mostrar;
 
     public function __construct(
         $plural,
@@ -76,6 +76,15 @@ class CaracteristicasBasicasPostType
         $this->incrementador += 1;
         return 1000 + $this->incrementador;
     }
+    public function set_nombre_para_mostrar($valor)
+    {
+        $this->nombre_para_mostrar = $valor;
+    }
+
+    public function get_nombre_para_mostrar()
+    {
+        return $this->nombre_para_mostrar;
+    }
 
     public function get_caracteristicas()
     {
@@ -83,7 +92,7 @@ class CaracteristicasBasicasPostType
             'public' => true,
             'show_ui' => true,
             'labels' => array(
-                'name' => __($this->get_plural_mayuscula()),
+                'name' => __($this->get_nombre_para_mostrar()),
                 'singular_name' => __(str_replace("_", ' ', $this->get_singular_mayuscula())),
                 'add_new' => __('Agregar nuev' . ($this->get_femenino() ? 'a' : 'o')),
                 'add_new_item' => __('Agregar nuev' . ($this->get_femenino() ? 'a' : 'o') . ' ' . $this->get_singular()),

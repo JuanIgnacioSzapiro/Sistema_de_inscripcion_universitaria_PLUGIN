@@ -40,18 +40,16 @@ class CampoTexto extends TipoMetaBox
                 <?php
             }
             ?>
+            <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
             <input type="text" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>"
                 value="<?php echo esc_attr($custom_field_value); ?>"
                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>" style="width: 100%;" />
-            <p class="description">
-                <?php echo esc_html($this->get_descripcion()); ?>
-            </p>
             <?php
         } else {
             $meta_key = $llave . '_' . $this->get_nombre_meta();
             $values = get_post_meta($post->ID, $meta_key);
             ?>
-            <div class="clonable-container">
+            <div class="clonable-container-texto">
                 <?php
                 if ($this->get_es_campo_opcional()) {
                     ?>
@@ -68,25 +66,23 @@ class CampoTexto extends TipoMetaBox
                     <?php
                 }
                 ?>
-                <div class="clonable-fields">
+                <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <div class="clonable-fields-texto">
                     <?php
                     // Always render at least ONE field (even if empty)
                     if (empty($values)) {
                         $values = [''];
                     }
                     foreach ($values as $value) { ?>
-                        <div class="clonable-field">
+                        <div class="clonable-field-texto">
                             <input type="text" name="<?php echo esc_attr($meta_key); ?>[]" value="<?php echo esc_attr($value); ?>"
                                 placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>"
                                 style="width: 100%; margin-bottom: 5px;" />
-                            <button type="button" class="button remove-field">Eliminar</button>
+                            <button type="button" class="button remove-field-texto">Eliminar</button>
                         </div>
                     <?php } ?>
                 </div>
-                <button type="button" class="button add-field">Agregar más</button>
-                <p class="description">
-                    <?php echo esc_html($this->get_descripcion()); ?>
-                </p>
+                <button type="button" class="button add-field-texto">Agregar más</button>
             </div>
             <script>
                 (function ($) {
@@ -94,20 +90,20 @@ class CampoTexto extends TipoMetaBox
                     if (typeof window.initClonableFields !== 'function') {
                         window.initClonableFields = function () {
                             $(document)
-                                .off('click', '.clonable-container .add-field') // Prevent duplicate bindings
-                                .on('click', '.clonable-container .add-field', function (e) {
+                                .off('click', '.clonable-container-texto .add-field-texto') // Prevent duplicate bindings
+                                .on('click', '.clonable-container-texto .add-field-texto', function (e) {
                                     e.preventDefault();
-                                    const container = $(this).closest('.clonable-container');
-                                    const newField = container.find('.clonable-field:last').clone();
+                                    const container = $(this).closest('.clonable-container-texto');
+                                    const newField = container.find('.clonable-field-texto:last').clone();
                                     newField.find('input').val('');
-                                    container.find('.clonable-fields').append(newField);
+                                    container.find('.clonable-fields-texto').append(newField);
                                 })
-                                .off('click', '.clonable-container .remove-field')
-                                .on('click', '.clonable-container .remove-field', function (e) {
+                                .off('click', '.clonable-container-texto .remove-field-texto')
+                                .on('click', '.clonable-container-texto .remove-field-texto', function (e) {
                                     e.preventDefault();
-                                    const container = $(this).closest('.clonable-container');
-                                    if (container.find('.clonable-field').length > 1) {
-                                        $(this).closest('.clonable-field').remove();
+                                    const container = $(this).closest('.clonable-container-texto');
+                                    if (container.find('.clonable-field-texto').length > 1) {
+                                        $(this).closest('.clonable-field-texto').remove();
                                     }
                                 });
                         };

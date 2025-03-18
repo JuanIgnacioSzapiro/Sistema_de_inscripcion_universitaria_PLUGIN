@@ -68,7 +68,6 @@ function generador_general($para_mostrar, $el_id)
                     foreach ($items as $item) {
 
                         $posible_json = json_decode($item);
-
                         $posible_url = (filter_var($item, FILTER_VALIDATE_URL) ? @get_headers($item) : '');
 
                         if (!empty($item)) {
@@ -87,14 +86,28 @@ function generador_general($para_mostrar, $el_id)
                                     }
                                     echo '</tr></tbody></table>';
                                 }
-                            } else {
-                                if (!empty($posible_url)) {
-                                    echo '<a href="' . esc_html($item) . '">' . esc_html($item) . '</a>';
+                            } elseif (!empty($posible_url)) {
+                                echo '<a href="' . esc_url($item) . '">' . esc_html($item) . '</a>';
+                            } elseif (is_serialized($item)) {
+                                $unserialized = maybe_unserialize($item);
+                                if (is_array($unserialized)) {
+                                    echo '<ul class="lista-serializada">';
+                                    foreach ($unserialized as $valor) {
+                                        echo '<li>' . esc_html($valor) . '</li>';
+                                    }
+                                    echo '</ul>';
                                 } else {
-                                    echo '<div>' . $item . '</div>';
+                                    echo '<div>' . esc_html($unserialized) . '</div>';
                                 }
+                            } elseif ($item == 'false') {
+                                echo '<div>No</div>';
+                            } elseif ($item == 'true') {
+                                echo '<div>Sí</div>';
+                            } else {
+                                echo '<div>' . esc_html($item) . '</div>';
                             }
                         } else {
+                            // Manejo de valor vacío
                         }
                     }
                 }

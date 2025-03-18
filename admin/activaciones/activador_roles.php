@@ -56,6 +56,7 @@ function activar_habilidades($roles)
         new CaracteristicasBasicasPostType('tipos_de_carrera'),
         new CaracteristicasBasicasPostType('materias'),
         new CaracteristicasBasicasPostType('planes_y_programas'),
+        new CaracteristicasBasicasPostType('form_ingreso'),
     );
 
     foreach ($roles as $rol) {

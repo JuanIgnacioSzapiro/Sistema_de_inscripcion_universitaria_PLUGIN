@@ -14,6 +14,7 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
 
     public function __construct(
         $singular,
+        $nombre_para_mostrar,
         $plural,
         $femenino,
         $prefijo,
@@ -22,6 +23,7 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
         $para_armar_columnas,
     ) {
         $this->set_singular($singular);
+        $this->set_nombre_para_mostrar($nombre_para_mostrar);
         $this->set_plural($plural);
         $this->set_femenino($femenino);
         $this->set_prefijo($prefijo);
