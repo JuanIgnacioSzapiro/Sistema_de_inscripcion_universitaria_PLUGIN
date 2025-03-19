@@ -9,6 +9,7 @@ function desinstalar_post_types()
         new CaracteristicasBasicasPostType('materias'),
         new CaracteristicasBasicasPostType('planes_y_programas'),
         new CaracteristicasBasicasPostType('documentacion'), 
+        new CaracteristicasBasicasPostType('form_ingreso'), 
     );
 
     if (!empty($post)) {

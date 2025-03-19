@@ -3,7 +3,7 @@ require_once dirname(__FILE__) . '/admin/activaciones/activador_post_types.php';
 require_once dirname(__FILE__) . '/admin/activaciones/activador_roles.php';
 require_once dirname(__FILE__) . '/admin/activaciones/activador_paginas.php';
 require_once dirname(__FILE__) . '/admin/activaciones/activar_campo_registrar_usuario.php';
-
+require_once dirname(__FILE__) . '/admin/activaciones/activador_shortcodes.php';
 
 function activar_plugin()
 {
@@ -17,9 +17,7 @@ function activar_plugin()
 
     activar_campo_registrar_usuario();
 
-    include_once dirname(__FILE__) . '/admin/shortcodes/galería.php';
-
-    include_once dirname(__FILE__) . '/admin/shortcodes/documentacion_inscripcion_a_carreras_2025.php';
+    activar_shortcodes();
 
     flush_rewrite_rules();
 }

@@ -46,4 +46,23 @@ class CampoFecha extends TipoMetaBox
         </div>
         <?php
     }
+    public function generar_fragmento_html_formulario($llave){
+        $meta_key = $llave . '_' . $this->nombre_meta;
+        ?>
+        <div class="file-upload-wrapper">
+            <?php if ($this->es_campo_opcional): ?>
+                <label for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->etiqueta); ?>
+                </label>
+            <?php else: ?>
+                <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->etiqueta); ?> *
+                </label>
+                <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+            <?php endif; ?>
+            <p class="description"><?php echo esc_html($this->descripcion); ?></p>
+            <input type="date" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>" />
+        </div>
+        <?php
+    }
 }

@@ -4,6 +4,8 @@ function activar_paginas()
     $title_of_the_page = array(
         'Demostración shortcodes' => "[mostrar_galeria post_type='carreras']",
         'Documentación para la inscripción a carreras 2025' => "[doc_insc_2025]",
+        'Formulario de pre inscripción 2025' => "[formulario_preinscriptos]",
+        'Pre formulario de pre inscripción 2025' => "[pre_formulario_preinscriptos]",
     );
 
     foreach ($title_of_the_page as $key => $item) {
@@ -22,7 +24,7 @@ function create_page($title_of_the_page, $content, $parent_id = NULL)
             'ping_status' => 'close',
             'post_author' => 1,
             'post_title' => $title_of_the_page,
-            'post_name' => strtolower(str_replace(' ', '-', trim($title_of_the_page))),
+            'post_name' => strtolower(str_replace(' ', '_', trim($title_of_the_page))),
             'post_status' => 'publish',
             'post_content' => $content,
             'post_type' => 'page',

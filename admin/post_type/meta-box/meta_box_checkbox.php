@@ -83,4 +83,64 @@ class CampoCheckbox extends TipoMetaBox
             <?php
         }
     }
+    public function generar_fragmento_html_formulario($llave){
+        $meta_key = $llave . '_' . $this->get_nombre_meta();
+        if (!empty($this->get_opciones())) {
+            // Mostrar etiqueta y descripción
+            if ($this->get_es_campo_opcional()) {
+                ?>
+                <label for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?>
+                </label>
+                <?php
+            } else {
+                ?>
+                <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?> *
+                </label>
+                <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                <?php
+            }
+            ?>
+            <p class="description">
+                <?php echo esc_html($this->get_descripcion()); ?>
+            </p>
+            <?php
+            // Generar checkboxes para cada opción
+            foreach ($this->get_opciones() as $key => $opcion) {
+                $input_id = $meta_key . '_' . $key;
+                ?>
+                <input type="checkbox" id="<?php echo esc_attr($input_id); ?>" name="<?php echo esc_attr($meta_key); ?>[]"
+                    value="<?php echo esc_attr($opcion); ?>"/>
+                <label for="<?php echo esc_attr($input_id); ?>">
+                    <?php echo esc_html($opcion); ?>
+                </label>
+                <br>
+                <?php
+            }
+        } else {
+            ?>
+            <input type="checkbox" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>" value="1" />
+            <?php
+            if ($this->get_es_campo_opcional()) {
+                ?>
+                <label for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?>
+                </label>
+                <?php
+            } else {
+                ?>
+                <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?> *
+                </label>
+                <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                <?php
+            }
+            ?>
+            <p class="description">
+                <?php echo esc_html($this->get_descripcion()); ?>
+            </p>
+            <?php
+        }
+    }
 }

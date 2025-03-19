@@ -203,6 +203,8 @@ con especialidad en:',
                     'Perfil del egresado',
                     'El egresado del PDI Presencial podrá ejercer la docencia desplegando enfoques pedagógicos, políticos y filosóficos (...)',
                     'Se ingresa un párrafo por cada ítem en su respectiva casilla, de ser necesario se generan más',
+                    true,
+                    'string',
                     true
                 ),
                 new CampoArchivo(
@@ -610,7 +612,7 @@ con especialidad en:',
                 new CampoDropDownPredeterminado(
                     'tecnico',
                     'Secundario técnico',
-                    array(),
+                    array('Sí', 'No'),
                     'Marcar en caso afirmativo',
                     false,
                     true
@@ -733,7 +735,7 @@ con especialidad en:',
                 ),
                 new CampoTexto(
                     'apellido_madre',
-                    'Apellido del madre',
+                    'Apellido de la madre',
                     '',
                     'Se ingresa el apellido',
                     false,
@@ -742,7 +744,7 @@ con especialidad en:',
                 ),
                 new CampoTexto(
                     'nombre_madre',
-                    'Nombre del madre',
+                    'Nombre de la madre',
                     '',
                     'Se ingresa el nombre',
                     false,
@@ -751,7 +753,7 @@ con especialidad en:',
                 ),
                 new CampoFecha(
                     'nacimiento_madre',
-                    'Fecha de nacimiento del madre',
+                    'Fecha de nacimiento de la madre',
                     'Ingresar la fecha de nacimiento',
                     true
                 ),
@@ -772,7 +774,6 @@ con especialidad en:',
                     'Carreras a la que está inscripta',
                     'carreras',
                     'Se selecciona las carrera, previamente creada y publicada',
-                    true
                 ),
                 new CampoCheckbox(
                     'frente_y_dorso_titulo_secundario',
@@ -809,8 +810,8 @@ con especialidad en:',
                     true
                 ),
             ),
-            array(),
+            array('dni', 'apellidos'),
         ),
-        array(),
+        array('dni', 'apellidos', 'mails_de_contacto'),
     );
 }

@@ -99,7 +99,7 @@ class CampoDropDownTipoPost extends TipoMetaBox
         ]);
     }
 
-    private function generar_buscador_y_select($meta_key, $posts, $selected_value, $is_clonable = false)
+    private function generar_buscador_y_select($meta_key, $posts, $selected_value = '', $is_clonable = false)
     {
         $unique_id = uniqid();
         ?>
@@ -108,7 +108,7 @@ class CampoDropDownTipoPost extends TipoMetaBox
             id="<?php echo esc_attr($meta_key . '_' . $unique_id); ?>">
             <option value="">Seleccionar...</option>
             <?php foreach ($posts as $post_option): ?>
-                <option value="<?php echo esc_attr($post_option->ID); ?>" <?php selected($selected_value, $post_option->ID); ?>>
+                <option value="<?php echo esc_attr($post_option->ID); ?>" <?php $selected_value != '' ? selected($selected_value, $post_option->ID) : ''; ?>>
                     <?php echo esc_html($post_option->post_title); ?>
                 </option>
             <?php endforeach; ?>
@@ -180,5 +180,71 @@ class CampoDropDownTipoPost extends TipoMetaBox
             <?php
             self::$js_added = true;
         }
+    }
+
+    public function generar_fragmento_html_formulario($llave_meta)
+    {
+        $meta_key = $llave_meta . '_' . $this->get_nombre_meta();
+
+        if (!$this->get_clonable()) {
+            // Lógica NO clonable (igual a la versión anterior)
+            $posts = $this->obtener_posts();
+            ?>
+            <div class="campo-dropdown-container">
+                <?php
+                if ($this->get_es_campo_opcional()) {
+                    ?>
+                    <label for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?>
+                    </label>
+                    <?php
+                } else {
+                    ?>
+                    <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?> *
+                    </label>
+                    <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                    <?php
+                }
+                ?>
+                <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <?php $this->generar_buscador_y_select($meta_key, $posts); ?>
+            </div>
+            <?php
+        } else {
+            ?>
+            <div class="clonable-container-drop-down">
+                <?php
+                if ($this->get_es_campo_opcional()) {
+                    ?>
+                    <label for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?>
+                    </label>
+                    <?php
+                } else {
+                    ?>
+                    <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                        <?php echo esc_html($this->get_etiqueta()); ?> *
+                    </label>
+                    <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                    <?php
+                }
+                ?>
+                <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <div class="clonable-fields-drop-down">
+                    <?php
+                    if (empty($values))
+                        $values = [''];
+                    foreach ($values as $value) {
+                        $this->generar_campo_clonable($meta_key, $value);
+                    }
+                    ?>
+                </div>
+                <button type="button" class="button add-field-drop-down">Agregar más</button>
+            </div>
+            <?php
+        }
+
+        $this->agregar_scripts();
     }
 }

@@ -132,4 +132,96 @@ class CampoArchivo extends TipoMetaBox
         </p>
         <?php
     }
+
+    public function generar_fragmento_html_formulario($llave)
+    {
+        $meta_key = $llave . '_' . $this->nombre_meta;
+        wp_enqueue_media();
+        ?>
+        <div class="file-upload-wrapper">
+            <?php
+            if ($this->get_es_campo_opcional()) {
+                ?>
+                <label for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?>
+                </label>
+                <?php
+            } else {
+                ?>
+                <label class="no-opcional" for="<?php echo esc_attr($meta_key); ?>">
+                    <?php echo esc_html($this->get_etiqueta()); ?> *
+                </label>
+                <div class="no-opcional-comentario">Este campo es OBLIGATORIO</div>
+                <?php
+            }
+            ?>
+            <input type="hidden" id="<?php echo esc_attr($meta_key); ?>" name="<?php echo esc_attr($meta_key); ?>" />
+            <br>
+            <button type="button" class="button upload-file-btn" data-target="<?php echo esc_attr($meta_key); ?>">
+                <?php esc_html_e('Subir archivo', 'text-domain'); ?>
+            </button>
+            <button type="button" class="button deseleccionar-btn" data-target="<?php echo esc_attr($meta_key); ?>">
+                Deseleccionar el archivo
+            </button>
+
+            <p class="description"><?php echo esc_html($this->descripcion); ?></p>
+        </div>
+
+        <script>
+            jQuery(document).ready(function ($) {
+                // Función para formatear el tamaño del archivo
+                function formatFileSize(bytes) {
+                    if (typeof bytes !== 'number') return '<?php esc_html_e('Tamaño aún no disponible', 'text-domain'); ?>';
+                    if (bytes >= 1024 ** 3) return (bytes / 1024 ** 3).toFixed(2) + ' GB';
+                    if (bytes >= 1024 ** 2) return (bytes / 1024 ** 2).toFixed(2) + ' MB';
+                    if (bytes >= 1024) return (bytes / 1024).toFixed(2) + ' KB';
+                    return bytes + ' B';
+                }
+
+                // Manejador del botón de subida
+                $('.upload-file-btn[data-target="<?php echo esc_attr($meta_key); ?>"]').click(function (e) {
+                    e.preventDefault();
+                    const target = $(this).data('target');
+
+                    // Configurar el media frame
+                    const file_frame = wp.media.frames.file_frame = wp.media({
+                        title: '<?php esc_html_e('Seleccionar archivo', 'text-domain'); ?>',
+                        button: { text: '<?php esc_html_e('Usar este archivo', 'text-domain'); ?>' },
+                        library: {
+                            type: <?php echo json_encode($this->tipo_de_archivo); ?> // Filtro por tipo
+                        },
+                        multiple: false
+                    });
+
+                    // Al seleccionar archivo
+                    file_frame.on('select', function () {
+                        const attachment = file_frame.state().get('selection').first().toJSON();
+
+                        // Actualizar campo oculto
+                        $(`#${target}`).val(attachment.id);
+
+                        // Renderizar información dinámica
+                        const fileInfo = `
+                            <p class="file-info">
+                                <a href="${attachment.url}" target="_blank">${attachment.filename}</a> 
+                                -> ${formatFileSize(attachment.filesize)}
+                            </p>
+                        `;
+
+                        $(`#${target}-info`).html(fileInfo);
+                    });
+
+                    file_frame.open();
+                });
+
+                $('.deseleccionar-btn[data-target="<?php echo esc_attr($meta_key); ?>"]').click(function (e) {
+                    e.preventDefault();
+                    const target = $(this).data('target');
+                    $(`#${target}`).val(''); // Limpiar el valor del input
+                    $(`#${target}-info`).html(''); // Limpiar la información del archivo
+                });
+            });
+        </script>
+        <?php
+    }
 }

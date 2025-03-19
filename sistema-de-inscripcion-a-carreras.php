@@ -48,8 +48,6 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
                 -------------------------|-------------------|----------------
                 Remove Tables from wpdb  |       No          |       Yes
                 */
-
-                register_deactivation_hook(__FILE__, 'desinstalar_plugin'); // USO EXCLUSIVO DE DEBUGGEO
             }
 
             public function instalar_plugins_requeridos()
@@ -65,11 +63,11 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
                         'file' => 'wp-mail-smtp/wp_mail_smtp.php',
                         'name' => 'WP Mail SMTP'
                     ),
-                    'wpforms-lite' => array(
-                        'slug' => 'wpforms-lite',
-                        'file' => 'wpforms-lite/wpforms.php',
-                        'name' => 'WPForms Lite'
-                    ),
+                    // 'wpforms-lite' => array(
+                    //     'slug' => 'wpforms-lite',
+                    //     'file' => 'wpforms-lite/wpforms.php',
+                    //     'name' => 'WPForms Lite'
+                    // ),
                     'wp-mail-logging' => array(
                         'slug' => 'wp-mail-logging',
                         'file' => 'wp-mail-logging/wp-mail-logging.php',

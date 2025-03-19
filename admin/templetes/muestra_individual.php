@@ -3,8 +3,11 @@
  * Single Materia Template
  */
 get_header();
-
+?>
+<div class="cuerpo-centrado">
+<?php
 while (have_posts()):
+
     the_post();
     if (in_array('read_' . get_post_type(), wp_get_current_user()->allcaps)) {
         ?>
@@ -32,7 +35,9 @@ while (have_posts()):
     }
 
 endwhile;
-
+?>
+</div>
+<?php
 get_footer();
 
 function generador_general($para_mostrar, $el_id)
