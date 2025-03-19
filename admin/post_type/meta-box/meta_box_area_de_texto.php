@@ -86,16 +86,16 @@ class CampoAreaDeTexto extends TipoMetaBox
                         </div>
                     <?php } ?>
                 </div>
-                <button type="button" class="button add-field">Agregar más</button>
+                <button type="button" class="button add-field-area-de-texto">Agregar más</button>
             </div>
             <script>
                 (function ($) {
                     // Only define once in global scope
-                    if (typeof window.initClonableFields !== 'function') {
-                        window.initClonableFields = function () {
+                    if (typeof window.initClonableFields_area !== 'function') {
+                        window.initClonableFields_area = function () {
                             $(document)
-                                .off('click', '.clonable-container-area-de-texto .add-field') // Prevent duplicate bindings
-                                .on('click', '.clonable-container-area-de-texto .add-field', function (e) {
+                                .off('click', '.clonable-container-area-de-texto .add-field-area-de-texto') // Prevent duplicate bindings
+                                .on('click', '.clonable-container-area-de-texto .add-field-area-de-texto', function (e) {
                                     e.preventDefault();
                                     const container = $(this).closest('.clonable-container-area-de-texto');
                                     const newField = container.find('.clonable-field-area-de-texto:last').clone();
@@ -115,9 +115,9 @@ class CampoAreaDeTexto extends TipoMetaBox
 
                     // Initialize when DOM is ready
                     $(document).ready(function () {
-                        if (!window.clonableFieldsInitialized) {
-                            window.initClonableFields();
-                            window.clonableFieldsInitialized = true;
+                        if (!window.clonableFieldsInitialized_area_de_texto) {
+                            window.initClonableFields_area();
+                            window.clonableFieldsInitialized_area_de_texto = true;
                         }
                     });
                 })(jQuery);
@@ -188,16 +188,16 @@ class CampoAreaDeTexto extends TipoMetaBox
                         </div>
                     <?php } ?>
                 </div>
-                <button type="button" class="button add-field">Agregar más</button>
+                <button type="button" class="button add-field-area-de-texto">Agregar más</button>
             </div>
             <script>
                 (function ($) {
                     // Only define once in global scope
-                    if (typeof window.initClonableFields !== 'function') {
-                        window.initClonableFields = function () {
+                    if (typeof window.initClonableFields_area !== 'function') {
+                        window.initClonableFields_area = function () {
                             $(document)
-                                .off('click', '.clonable-container-area-de-texto .add-field') // Prevent duplicate bindings
-                                .on('click', '.clonable-container-area-de-texto .add-field', function (e) {
+                                .off('click', '.clonable-container-area-de-texto .add-field-area-de-texto') // Prevent duplicate bindings
+                                .on('click', '.clonable-container-area-de-texto .add-field-area-de-texto', function (e) {
                                     e.preventDefault();
                                     const container = $(this).closest('.clonable-container-area-de-texto');
                                     const newField = container.find('.clonable-field-area-de-texto:last').clone();
@@ -217,9 +217,9 @@ class CampoAreaDeTexto extends TipoMetaBox
 
                     // Initialize when DOM is ready
                     $(document).ready(function () {
-                        if (!window.clonableFieldsInitialized) {
-                            window.initClonableFields();
-                            window.clonableFieldsInitialized = true;
+                        if (!window.clonableFieldsInitialized_area_de_texto) {
+                            window.initClonableFields_area();
+                            window.clonableFieldsInitialized_area_de_texto = true;
                         }
                     });
                 })(jQuery);

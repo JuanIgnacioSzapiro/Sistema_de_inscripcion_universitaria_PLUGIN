@@ -277,7 +277,7 @@ con especialidad en:',
                     'grado_academico',
                     'Grado académico',
                     'Pregado',
-                    ''
+                    '',
                 ),
                 new CampoTexto(
                     'modalidad',

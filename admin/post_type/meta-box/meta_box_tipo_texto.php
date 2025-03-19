@@ -87,8 +87,8 @@ class CampoTexto extends TipoMetaBox
             <script>
                 (function ($) {
                     // Only define once in global scope
-                    if (typeof window.initClonableFields !== 'function') {
-                        window.initClonableFields = function () {
+                    if (typeof window.initClonableFields_texto !== 'function') {
+                        window.initClonableFields_texto = function () {
                             $(document)
                                 .off('click', '.clonable-container-texto .add-field-texto') // Prevent duplicate bindings
                                 .on('click', '.clonable-container-texto .add-field-texto', function (e) {
@@ -111,9 +111,9 @@ class CampoTexto extends TipoMetaBox
 
                     // Initialize when DOM is ready
                     $(document).ready(function () {
-                        if (!window.clonableFieldsInitialized) {
-                            window.initClonableFields();
-                            window.clonableFieldsInitialized = true;
+                        if (!window.clonableFieldsInitialized_texto) {
+                            window.initClonableFields_texto();
+                            window.clonableFieldsInitialized_texto = true;
                         }
                     });
                 })(jQuery);
@@ -166,13 +166,28 @@ class CampoTexto extends TipoMetaBox
                 }
                 ?>
                 <p class="description"><?php echo esc_html($this->get_descripcion()); ?></p>
+                <div class="clonable-fields-texto">
+                    <?php
+                    // Always render at least ONE field (even if empty)
+                    if (empty($values)) {
+                        $values = [''];
+                    }
+                    foreach ($values as $value) { ?>
+                        <div class="clonable-field-texto">
+                            <input type="text" name="<?php echo esc_attr($meta_key); ?>[]" value="<?php echo esc_attr($value); ?>"
+                                placeholder="<?php echo esc_attr($this->get_texto_de_ejemplificacion()); ?>"
+                                style="width: 100%; margin-bottom: 5px;" />
+                            <button type="button" class="button remove-field-texto">Eliminar</button>
+                        </div>
+                    <?php } ?>
+                </div>
                 <button type="button" class="button add-field-texto">Agregar más</button>
             </div>
             <script>
                 (function ($) {
                     // Only define once in global scope
-                    if (typeof window.initClonableFields !== 'function') {
-                        window.initClonableFields = function () {
+                    if (typeof window.initClonableFields_texto !== 'function') {
+                        window.initClonableFields_texto = function () {
                             $(document)
                                 .off('click', '.clonable-container-texto .add-field-texto') // Prevent duplicate bindings
                                 .on('click', '.clonable-container-texto .add-field-texto', function (e) {
@@ -195,9 +210,9 @@ class CampoTexto extends TipoMetaBox
 
                     // Initialize when DOM is ready
                     $(document).ready(function () {
-                        if (!window.clonableFieldsInitialized) {
-                            window.initClonableFields();
-                            window.clonableFieldsInitialized = true;
+                        if (!window.clonableFieldsInitialized_texto) {
+                            window.initClonableFields_texto();
+                            window.clonableFieldsInitialized_texto = true;
                         }
                     });
                 })(jQuery);
