@@ -41,7 +41,9 @@ class CampoDropDownPredeterminado extends TipoMetaBox
                 <?php
             }
             ?>
-            <br>
+            <p class="description">
+                <?php echo esc_html($this->get_descripcion()); ?>
+            </p>
             <select name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
                 <option value="">Seleccionar...</option>
                 <?php foreach ($argumentos as $opcion): ?>
@@ -50,9 +52,6 @@ class CampoDropDownPredeterminado extends TipoMetaBox
                     </option>
                 <?php endforeach; ?>
             </select>
-            <p class="description">
-                <?php echo esc_html($this->get_descripcion()); ?>
-            </p>
         </div>
         <?php
     }
@@ -78,7 +77,9 @@ class CampoDropDownPredeterminado extends TipoMetaBox
                 <?php
             }
             ?>
-            <br>
+            <p class="description">
+                <?php echo esc_html($this->get_descripcion()); ?>
+            </p>
             <select name="<?php echo esc_attr($meta_key); ?>" id="<?php echo esc_attr($meta_key); ?>">
                 <option value="">Seleccionar...</option>
                 <?php foreach ($argumentos as $opcion): ?>
@@ -87,9 +88,7 @@ class CampoDropDownPredeterminado extends TipoMetaBox
                     </option>
                 <?php endforeach; ?>
             </select>
-            <p class="description">
-                <?php echo esc_html($this->get_descripcion()); ?>
-            </p>
+
         </div>
         <?php
     }

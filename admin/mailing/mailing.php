@@ -45,37 +45,34 @@ class Mailing
         $this->headers = $headers;
     }
 
-    function __construct($email, $subject, $message, $headers = [])
+    function __construct($email, $subject, $message, $headers = array('Content-Type: text/html; charset=UTF-8'))
     {
         $this->set_email($email);
         $this->set_subject($subject);
         $this->set_message($message);
         $this->set_headers($headers);
-
-        add_action('phpmailer_init', array($this, 'configurar_smtp'));
     }
 
     function configurar_smtp($phpmailer)
     {
         $phpmailer->isSMTP();
-        $phpmailer->Host = 'localhost'; // MailHog
-        $phpmailer->Port = 1025; // Puerto de MailHog
-        $phpmailer->SMTPAuth = false; // No requiere autenticación
 
-        // Si usas un SMTP externo (ej: Gmail):
-        if (defined($GLOBALS['smtp_host'])) {
-            // Configuración para producción
-            $phpmailer->isSMTP();
-            $phpmailer->Host = $GLOBALS['smtp_host']; // Ej: smtp.gmail.com
-            $phpmailer->Port = $GLOBALS['smtp_puerto']; // 587
+        // Configuración para MailHog (desarrollo)
+        $phpmailer->Host = 'localhost';
+        $phpmailer->Port = 1025;
+        $phpmailer->SMTPAuth = false;
+
+        // Configuración para producción (si existen globals)
+        if (isset($GLOBALS['smtp_host'])) {
+            $phpmailer->Host = $GLOBALS['smtp_host'];
+            $phpmailer->Port = $GLOBALS['smtp_puerto'];
             $phpmailer->SMTPAuth = true;
             $phpmailer->Username = $GLOBALS['mail'];
             $phpmailer->Password = $GLOBALS['clave'];
-            $phpmailer->SMTPSecure = $GLOBALS['smtp_secure']; // tls
+            $phpmailer->SMTPSecure = $GLOBALS['smtp_secure'];
         }
 
-        $phpmailer->SMTPDebug = 2; // Nivel de depuración
-        error_log(print_r($phpmailer, true)); // Log en debug.log
+        $phpmailer->SMTPDebug = 2;
     }
 
     function mandar_mail()

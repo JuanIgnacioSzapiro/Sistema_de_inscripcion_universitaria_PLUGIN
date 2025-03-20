@@ -5,7 +5,15 @@
 add_shortcode('formulario_preinscriptos', 'formulario_preinscriptos_shortcode');
 function formulario_preinscriptos_shortcode()
 {
-    $preguntas = array(
+    $carreras = array(
+        new CampoDropDownTipoPost(
+            'carreras',
+            'Carreras a la que está inscripta',
+            'carreras',
+            'Se selecciona las carrera, previamente creada y publicada',
+        ),
+    );
+    $datos_personales = array(
         new CampoTexto(
             'dni',
             'DNI',
@@ -106,6 +114,8 @@ function formulario_preinscriptos_shortcode()
             'string',
             true
         ),
+    );
+    $nacimiento = array(
         new CampoFecha(
             'nacimiento',
             'Fecha de nacimiento',
@@ -141,6 +151,8 @@ function formulario_preinscriptos_shortcode()
             'CABA',
             'Se ingresa el ciudad de origen',
         ),
+    );
+    $dommicilio = array(
         new CampoTexto(
             'calle',
             'Calle de residencia',
@@ -180,6 +192,8 @@ function formulario_preinscriptos_shortcode()
             '1419',
             'Se ingresa el código postal',
         ),
+    );
+    $contacto = array(
         new CampoTexto(
             'tel_fijo',
             'Teléfono fijo',
@@ -207,15 +221,24 @@ function formulario_preinscriptos_shortcode()
             'string',
             true
         ),
-        new CampoTexto(
-            'tel_movil_de_emergencia',
-            'Teléfonos móvil de emergencia',
-            '+54 - 15 - 911 1111 1111',
-            'Se ingresan los teléfonos móviles',
-            true,
+    );
+    $contacto_emergencia = array(
+        new CampoTextoAsociado(
+            'contacto_emergencia_nombre',
+            'Nombre del contacto',
+            'John Doe',
+            'Se ingresa el nombre.',
+            'contacto_emergencia_tel_movil',
+            'Teléfonos móvil',
+            '+54 911 1111 1111',
+            'Se ingresa número de teléfono móvil',
             'string',
+            'string',
+            true,
             true
         ),
+    );
+    $secundario = array(
         new CampoTexto(
             'nombre_título_secundario',
             'Nombre del título secundario obtenido o a obtener',
@@ -224,7 +247,6 @@ function formulario_preinscriptos_shortcode()
             false,
             'string',
             true
-
         ),
         new CampoDropDownPredeterminado(
             'tecnico',
@@ -234,6 +256,8 @@ function formulario_preinscriptos_shortcode()
             false,
             true
         ),
+    );
+    $otros_estudios = array(
         new CampoDropDownPredeterminado(
             'tipo_otro_estudio',
             'Tipo',
@@ -276,6 +300,8 @@ function formulario_preinscriptos_shortcode()
             false,
             true
         ),
+    );
+    $trabajo = array(
         new CampoDropDownPredeterminado(
             'trabajo',
             'Situación Laboral',
@@ -288,6 +314,8 @@ function formulario_preinscriptos_shortcode()
             false,
             true
         ),
+    );
+    $familia = array(
         new CampoDropDownPredeterminado(
             'hijos_a_cargo',
             'Cantidad de hijos a cargo',
@@ -314,6 +342,8 @@ function formulario_preinscriptos_shortcode()
             false,
             true
         ),
+    );
+    $padre = array(
         new CampoTexto(
             'apellido_padre',
             'Apellido del padre',
@@ -350,6 +380,8 @@ function formulario_preinscriptos_shortcode()
             false,
             true
         ),
+    );
+    $madre = array(
         new CampoTexto(
             'apellido_madre',
             'Apellido de la madre',
@@ -386,30 +418,78 @@ function formulario_preinscriptos_shortcode()
             false,
             true
         ),
-        new CampoDropDownTipoPost(
-            'carreras',
-            'Carreras a la que está inscripta',
-            'carreras',
-            'Se selecciona las carrera, previamente creada y publicada',
-            true
-        ),
     );
-
     ob_start();
     ?>
     <div class="formulario">
+        <h2>INGRESO 2025</h2>
+        <p>A continuación, te pediremos algunos datos para completar la preinscripción. Te sugerimos que revises la
+            información que cargues ya que reviste carácter de Declaración Jurada.</p>
+        <p>Recordamos que la vacante quedará reservada una vez que presentes en nuestra sede de Av. Triunvirato 3174,
+            CABA, de 9 a 20 hs., toda la documentación requerida (ver requisitos en la página web)</p>
+        <h3>Carrera</h3>
         <?php
-        foreach ($preguntas as $pregunta) {
-            ?>
-            <div class="en-meta-box">
-                <?php
-                $pregunta->generar_fragmento_html_formulario($GLOBALS['prefijo_variables_sql']);
-                ?>
-            </div>
-            <?php
-        }
+        recorrer_array($carreras);
         ?>
+        <h3>Datos personales</h3>
+        <?php
+        recorrer_array($datos_personales);
+        ?>
+        <h3>Nacimiento</h3>
+        <?php
+        recorrer_array($nacimiento);
+        ?>
+        <h3>Domicilio (como figura en su documento)</h3>
+        <?php
+        recorrer_array($dommicilio);
+        ?>
+        <h3>Contacto</h3>
+        <?php
+        recorrer_array($contacto);
+        ?>
+        <h3>¿A quién recurrir en caso de que lo necesites?</h3>
+        <?php
+        recorrer_array($contacto_emergencia);
+        ?>
+        <h3>Secundario</h3>
+        <?php
+        recorrer_array($secundario);
+        ?>
+        <h3>Otros Estudios</h3>
+        <?php
+        recorrer_array($otros_estudios);
+        ?>
+        <h3>Trabajo</h3>
+        <?php
+        recorrer_array($trabajo);
+        ?>
+        <h3>Familia</h3>
+        <?php
+        recorrer_array($familia);
+        ?>
+        <h3>Padre</h3>
+        <?php
+        recorrer_array($padre);
+        ?>
+        <h3>Madre</h3>
+        <?php
+        recorrer_array($madre);
+        ?>
+
     </div>
     <?php
     return ob_get_clean();
+}
+
+function recorrer_array($xs)
+{
+    foreach ($xs as $x) {
+        ?>
+        <div class="en-meta-box">
+            <?php
+            $x->generar_fragmento_html_formulario($GLOBALS['prefijo_variables_sql']);
+            ?>
+        </div>
+        <?php
+    }
 }

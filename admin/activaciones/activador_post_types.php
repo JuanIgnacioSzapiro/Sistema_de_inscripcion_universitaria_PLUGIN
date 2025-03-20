@@ -9,6 +9,40 @@ require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_fecha.php';
 
 function activar_post_types()
 {
+    $links_preinscripciones = new CuerpoPostType(
+        'link de inscripciones',
+        'Link de inscripciones',
+        'links_preinscriptos',
+        false,
+        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        'dashicons-admin-links',
+        new TipoMetaBox(
+            'Editor de materias',
+            array(
+                new CampoDropDownTipoPost(
+                    'link_documentacion',
+                    'Página de documentación requerida',
+                    'page',
+                    'Se selecciona la página de documentación requerida para la inscripción'
+                ),
+                new CampoDropDownTipoPost(
+                    'link_previo_preinscripcion',
+                    'Página del formulario previo',
+                    'page',
+                    'Se selecciona la página del formulario previo a la preinscripción'
+                ),
+                new CampoDropDownTipoPost(
+                    'link_preinscripcion',
+                    'Página del formulario',
+                    'page',
+                    'Se selecciona la página del formulario para la preinscripción'
+                )
+            )
+            ,
+            array('page'),
+        ),
+        array('page')
+    );
     $materias = new CuerpoPostType(
         'materia',
         'Materias',
@@ -575,7 +609,7 @@ con especialidad en:',
                 new CampoTexto(
                     'tel_movil',
                     'Teléfono móvil',
-                    '+54 - 15 - 911 1111 1111',
+                    '+54 911 1111 1111',
                     'Se ingresa número de teléfono móvil',
                     true,
                     'string',
@@ -590,13 +624,18 @@ con especialidad en:',
                     'string',
                     true
                 ),
-                new CampoTexto(
-                    'tel_movil_de_emergencia',
-                    'Teléfonos móvil de emergencia',
-                    '+54 - 15 - 911 1111 1111',
-                    'Se ingresan los teléfonos móviles',
-                    true,
+                new CampoTextoAsociado(
+                    'contacto_emergencia_nombre',
+                    'Nombre del contacto',
+                    'John Doe',
+                    'Se ingresa el nombre.',
+                    'contacto_emergencia_tel_movil',
+                    'Teléfonos móvil',
+                    '+54 911 1111 1111',
+                    'Se ingresa número de teléfono móvil',
                     'string',
+                    'string',
+                    true,
                     true
                 ),
                 new CampoTexto(

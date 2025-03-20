@@ -9,6 +9,7 @@ function desactivar_post_types()
         new CaracteristicasBasicasPostType('planes_y_programas'),
         new CaracteristicasBasicasPostType('documentacion'), 
         new CaracteristicasBasicasPostType('form_ingreso'), 
+        new CaracteristicasBasicasPostType('links_preinscriptos'), 
     );
 
     if (!empty($post)) {

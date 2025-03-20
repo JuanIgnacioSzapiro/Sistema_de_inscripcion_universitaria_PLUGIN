@@ -27,6 +27,7 @@ class CampoDropDownTipoPost extends TipoMetaBox
             // Lógica NO clonable (igual a la versión anterior)
             $selected_value = get_post_meta($post->ID, $meta_key, true);
             $posts = $this->obtener_posts();
+
             ?>
             <div class="campo-dropdown-container">
                 <?php

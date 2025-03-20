@@ -1,4 +1,6 @@
 <?php
+require_once dirname(__FILE__) . '/../funciones.php';
+
 function documentacion_inscripciones_a_carreras_2025()
 {
     $carreras = obtener_post_type('carreras');
@@ -8,7 +10,7 @@ function documentacion_inscripciones_a_carreras_2025()
     ob_start();
 
     ?>
-    <div class="cuerpo-centrado">
+    <div class="cuerpo-centrado documentacion">
         <div class="contenedor-doc-inscripciones">
             <h1 class="subtitulo">Inscribite a tu carrera</h1>
             <div class="<?php echo esc_html((count($carreras) != 1) ? 'muestra-carreras' : 'muestra-carreras-solo') ?>">
@@ -20,20 +22,23 @@ function documentacion_inscripciones_a_carreras_2025()
                 }
                 ?>
             </div>
-            <h2 class="subtitulo espaciado">Trámite para realizar la inscripción</h2>
-            <div class="contenedor-dividido">
-                <div class="lado-izq">
-                    <p>1- Completar el formulario de Preinscripción</p>
-                    <p>2- Presentar la documentación requerida en la sede </p>
-                    <button class="boton_link">Formulario de inscripción</button>
-                </div>
-                <div class="lado-der">
-                    <p>Para otros trámites y consultas</p>
-                    <button class="boton_link">Trámites y consultas</button>
-                </div>
+            <div>
+                <h2 class="subtitulo espaciado">Trámite para realizar la inscripción</h2>
+                <div class="contenedor-dividido">
+                    <div class="lado-izq">
+                        <p>1- Completar el formulario de Preinscripción</p>
+                        <p>2- Presentar la documentación requerida en la sede </p>
+                        <button class="boton_link">Formulario de inscripción</button>
+                    </div>
+                    <div class="lado-der">
+                        <p>Para otros trámites y consultas</p>
+                        <button class="boton_link">Trámites y consultas</button>
+                    </div>
 
-                </p>
+                    </p>
+                </div>
             </div>
+            <div><a href="<?php echo obtener_el_link_previo_preinscripcion() ?>" class="button">Formulario de inscripción</a></div>
             <h2 class="subtitulo espaciado">Preguntas Frecuentes</h2>
             <div class="contenedor-dividido">
                 <div class="lado-izq">
@@ -188,7 +193,6 @@ function obtener_post_type($id_post_type)
         'order' => 'ASC'
     ));
 }
-
 
 
 add_shortcode('doc_insc_2025', 'documentacion_inscripciones_a_carreras_2025');

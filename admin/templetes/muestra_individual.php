@@ -1,41 +1,43 @@
 <?php
+require_once dirname(__FILE__) . '/../funciones.php';
+
 /**
  * Single Materia Template
  */
 get_header();
 ?>
 <div class="cuerpo-centrado">
-<?php
-while (have_posts()):
+    <?php
+    while (have_posts()):
 
-    the_post();
-    if (in_array('read_' . get_post_type(), wp_get_current_user()->allcaps)) {
-        ?>
-        <article>
-            <h1><?php the_title(); ?></h1>
-            <div class="contenedorTabla">
-                <table>
-                    <tbody>
-                        <?php
-                        generador_general(get_post_meta(get_the_ID()), get_the_ID());
-                        ?>
-                    </tbody>
-                </table>
-            </div>
-        </article>
-        <?php
-    } elseif (get_post_type() === 'carreras') {
-        ?>
-        <div class="muesta-individual-sin-registro">
-            <?php
-            generador_carreras($post);
+        the_post();
+        if (in_array('read_' . get_post_type(), wp_get_current_user()->allcaps)) {
             ?>
-        </div>
-        <?php
-    }
+            <article>
+                <h1><?php the_title(); ?></h1>
+                <div class="contenedorTabla">
+                    <table>
+                        <tbody>
+                            <?php
+                            generador_general(get_post_meta(get_the_ID()), get_the_ID());
+                            ?>
+                        </tbody>
+                    </table>
+                </div>
+            </article>
+            <?php
+        } elseif (get_post_type() === 'carreras') {
+            ?>
+            <div class="muesta-individual-sin-registro">
+                <?php
+                generador_carreras($post);
+                ?>
+            </div>
+            <?php
+        }
 
-endwhile;
-?>
+    endwhile;
+    ?>
 </div>
 <?php
 get_footer();
@@ -147,6 +149,7 @@ function generador_carreras($post)
         <h2 class="tipos-de-carrera">
             <?php echo get_the_title(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_tipos_de_carrera', true))); ?>
         </h2>
+        <a href="<?php echo obtener_el_link_documentacion(); ?>"class="button">Inscripción 2025</a>
     </div>
     <p class="descripcion-carrera">
         <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_de_la_carrera', true)); ?>
@@ -160,7 +163,7 @@ function generador_carreras($post)
         <?php
     }
     ?>
-    <a class="resolucion-ministerial"
+    <a class="button"
         href="<?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_resolucion_ministerial_de_la_carrera', true)); ?>">
         Resolución ministerial
     </a>

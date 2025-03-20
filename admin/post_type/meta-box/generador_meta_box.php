@@ -206,6 +206,11 @@ class TipoMetaBox
         return $this->es_campo_opcional;
     }
 
+    public function get_nombre_meta_con_llave()
+    {
+        return $this->get_llave_meta() . '_' . $this->get_nombre_meta();
+    }
+
 
     public function crear_tipo_meta_box()
     {
