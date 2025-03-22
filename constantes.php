@@ -3,7 +3,7 @@
 function cargar_configuracion_desde_csv()
 {
     // Ruta al archivo CSV en el directorio del plugin
-    $csv_file = plugin_dir_path(__FILE__) . 'constantes.txt';
+    $csv_file = plugin_dir_path(__FILE__) . 'constantes.csv';
 
     // Verificar si el archivo existe
     if (!file_exists($csv_file)) {
@@ -51,6 +51,3 @@ function cargar_configuracion_desde_csv()
         }
     }
 }
-
-// Ejecutar al inicializar el plugin
-add_action('init', 'cargar_configuracion_desde_csv');

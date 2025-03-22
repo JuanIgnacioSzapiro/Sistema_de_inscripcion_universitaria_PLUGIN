@@ -9,12 +9,14 @@ require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_fecha.php';
 
 function activar_post_types()
 {
+    $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES';
+
     $links_preinscripciones = new CuerpoPostType(
         'link de inscripciones',
         'Link de inscripciones',
         'links_preinscriptos',
         false,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        $prefijo,
         'dashicons-admin-links',
         new TipoMetaBox(
             'Editor de materias',
@@ -48,7 +50,7 @@ function activar_post_types()
         'Materias',
         'materias',
         true,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        $prefijo,
         'dashicons-text-page',
         new TipoMetaBox(
             'Editor de materias',
@@ -88,7 +90,7 @@ function activar_post_types()
         'Planes y programas',
         'planes_y_programas',
         false,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        $prefijo,
         'dashicons-book',
         new TipoMetaBox(
             'Editor de planes y programas',
@@ -122,7 +124,7 @@ function activar_post_types()
         'Tipo de carreras',
         'tipos_de_carrera',
         false,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        $prefijo,
         'dashicons-book-alt',
         new TipoMetaBox(
             'Editor de tipos de carrera',
@@ -153,7 +155,7 @@ con especialidad en:',
         'Carreras',
         'carreras',
         true,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        $prefijo,
         'dashicons-bank',
         new TipoMetaBox(
             'Editor de carreras',
@@ -341,11 +343,41 @@ con especialidad en:',
         array('numero_de_plan_de_la_carrera', 'nombre_de_la_carrera', 'tipos_de_carrera'),
     );
     $documentacion = new CuerpoPostType(
+        'documentación',
+        'Documentaciones',
+        'doc',
+        true,
+        $prefijo,
+        'dashicons-media-document',
+        new TipoMetaBox(
+            'Editor de documentación',
+            array(
+                new CampoTexto(
+                    'nombre_del_documento',
+                    'Documento requerido',
+                    'Título secundario original legalizado (*) y fotocopia (frente y dorso)',
+                    'Se ingresa el documento requerido',
+                ),
+                new CampoTexto(
+                    'aclaracion',
+                    'Aclaración sobre el documento',
+                    ' *En el caso de no poseer el título secundario, se debe presentar Constancia de título en trámite o bien, Constancia original de alumno regular o de Materias Adeudadas (5to/6to año) – original y fotocopia',
+                    'Se ingresa una aclaración corta sobre ese documento',
+                    true,
+                    'string',
+                    true
+                )
+            ),
+            array('nombre_del_documento')
+        ),
+        array()
+    );
+    $doc_total = new CuerpoPostType(
         'documentación requerida',
         'Documentación requerida',
-        'documentacion',
+        'doc_total',
         true,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        $prefijo,
         'dashicons-media-document',
         new TipoMetaBox(
             'Editor de documentación requerida',
@@ -357,11 +389,11 @@ con especialidad en:',
                     'Se selecciona las carreras, previamente creadas y publicadas',
                     true
                 ),
-                new CampoTexto(
-                    'documentacion_necesaria',
-                    'Documentación necesaria para la inscripción',
-                    '- Título secundario original legalizado (*) y fotocopia (frente y dorso).',
-                    'Se ingresa el texto correspondiente y agregan líneas a medida que se necesitan más párrafos',
+                new CampoDropDownTipoPost(
+                    'doc',
+                    'Documentación requerida',
+                    'doc',
+                    'Se selecciona las documentaciones, previamente creadas y publicadas',
                     true
                 ),
                 new CampoArchivo(
@@ -382,7 +414,7 @@ con especialidad en:',
                 ),
                 new CampoTexto(
                     'condiciones_de_ingreso',
-                    ' Condiciones de ingreso',
+                    'Condiciones de ingreso',
                     'Poseer título profesional universitario con título de grado de cuatro (4) años de duración y una carga mínima de 2.600 horas reloj, en las áres de la Ciencia y de la Técnica',
                     'Se ingresa el texto correspondiente y agregan líneas a medida que se necesitan más párrafos',
                     true,
@@ -413,12 +445,52 @@ con especialidad en:',
         ),
         array(),
     );
-    $documentacion = new CuerpoPostType(
+    $pre_form_ingreso = $form_ingreso = new CuerpoPostType(
+        'formulario previo al formulario pre ingreso',
+        'Formulario previo al formulario pre ingreso',
+        'pre_form_ingreso',
+        false,
+        $prefijo,
+        'dashicons-editor-paste-text',
+        new TipoMetaBox(
+            'Editor de formulario previo al pre ingreso',
+            array(
+                new CampoTexto(
+                    'dni',
+                    'DNI',
+                    '11.111.111',
+                    'Se ingresa el DNI',
+                ),
+                new CampoTexto(
+                    'apellidos',
+                    'Apellidos',
+                    'Doe',
+                    'Se ingresan los apellidos',
+                ),
+                new CampoTexto(
+                    'nombres',
+                    'Nombres',
+                    'John',
+                    'Se ingresan los nombres',
+                ),
+                new CampoTexto(
+                    'mails_de_contacto',
+                    'Mails de contacto',
+                    'john.doe@gmail.com',
+                    'Se ingresan los mails',
+                    true
+                ),
+            ),
+            array('dni', 'apellidos')
+        ),
+        array('dni', 'apellidos', 'mails_de_contacto')
+    );
+    $form_ingreso = new CuerpoPostType(
         'formulario pre ingreso',
         'Formulario pre ingreso',
         'form_ingreso',
         false,
-        'INSPT_SISTEMA_DE_INSCRIPCIONES',
+        $prefijo,
         'dashicons-editor-paste-text',
         new TipoMetaBox(
             'Editor de formulario pre ingreso',
@@ -814,40 +886,40 @@ con especialidad en:',
                     'carreras',
                     'Se selecciona las carrera, previamente creada y publicada',
                 ),
-                new CampoCheckbox(
-                    'frente_y_dorso_titulo_secundario',
-                    'Entregó fotocopia frente y dorso del título secundario',
-                    'Marcar si se hizo entrega',
-                ),
-                new CampoCheckbox(
-                    'frente_y_dorso_titulo_secundario',
-                    'Entregó fotocopia frente y dorso de la constancia de título en trámite o bien, constancia original de alumno regular o de materias adeudadas (5to/6to año)',
-                    'Marcar si se hizo entrega',
-                    array(),
-                    true
-                ),
-                new CampoCheckbox(
-                    'frente_y_dorso_dni',
-                    'Entregó fotocopia frente y dorso del DNI',
-                    'Marcar si se hizo entrega',
-                ),
-                new CampoCheckbox(
-                    'fotos_4x4',
-                    'Entregó 3 Fotos color 4 x 4',
-                    'Marcar si se hizo entrega',
-                ),
-                new CampoCheckbox(
-                    'constancia_cuil',
-                    'Fotocopia de constancia de CUIL',
-                    'Marcar si se hizo entrega',
-                ),
-                new CampoCheckbox(
-                    'plan_de_estudio_con_carga_horaria',
-                    'Plan de estudios con totalidad de la carga horaria de la carrera de base en horas reloj',
-                    'Marcar si se hizo entrega',
-                    array(),
-                    true
-                ),
+                // new CampoCheckbox(
+                //     'frente_y_dorso_titulo_secundario',
+                //     'Entregó fotocopia frente y dorso del título secundario',
+                //     'Marcar si se hizo entrega',
+                // ),
+                // new CampoCheckbox(
+                //     'frente_y_dorso_titulo_secundario',
+                //     'Entregó fotocopia frente y dorso de la constancia de título en trámite o bien, constancia original de alumno regular o de materias adeudadas (5to/6to año)',
+                //     'Marcar si se hizo entrega',
+                //     array(),
+                //     true
+                // ),
+                // new CampoCheckbox(
+                //     'frente_y_dorso_dni',
+                //     'Entregó fotocopia frente y dorso del DNI',
+                //     'Marcar si se hizo entrega',
+                // ),
+                // new CampoCheckbox(
+                //     'fotos_4x4',
+                //     'Entregó 3 Fotos color 4 x 4',
+                //     'Marcar si se hizo entrega',
+                // ),
+                // new CampoCheckbox(
+                //     'constancia_cuil',
+                //     'Fotocopia de constancia de CUIL',
+                //     'Marcar si se hizo entrega',
+                // ),
+                // new CampoCheckbox(
+                //     'plan_de_estudio_con_carga_horaria',
+                //     'Plan de estudios con totalidad de la carga horaria de la carrera de base en horas reloj',
+                //     'Marcar si se hizo entrega',
+                //     array(),
+                //     true
+                // ),
             ),
             array('dni', 'apellidos'),
         ),

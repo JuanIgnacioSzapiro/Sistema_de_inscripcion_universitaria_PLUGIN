@@ -8,7 +8,8 @@ function desinstalar_post_types()
         new CaracteristicasBasicasPostType('tipos_de_carrera'),
         new CaracteristicasBasicasPostType('materias'),
         new CaracteristicasBasicasPostType('planes_y_programas'),
-        new CaracteristicasBasicasPostType('documentacion'), 
+        new CaracteristicasBasicasPostType('doc'), 
+        new CaracteristicasBasicasPostType('doc_total'), 
         new CaracteristicasBasicasPostType('form_ingreso'), 
         new CaracteristicasBasicasPostType('links_preinscriptos'), 
     );

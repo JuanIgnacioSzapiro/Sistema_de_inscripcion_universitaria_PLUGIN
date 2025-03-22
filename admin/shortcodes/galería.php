@@ -24,13 +24,13 @@ function generador_de_galeria($atts)
     ?>
     <div class="cuerpo-centrado">
         <?php
-
+        $prefijo = $GLOBALS['prefijo_variables_sql'];
 
         if (!empty($tipos)) {
             foreach ($tipos as $tipo) {
                 $tipo_id = $tipo->ID;
                 $tipo_title = get_the_title($tipo);
-                $tipo_descripcion = get_post_meta($tipo_id, 'INSPT_SISTEMA_DE_INSCRIPCIONES_tipos_de_carrera_descripcion_tipo_de_carrera', true);
+                $tipo_descripcion = get_post_meta($tipo_id, $prefijo . '_tipos_de_carrera_descripcion_tipo_de_carrera', true);
                 ?>
                 <section class="tipo-carrera">
                     <div class="titulos-y-subtitulos">
@@ -46,7 +46,7 @@ function generador_de_galeria($atts)
                         'post_status' => 'publish',
                         'meta_query' => array(
                             array(
-                                'key' => 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_tipos_de_carrera',
+                                'key' => $prefijo . '_carreras_tipos_de_carrera',
                                 'value' => $tipo_id,
                                 'compare' => '='
                             )
@@ -67,9 +67,9 @@ function generador_de_galeria($atts)
                         ?>
                                 <?php foreach ($posts as $post):
                                     setup_postdata($post);
-                                    $plan = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera', true);
-                                    $imagen_id = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_imagen_para_galeria', true);
-                                    $descripcion = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_corta_de_la_carrera', true);
+                                    $plan = get_post_meta($post->ID, $prefijo . '_carreras_numero_de_plan_de_la_carrera', true);
+                                    $imagen_id = get_post_meta($post->ID, $prefijo . '_carreras_imagen_para_galeria', true);
+                                    $descripcion = get_post_meta($post->ID, $prefijo . '_carreras_descripcion_corta_de_la_carrera', true);
                                     $imagen_url = $imagen_id ? wp_get_attachment_image_url($imagen_id, 'medium') : '';
                                     $link = get_permalink($post->ID);
                                     ?>

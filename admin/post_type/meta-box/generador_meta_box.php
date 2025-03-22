@@ -153,7 +153,7 @@ class TipoMetaBox
     }
 
     // Setters y Getters para asociado2
-    public function set_nombre_meta_asociado2($valor)
+    public function set_nombre_meta_asociado2($valor = '')
     {
         $this->nombre_meta_asociado2 = $valor;
     }

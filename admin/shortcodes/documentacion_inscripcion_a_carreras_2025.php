@@ -4,11 +4,10 @@ require_once dirname(__FILE__) . '/../funciones.php';
 function documentacion_inscripciones_a_carreras_2025()
 {
     $carreras = obtener_post_type('carreras');
-    $documentaciones = obtener_post_type('documentacion');
-
+    $documentaciones = obtener_post_type('doc_total');
 
     ob_start();
-
+    $prefijo = $GLOBALS['prefijo_variables_sql'] . '_doc_total';
     ?>
     <div class="cuerpo-centrado documentacion">
         <div class="contenedor-doc-inscripciones">
@@ -38,7 +37,8 @@ function documentacion_inscripciones_a_carreras_2025()
                     </p>
                 </div>
             </div>
-            <div><a href="<?php echo obtener_el_link_previo_preinscripcion() ?>" class="button">Formulario de inscripción</a></div>
+            <div><a href="<?php echo obtener_el_link_de_pagina($GLOBALS['prefijo_variables_sql'] . '_links_preinscriptos_link_previo_preinscripcion') ?>"
+                    class="redireccionamiento">Formulario de inscripción</a></div>
             <h2 class="subtitulo espaciado">Preguntas Frecuentes</h2>
             <div class="contenedor-dividido">
                 <div class="lado-izq">
@@ -67,14 +67,14 @@ function documentacion_inscripciones_a_carreras_2025()
                 foreach ($documentaciones as $documentacion) {
                     $carreras_documento = array_map(function ($item) {
                         return get_post($item);
-                    }, get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_carreras', false));
-                    $documentaciones = get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_documentacion_necesaria', false);
-                    $tipo_ingreso = get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_tipo_de_ingreso', true);
-                    $costos = get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_costos', true);
-                    $condiciones_asistencia = get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_condiciones_de_asistencia', true);
-                    $equivalencias = get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_equivalencias', false);
-                    $modelos_examen = get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_modelos_de_examen', false);
-                    $condiciones_ingreso = get_post_meta($documentacion->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_documentacion_condiciones_de_ingreso', false);
+                    }, get_post_meta($documentacion->ID, $prefijo . '_carreras', false));
+                    $documentaciones_requerida = get_post_meta($documentacion->ID, $prefijo . '_doc', false);
+                    $tipo_ingreso = get_post_meta($documentacion->ID, $prefijo . '_tipo_de_ingreso', true);
+                    $costos = get_post_meta($documentacion->ID, $prefijo . '_costos', true);
+                    $condiciones_asistencia = get_post_meta($documentacion->ID, $prefijo . '_condiciones_de_asistencia', true);
+                    $equivalencias = get_post_meta($documentacion->ID, $prefijo . '_equivalencias', false);
+                    $modelos_examen = get_post_meta($documentacion->ID, $prefijo . '_modelos_de_examen', false);
+                    $condiciones_ingreso = get_post_meta($documentacion->ID, $prefijo . '_condiciones_de_ingreso', false);
                     ?>
                     <div class="carrera">
                         <?php
@@ -89,23 +89,39 @@ function documentacion_inscripciones_a_carreras_2025()
                                 ?>
                             <?php
                         }
-                        if (!empty($documentaciones)) {
+                        if (!empty($documentaciones_requerida)) {
                             ?>
-                            <p id="documentaciones" class="subtitulo-mostrado">Documentación necesaria para la inscripción</p>
+                            <p id="documentaciones_requerida" class="subtitulo-mostrado">Documentación requerida para la
+                                inscripción</p>
                             <?php
-                            foreach ($documentaciones as $key => $documentacion) {
+                            foreach ($documentaciones_requerida as $key => $documentacion) {
+                                $documentacion_nombre_del_documento = get_post_meta($documentacion, 'INSPT_SISTEMA_DE_INSCRIPCIONES_doc_nombre_del_documento', true);
+                                $documentacion_aclaraciones = get_post_meta($documentacion, 'INSPT_SISTEMA_DE_INSCRIPCIONES_doc_aclaracion', false);
                                 ?>
                                 <p id="documentacion-<?php echo esc_html($key) ?>" class="escondido">
-                                    <?php echo esc_html($documentacion) ?>
+                                    <?php echo esc_html($documentacion_nombre_del_documento) ?>
+                                    <?php
+                                    if (!empty($documentacion_aclaraciones[0])) {
+                                        foreach ($documentacion_aclaraciones as $key => $aclaracion) {
+                                            ?>
+                                        <p id="documentacion-<?php echo esc_html($key) ?>" class="escondido description">
+                                            <?php echo esc_html($aclaracion) ?>
+                                        </p>
+                                        <?php
+                                        }
+                                    }
+                                    ?>
                                 </p>
                                 <?php
+
                             }
                         }
                         if (!empty($tipo_ingreso)) {
                             ?>
                             <p id="tipo_ingreso" class="subtitulo-mostrado">Tipo de ingreso</p>
+
                             <p id="contenido-tipo_ingreso" class="escondido">
-                                <?php echo esc_html(the_attachment_link($tipo_ingreso)) ?>
+                                <a href="<?php echo esc_html(get_post($tipo_ingreso)->guid) ?>">Descargar Instructivo</a>
                             </p>
                             <?php
                         }
@@ -145,7 +161,7 @@ function documentacion_inscripciones_a_carreras_2025()
                                 <?php
                             }
                         }
-                        if (!empty($condiciones_ingreso)) {
+                        if (!empty($condiciones_ingreso[0])) {
                             ?>
                             <p id="condiciones_ingreso" class="subtitulo-mostrado">Condiciones de ingreso</p>
                             <?php

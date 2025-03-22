@@ -4,10 +4,13 @@ require_once dirname(__FILE__) . '/admin/activaciones/activador_roles.php';
 require_once dirname(__FILE__) . '/admin/activaciones/activador_paginas.php';
 require_once dirname(__FILE__) . '/admin/activaciones/activar_campo_registrar_usuario.php';
 require_once dirname(__FILE__) . '/admin/activaciones/activador_shortcodes.php';
+require_once dirname(__FILE__) . '/constantes.php';
+
 
 function activar_plugin()
 {
-    include_once dirname(__FILE__) . '/constantes.php';
+    // Ejecutar al inicializar el plugin
+    add_action('init', 'cargar_configuracion_desde_csv');
 
     activar_post_types();
 
@@ -15,7 +18,7 @@ function activar_plugin()
 
     activar_paginas();
 
-    activar_campo_registrar_usuario();
+    //activar_campo_registrar_usuario();
 
     activar_shortcodes();
 

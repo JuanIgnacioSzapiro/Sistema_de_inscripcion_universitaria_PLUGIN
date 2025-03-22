@@ -34,6 +34,14 @@ get_header();
                 ?>
             </div>
             <?php
+        } elseif (get_post_type() === 'form_ingreso') {
+            ?>
+            <div class="muesta-individual-sin-registro">
+                <?php
+                generador_formulario_preingreso($post);
+                ?>
+            </div>
+            <?php
         }
 
     endwhile;
@@ -45,7 +53,7 @@ get_footer();
 function generador_general($para_mostrar, $el_id)
 {
     foreach ($para_mostrar as $key => $items) {
-        $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES_' . get_post_type($el_id) . '_';
+        $prefijo = $GLOBALS['prefijo_variables_sql'] . '_' . get_post_type($el_id) . '_';
         if (strpos($key, $prefijo) === 0) {
             $campo = str_replace($prefijo, '', $key);
             $post_types = get_post_types([], 'names');
@@ -135,27 +143,29 @@ function generador_carreras($post)
 {
     $total_materias = array();
     $periodo_mayor = 0;
+    $prefijo = $GLOBALS['prefijo_variables_sql'];
     ?>
     <img class="imagen-carrera"
-        src="<?php echo esc_html(wp_get_attachment_image_url(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_imagen_para_galeria', true))) ?>"
+        src="<?php echo esc_html(wp_get_attachment_image_url(get_post_meta($post->ID, $prefijo . '_carreras_imagen_para_galeria', true))) ?>"
         alt="imagen-carrera">
     <div class="centrado">
         <h1 class="titulo-carrera">
             <?php echo get_the_title() ?>
         </h1>
         <h6 class="plan-carrera">Número de plan:
-            <?php echo get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_numero_de_plan_de_la_carrera', true); ?>
+            <?php echo get_post_meta($post->ID, $prefijo . '_carreras_numero_de_plan_de_la_carrera', true); ?>
         </h6>
         <h2 class="tipos-de-carrera">
-            <?php echo get_the_title(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_tipos_de_carrera', true))); ?>
+            <?php echo get_the_title(get_post(get_post_meta($post->ID, $prefijo . '_carreras_tipos_de_carrera', true))); ?>
         </h2>
-        <a href="<?php echo obtener_el_link_documentacion(); ?>"class="button">Inscripción 2025</a>
+        <a href="<?php echo obtener_el_link_de_pagina($GLOBALS['prefijo_variables_sql'] . '_links_preinscriptos_link_documentacion'); ?>"
+            class="redireccionamiento">Inscripción 2025</a>
     </div>
     <p class="descripcion-carrera">
-        <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_de_la_carrera', true)); ?>
+        <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_descripcion_de_la_carrera', true)); ?>
     </p>
     <?php
-    foreach (get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_profesional_en_condiciones_de_la_carrera', false) as $condicion) {
+    foreach (get_post_meta($post->ID, $prefijo . '_carreras_profesional_en_condiciones_de_la_carrera', false) as $condicion) {
         ?>
         <p class="profesional-en-condiciones-de-la-carrera">
             <?php echo esc_html($condicion); ?>
@@ -164,13 +174,13 @@ function generador_carreras($post)
     }
     ?>
     <a class="button"
-        href="<?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_resolucion_ministerial_de_la_carrera', true)); ?>">
+        href="<?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_resolucion_ministerial_de_la_carrera', true)); ?>">
         Resolución ministerial
     </a>
     <?php
-    $reconocimiento_CABA = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_reconocimiento_CABA', true);
-    $reconocimiento_PBA = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_reconocimiento_PBA', true);
-    $perfiles_del_egresado = get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_perfil_del_egresado', false);
+    $reconocimiento_CABA = get_post_meta($post->ID, $prefijo . '_carreras_reconocimiento_CABA', true);
+    $reconocimiento_PBA = get_post_meta($post->ID, $prefijo . '_carreras_reconocimiento_PBA', true);
+    $perfiles_del_egresado = get_post_meta($post->ID, $prefijo . '_carreras_perfil_del_egresado', false);
 
     if (!empty($reconocimiento_CABA) || !empty($reconocimiento_CABA)) {
         ?>
@@ -201,12 +211,12 @@ function generador_carreras($post)
             <?php
         }
     }
-    foreach (get_post_meta(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_planes_y_programas', true), 'INSPT_SISTEMA_DE_INSCRIPCIONES_planes_y_programas_materias', false) as $programa) {
+    foreach (get_post_meta(get_post_meta($post->ID, $prefijo . '_carreras_planes_y_programas', true), $prefijo . '_planes_y_programas_materias', false) as $programa) {
         $sub_materia = array();
-        $sub_codigo_materia = get_post_meta($programa, 'INSPT_SISTEMA_DE_INSCRIPCIONES_materias_codigo_de_materia', true);
-        $sub_nombre_materia = get_post_meta($programa, 'INSPT_SISTEMA_DE_INSCRIPCIONES_materias_asginatura', true);
+        $sub_codigo_materia = get_post_meta($programa, $prefijo . '_materias_codigo_de_materia', true);
+        $sub_nombre_materia = get_post_meta($programa, $prefijo . '_materias_asginatura', true);
         $sub_periodo_y_hora = array();
-        foreach (get_post_meta($programa, 'INSPT_SISTEMA_DE_INSCRIPCIONES_materias_periodo_en_que_aplica_horas', false) as $materias) {
+        foreach (get_post_meta($programa, $prefijo . '_materias_periodo_en_que_aplica_horas', false) as $materias) {
             foreach (json_decode($materias) as $periodo_y_hora) {
                 $sub_periodo_y_hora += array($periodo_y_hora->periodo_en_que_aplica => $periodo_y_hora->horas);
                 if ($periodo_mayor < $periodo_y_hora->periodo_en_que_aplica) {
@@ -228,7 +238,7 @@ function generador_carreras($post)
                 <th colspan="<?php echo esc_html($periodo_mayor + 2) ?>">
                     <span>Período:
                         <?php
-                        echo esc_html(get_post_meta(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_planes_y_programas', true), 'INSPT_SISTEMA_DE_INSCRIPCIONES_planes_y_programas_tipo_de_cursada', true));
+                        echo esc_html(get_post_meta(get_post_meta($post->ID, $prefijo . '_carreras_planes_y_programas', true), $prefijo . '_planes_y_programas_tipo_de_cursada', true));
                         ?>
                     </span>
                 </th>
@@ -306,21 +316,21 @@ function generador_carreras($post)
         </tbody>
     </table>
     <a class="link carreras"
-        href="<?php echo esc_html(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_correlatividades_de_la_carrera', true))->guid); ?>">
+        href="<?php echo esc_html(get_post(get_post_meta($post->ID, $prefijo . '_carreras_correlatividades_de_la_carrera', true))->guid); ?>">
         Correlativas de la carrera </a>
     <div class="dropdown-group">
         <a href="#" class="dropdown-trigger horarios">Horarios ▼</a>
         <div class="dropdown-content">
             <a class="link horarios"
-                href="<?php echo esc_url(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_horarios_turno_manana_de_la_carrera', true))->guid); ?>">
+                href="<?php echo esc_url(get_post(get_post_meta($post->ID, $prefijo . '_carreras_horarios_turno_manana_de_la_carrera', true))->guid); ?>">
                 Turno Mañana
             </a>
             <a class="link horarios"
-                href="<?php echo esc_url(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_horarios_turno_tarde_de_la_carrera', true))->guid); ?>">
+                href="<?php echo esc_url(get_post(get_post_meta($post->ID, $prefijo . '_carreras_horarios_turno_tarde_de_la_carrera', true))->guid); ?>">
                 Turno Tarde
             </a>
             <a class="link horarios"
-                href="<?php echo esc_url(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_horarios_turno_noche_de_la_carrera', true))->guid); ?>">
+                href="<?php echo esc_url(get_post(get_post_meta($post->ID, $prefijo . '_carreras_horarios_turno_noche_de_la_carrera', true))->guid); ?>">
                 Turno Noche
             </a>
         </div>
@@ -330,45 +340,45 @@ function generador_carreras($post)
         <a href="#" class="dropdown-trigger mesas-de-examen">Mesas de Exámen ▼</a>
         <div class="dropdown-content">
             <a class="link mesas-de-examen"
-                href="<?php echo esc_url(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_mesas_de_examen_turno_manana_de_la_carrera', true))->guid); ?>">
+                href="<?php echo esc_url(get_post(get_post_meta($post->ID, $prefijo . '_carreras_mesas_de_examen_turno_manana_de_la_carrera', true))->guid); ?>">
                 Turno Mañana
             </a>
             <a class="link mesas-de-examen"
-                href="<?php echo esc_url(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_mesas_de_examen_turno_tarde_de_la_carrera', true))->guid); ?>">
+                href="<?php echo esc_url(get_post(get_post_meta($post->ID, $prefijo . '_carreras_mesas_de_examen_turno_tarde_de_la_carrera', true))->guid); ?>">
                 Turno Tarde
             </a>
             <a class="link mesas-de-examen"
-                href="<?php echo esc_url(get_post(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_mesas_de_examen_turno_noche_de_la_carrera', true))->guid); ?>">
+                href="<?php echo esc_url(get_post(get_post_meta($post->ID, $prefijo . '_carreras_mesas_de_examen_turno_noche_de_la_carrera', true))->guid); ?>">
                 Turno Noche
             </a>
         </div>
     </div>
     <p class="nombre-direccion-carrera">
-        <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_de_la_direccion_de_la_carrera', true)); ?>
+        <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_nombre_de_la_direccion_de_la_carrera', true)); ?>
     </p>
     <p class="descripcion-direccion-carrera">
-        <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_de_la_direccion_de_la_carrera', true)); ?>
+        <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_descripcion_de_la_direccion_de_la_carrera', true)); ?>
     </p>
     <p class="nombre-referente-carrera">
-        <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_nombre_del_referente_de_laboratorio', true)); ?>
+        <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_nombre_del_referente_de_laboratorio', true)); ?>
     </p>
     <p class="descripcion-referente-carrera">
-        <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_descripcion_del_referente_de_laboratorio', true)); ?>
+        <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_descripcion_del_referente_de_laboratorio', true)); ?>
     </p>
     <p class="grado-academico">Grado académico:
-        <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_grado_academico', true)); ?>
+        <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_grado_academico', true)); ?>
     </p>
     <p class="modalidad">Modalidad:
-        <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_modalidad', true)); ?>
+        <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_modalidad', true)); ?>
     </p>
     <div class="contactos">
         <p class="titulo-contactos">Contactanos a través de:</p>
         <div class="metodos-contacto">
             <p class="contacto">
-                <?php echo esc_html(get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_mail_de_la_carrera', true)); ?>
+                <?php echo esc_html(get_post_meta($post->ID, $prefijo . '_carreras_mail_de_la_carrera', true)); ?>
             </p>
             <?php
-            foreach (get_post_meta($post->ID, 'INSPT_SISTEMA_DE_INSCRIPCIONES_carreras_consultas_a', false) as $contacto) {
+            foreach (get_post_meta($post->ID, $prefijo . '_carreras_consultas_a', false) as $contacto) {
                 ?>
                 <p class="contacto">
                     <?php echo esc_html($contacto); ?>
@@ -379,4 +389,8 @@ function generador_carreras($post)
         </div>
     </div>
     <?php
+}
+
+function generador_formulario_preingreso($post)
+{
 }

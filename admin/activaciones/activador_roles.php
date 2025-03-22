@@ -60,7 +60,9 @@ function activar_habilidades($roles)
         new CaracteristicasBasicasPostType('tipos_de_carrera'),
         new CaracteristicasBasicasPostType('materias'),
         new CaracteristicasBasicasPostType('planes_y_programas'),
-        new CaracteristicasBasicasPostType('documentacion'), 
+        new CaracteristicasBasicasPostType('doc'), 
+        new CaracteristicasBasicasPostType('doc_total'), 
+        new CaracteristicasBasicasPostType('pre_form_ingreso'), 
         new CaracteristicasBasicasPostType('form_ingreso'), 
         new CaracteristicasBasicasPostType('links_preinscriptos'), 
     );

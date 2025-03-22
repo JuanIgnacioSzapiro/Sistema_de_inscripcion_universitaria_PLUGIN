@@ -139,7 +139,7 @@ function obtener_obligatorios()
 
 function obtener_prefijo()
 {
-    return $GLOBALS['prefijo_variables_sql'] . '_form_ingreso';
+    return $GLOBALS['prefijo_variables_sql'] . '_pre_form_ingreso';
 }
 
 add_action('rest_api_init', function () {
@@ -156,6 +156,7 @@ add_action('rest_api_init', function () {
 
 function handle_pre_formulario_preinscriptos_shortcode_submit($request)
 {
+    $prefijo = obtener_prefijo();
     // Verificar el nonce desde los headers
     $nonce = isset($_SERVER['HTTP_X_WP_NONCE']) ? sanitize_text_field($_SERVER['HTTP_X_WP_NONCE']) : '';
 
@@ -182,34 +183,57 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
 
         wp_set_current_user(1);
 
-        $nuevo_formulario = array(
-            'post_title' => $datos_sanitizados['INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_dni'] . ' - ' . $datos_sanitizados['INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_apellidos'],
-            'post_status' => 'draft',
-            'post_type' => 'form_ingreso',
-            'post_author' => 1 // Forzar autoría
-        );
+        /*
+        chequear existencia de pre formularios con ese dni
+        false->seguimiento normal
+        true->chequear existencia de formularios por dni completado
+            false->seguimiento normal
+            true->chequear si esos formularios son de esta misma carrera
+                false->seguimiento normal
+                true->chequear si ese formulario está publicado
+                    false->enviar mensaje con los documentos faltantes a entregar e informar que este formulario ya fue entregado
+                    true->seguimiento normal. Generar un nuevo formulario porque va a volver a comenzar la carrera
+        */
 
-        $post_id = wp_insert_post($nuevo_formulario);
+        if (
+            true//chequear existencia de pre formulario con ese dni
+            && true //chequear existencia de formularios por dni completado
+            && true//chequear si esos formularios son de esta misma carrera
+            && !true//chequear si ese formulario está completado
+        ) {
 
-        foreach ($datos_sanitizados as $key => $dato) {
-            actualizar_data($post_id, $key, $dato);
+        } else {
+            $nuevo_formulario = array(
+                'post_title' => $datos_sanitizados[$prefijo . '_dni'] . ' - ' . $datos_sanitizados[$prefijo . '_apellidos'],
+                'post_status' => 'draft',
+                'post_type' => obtener_prefijo(),
+                'post_author' => 1 // Forzar autoría
+            );
+
+            $post_id = wp_insert_post($nuevo_formulario);
+
+            foreach ($datos_sanitizados as $key => $dato) {
+                actualizar_data($post_id, $key, $dato);
+            }
+
+            // Opcional: Restaurar usuario original si es necesario
+            wp_set_current_user(get_current_user_id());
+
+            enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], $datos_sanitizados[$prefijo . '_apellidos'] . '; ' . $datos_sanitizados[$prefijo . '_nombres']);
+
+            return new WP_REST_Response([
+                'success' => true,
+                'message' => repuesta_succes(),
+                'data' => $datos_sanitizados
+            ], 200);
         }
-
-        // Opcional: Restaurar usuario original si es necesario
-        wp_set_current_user(get_current_user_id());
-
-        enviar_mail($datos_sanitizados['INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_mails_de_contacto'], $datos_sanitizados['INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_carreras']);
-
-        return new WP_REST_Response([
-            'success' => true,
-            'message' => repuesta_succes(),
-            'data' => $datos_sanitizados
-        ], 200);
     }
 }
 
 function validar_datos($datos)
 {
+    $prefijo = obtener_prefijo();
+    ;
     $errores = [];
     $obligatorios = obtener_obligatorios();
 
@@ -219,11 +243,11 @@ function validar_datos($datos)
         }
     }
 
-    if (!preg_match('/^\d{1,3}(?:\.\d{3})*$/', $datos['INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_dni'])) {
+    if (!preg_match('/^\d{1,3}(?:\.\d{3})*$/', $datos[$prefijo . '_dni'])) {
         $errores[] = "Formato incorrecto. Se ingresa el DNI. Exclusivamente números separados por punto cada tres caracteres de derecha a izquierda.";
     }
 
-    foreach ($datos['INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_mails_de_contacto'] as $mail) {
+    foreach ($datos[$prefijo . '_mails_de_contacto'] as $mail) {
         if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
             $errores[] = "Correo inválido" . $mail;
 
@@ -250,9 +274,11 @@ function repuesta_succes()
 
 function sanitizar_datos($datos)
 {
+    $prefijo = obtener_prefijo();
+    ;
     $dato_szanitizado = [];
     foreach ($datos as $key => $dato) {
-        if ($key == 'INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_apellidos' || $key == 'INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_nombres') {
+        if ($key == $prefijo . '_apellidos' || $key == $prefijo . '_nombres') {
             $dato_szanitizado[$key] = implode(" ", array_map(function ($x) {
                 return ucfirst(strtolower($x));
             }, explode(" ", $dato)));
@@ -277,16 +303,18 @@ function actualizar_data($post_id, $key, $dato)
         return "Error al crear formulario: " . $post_id->get_error_message();
     }
 }
-function enviar_mail($mails, $carrera)
+function enviar_mail($mails, $carrera, $persona)
 {
     foreach ($mails as $mail) {
-        $mailer = new Mailing($mail, 'INSPT - Inscripción a ' . get_the_title($carrera), mensaje());
+        $mailer = new Mailing($mail, 'INSPT - Inscripción a ' . get_the_title($carrera), mensaje($persona));
         $mailer->mandar_mail();
     }
 }
 
-function mensaje()
+function mensaje($persona)
 {
+    $prefijo = obtener_prefijo();
+    ;
     return '<style>
         .button {
             display: inline-block;
@@ -303,7 +331,7 @@ function mensaje()
             opacity: 0.9;
         }
     </style>
-    <p>Bienvenida/o nuevamente.</p>
+    <p>Bienvenida/o ' . $persona . '</p>
     <p>Te enviamos este correo para que puedas continuar con el proceso de preinscripción a las carreras del INSPT-UTN.</p>
     <p>Es necesario que conserves este mensaje hasta finalizar el trámite.</p>
     <br>
@@ -311,14 +339,14 @@ function mensaje()
     <p><b>1. Preinscripción a las carreras del INSPT-UTN vía el formulario "Continuar Preinscripción”</b></p>
     <p>Completa todos los campos solicitados en el siguiente formulario. Verifica que los mismos sean correctos antes del envío, en especial, Nombre y Apellido, DNI y mail.</p>
     <p>Puedes acceder por aquí</p>
-    <a class="button" href="' . obtener_el_link_formulario() . '">Continuar Preinscripción</a>
+    <a class="button" href="' . obtener_el_link_de_pagina($prefijo . '_links_preinscriptos_link_preinscripcion') . '">Continuar Preinscripción</a>
     <p> o bien, pega la siguiente url en tu navegador:</p>
     <p></p>
     <p>En caso de no completarlo ahora, podrás reutilizar el link cuantas veces sea necesario, los valores ya ingresados serán guardados en la medida que los vayas cargando.</p>
     <p><b>IMPORTANTE:</b></p>
     <p><b>2. Presentación de la documentación</b></p>
     <p>La vacante quedará reservada una vez que hayas completado el formulario “continuar Preinscripción” y <b>presentado en nuestra sede de Av. Triunvirato 3174, CABA, de 9 a 20 hs. toda la documentación requerida dentro de los plazos fijados por el INSPT.</b></p>
-    <a class="button" href="' . obtener_el_link_documentacion() . '">Documentación requerida</a>
+    <a class="button" href="' . obtener_el_link_de_pagina($prefijo . '_links_preinscriptos_link_documentacion') . '">Documentación requerida</a>
     <b>
     <p>Fechas para entrega de documentación para inscribirse:</p>
     <p>Del 5/8/2024 al 13/12/2024 (lunes a viernes de 9 a 20 hs).</p>
