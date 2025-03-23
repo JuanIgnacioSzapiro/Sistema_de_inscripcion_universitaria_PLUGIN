@@ -21,6 +21,7 @@ class TipoMetaBox
     protected $titulo;
     protected $tipo_de_input;
     protected $es_campo_opcional;
+    protected $query;
 
     public function __construct($titulo_de_editor, $contenido, $titulo)
     {
@@ -209,6 +210,15 @@ class TipoMetaBox
     public function get_nombre_meta_con_llave()
     {
         return $this->get_llave_meta() . '_' . $this->get_nombre_meta();
+    }
+    public function set_query($valor)
+    {
+        $this->query = $valor;
+    }
+
+    public function get_query()
+    {
+        return $this->query;
     }
 
 

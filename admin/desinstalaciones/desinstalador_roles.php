@@ -28,9 +28,14 @@ function desinstalar_roles()
     $total = array(
         new CaracteristicasBasicasPostType('carreras'),
         new CaracteristicasBasicasPostType('tipos_de_carrera'),
-        new CaracteristicasBasicasPostType('materias'),       
-        new CaracteristicasBasicasPostType('planes_y_programas'), 
-        new CaracteristicasBasicasPostType('documentacion'), 
+        new CaracteristicasBasicasPostType('materias'),
+        new CaracteristicasBasicasPostType('planes_y_programas'),
+        new CaracteristicasBasicasPostType('doc'), 
+        new CaracteristicasBasicasPostType('doc_total'), 
+        new CaracteristicasBasicasPostType('pre_form_ingreso'), 
+        new CaracteristicasBasicasPostType('form_ingreso'), 
+        new CaracteristicasBasicasPostType('links_preinscriptos'), 
+        new CaracteristicasBasicasPostType('test'), 
     );
     foreach($total as $individual){
         foreach ($individual->get_habilidades() as $valor) {

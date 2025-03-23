@@ -6,6 +6,7 @@ require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_tipo_texto_aso
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_area_de_texto.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_checkbox.php';
 require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_fecha.php';
+require_once dirname(__FILE__) . '/../post_type/meta-box/meta_box_checkbox_query.php';
 
 function activar_post_types()
 {
@@ -886,43 +887,31 @@ con especialidad en:',
                     'carreras',
                     'Se selecciona las carrera, previamente creada y publicada',
                 ),
-                // new CampoCheckbox(
-                //     'frente_y_dorso_titulo_secundario',
-                //     'Entregó fotocopia frente y dorso del título secundario',
-                //     'Marcar si se hizo entrega',
-                // ),
-                // new CampoCheckbox(
-                //     'frente_y_dorso_titulo_secundario',
-                //     'Entregó fotocopia frente y dorso de la constancia de título en trámite o bien, constancia original de alumno regular o de materias adeudadas (5to/6to año)',
-                //     'Marcar si se hizo entrega',
-                //     array(),
-                //     true
-                // ),
-                // new CampoCheckbox(
-                //     'frente_y_dorso_dni',
-                //     'Entregó fotocopia frente y dorso del DNI',
-                //     'Marcar si se hizo entrega',
-                // ),
-                // new CampoCheckbox(
-                //     'fotos_4x4',
-                //     'Entregó 3 Fotos color 4 x 4',
-                //     'Marcar si se hizo entrega',
-                // ),
-                // new CampoCheckbox(
-                //     'constancia_cuil',
-                //     'Fotocopia de constancia de CUIL',
-                //     'Marcar si se hizo entrega',
-                // ),
-                // new CampoCheckbox(
-                //     'plan_de_estudio_con_carga_horaria',
-                //     'Plan de estudios con totalidad de la carga horaria de la carrera de base en horas reloj',
-                //     'Marcar si se hizo entrega',
-                //     array(),
-                //     true
-                // ),
+                new CampoCheckboxQuery(
+                    'documentacion_requerida',
+                    'Documentación requerida',
+                    'Marcar si se hizo entrega',
+                    "SELECT post_title from wp_posts where wp_posts.ID IN (SELECT meta_value FROM wp_postmeta WHERE wp_postmeta.post_id = (SELECT ID FROM wp_posts WHERE post_title LIKE CONCAT( '%', (SELECT post_title FROM wp_posts INNER JOIN wp_postmeta on wp_posts.ID = wp_postmeta.meta_value where wp_postmeta.meta_key like 'INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_carreras' and post_id = %s ), '%' ) and wp_posts.post_type = 'doc_total' and wp_posts.post_status like 'publish' ORDER BY wp_posts.post_date DESC LIMIT 1) AND wp_postmeta.meta_key like 'INSPT_SISTEMA_DE_INSCRIPCIONES_doc_total_doc') and wp_posts.post_status LIKE 'publish' ORDER by wp_posts.post_title ASC;",
+                ),
             ),
             array('dni', 'apellidos'),
         ),
         array('dni', 'apellidos', 'mails_de_contacto'),
+    );
+    $pre_form_ingreso = $form_ingreso = new CuerpoPostType(
+        'test',
+        'test',
+        'test',
+        false,
+        $prefijo,
+        'dashicons-editor-paste-text',
+        new TipoMetaBox(
+            'test',
+            array(
+                
+            ),
+            array()
+        ),
+        array()
     );
 }
