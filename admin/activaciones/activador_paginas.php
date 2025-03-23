@@ -4,7 +4,6 @@ function activar_paginas()
     $title_of_the_page = array(
         'Demostración shortcodes' => "[mostrar_galeria post_type='carreras']",
         'Documentación para la inscripción a carreras 2025' => "[doc_insc_2025]",
-        'Formulario de pre inscripción 2025' => "[formulario_preinscriptos]",
         'Pre formulario de pre inscripción 2025' => "[pre_formulario_preinscriptos]",
     );
 

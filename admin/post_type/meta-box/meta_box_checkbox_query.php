@@ -1,5 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/generador_meta_box.php';
+require_once dirname(__FILE__) . '/../../funciones.php';
+
 
 class CampoCheckboxQuery extends TipoMetaBox
 {
@@ -21,7 +23,7 @@ class CampoCheckboxQuery extends TipoMetaBox
     {
         $meta_key = $llave . '_' . $this->get_nombre_meta();
         
-        $datos = $this->obtener_resultado_query($post->ID);
+        $datos = obtener_resultado_query(str_replace('%s', $post->ID, $this->get_query()));
         
         if (!empty($datos)) {
             $saved_values = get_post_meta($post->ID, $meta_key, true);
@@ -48,11 +50,11 @@ class CampoCheckboxQuery extends TipoMetaBox
             <?php
             foreach ($datos as $id => $titulo) {
                 $input_id = $meta_key . '_' . $id;
-                $checked = in_array(strval($id), $saved_values) ? 'checked="checked"' : '';
+                $checked = in_array($titulo->post_title, $saved_values) ? 'checked="checked"' : '';
                 ?>
                 <input type="checkbox" id="<?php echo esc_attr($input_id); ?>" 
                        name="<?php echo esc_attr($meta_key); ?>[]"
-                       value="<?php echo esc_attr($id); ?>" <?php echo $checked; ?> />
+                       value="<?php echo esc_html($titulo->post_title); ?>" <?php echo $checked; ?> />
                 <label for="<?php echo esc_attr($input_id); ?>">
                     <?php echo esc_html($titulo->post_title); ?>
                 </label>
@@ -60,16 +62,5 @@ class CampoCheckboxQuery extends TipoMetaBox
                 <?php
             }
         }
-    }
-
-    private function obtener_resultado_query($id_post)
-    {
-        $resultados = array();
-        $query_args = $this->get_query();
-
-        global $wpdb;
-
-        // Es buena práctica usar prepare() para evitar inyecciones SQL
-        return $wpdb->get_results(str_replace('%s', $id_post, $query_args));
     }
 }

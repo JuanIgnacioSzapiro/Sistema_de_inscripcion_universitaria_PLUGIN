@@ -12,7 +12,6 @@ function desactivar_post_types()
         new CaracteristicasBasicasPostType('pre_form_ingreso'), 
         new CaracteristicasBasicasPostType('form_ingreso'), 
         new CaracteristicasBasicasPostType('links_preinscriptos'), 
-        new CaracteristicasBasicasPostType('test'), 
     );
 
     if (!empty($post)) {

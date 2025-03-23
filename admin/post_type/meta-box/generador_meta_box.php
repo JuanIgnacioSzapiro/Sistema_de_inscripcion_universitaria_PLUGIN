@@ -364,11 +364,11 @@ class TipoMetaBox
                     $valor = isset($_POST[$meta_key]) ? absint($_POST[$meta_key]) : '';
                     update_post_meta($post_id, $meta_key, $valor);
                 }
-            } elseif ($individual instanceof CampoCheckbox) {
+            } elseif ($individual instanceof CampoCheckbox || $individual instanceof CampoCheckboxQuery) {
                 $meta_key = $this->get_llave_meta() . '_' . $individual->get_nombre_meta();
 
                 // Checkbox simple o múltiple no clonable
-                if (!empty($individual->get_opciones())) {
+                if (!empty($individual->get_opciones()) || $individual instanceof CampoCheckboxQuery) {
                     // Múltiples checkboxes (valores como array)
                     $valores = isset($_POST[$meta_key]) ? (array) $_POST[$meta_key] : [];
                     $sanitized_values = array_map('sanitize_text_field', $valores);

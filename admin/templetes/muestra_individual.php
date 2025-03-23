@@ -34,7 +34,7 @@ get_header();
                 ?>
             </div>
             <?php
-        } elseif (get_post_type() === 'form_ingreso') {
+        } elseif (get_post_type() === 'pre_form_ingreso') {
             ?>
             <div class="muesta-individual-sin-registro">
                 <?php
@@ -393,4 +393,5 @@ function generador_carreras($post)
 
 function generador_formulario_preingreso($post)
 {
+    echo do_shortcode('[formulario_preinscriptos]');
 }

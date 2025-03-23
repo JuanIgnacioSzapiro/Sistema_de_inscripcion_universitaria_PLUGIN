@@ -481,10 +481,16 @@ con especialidad en:',
                     'Se ingresan los mails',
                     true
                 ),
+                new CampoDropDownTipoPost(
+                    'carreras',
+                    'Carreras a la que está inscripta',
+                    'carreras',
+                    'Se selecciona las carrera, previamente creada y publicada',
+                ),
             ),
             array('dni', 'apellidos')
         ),
-        array('dni', 'apellidos', 'mails_de_contacto')
+        array('dni', 'apellidos', 'mails_de_contacto', 'carreras')
     );
     $form_ingreso = new CuerpoPostType(
         'formulario pre ingreso',
@@ -888,30 +894,14 @@ con especialidad en:',
                     'Se selecciona las carrera, previamente creada y publicada',
                 ),
                 new CampoCheckboxQuery(
-                    'documentacion_requerida',
-                    'Documentación requerida',
+                    'documentacion_entregada',
+                    'Documentación entregada',
                     'Marcar si se hizo entrega',
                     "SELECT post_title from wp_posts where wp_posts.ID IN (SELECT meta_value FROM wp_postmeta WHERE wp_postmeta.post_id = (SELECT ID FROM wp_posts WHERE post_title LIKE CONCAT( '%', (SELECT post_title FROM wp_posts INNER JOIN wp_postmeta on wp_posts.ID = wp_postmeta.meta_value where wp_postmeta.meta_key like 'INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_carreras' and post_id = %s ), '%' ) and wp_posts.post_type = 'doc_total' and wp_posts.post_status like 'publish' ORDER BY wp_posts.post_date DESC LIMIT 1) AND wp_postmeta.meta_key like 'INSPT_SISTEMA_DE_INSCRIPCIONES_doc_total_doc') and wp_posts.post_status LIKE 'publish' ORDER by wp_posts.post_title ASC;",
                 ),
             ),
             array('dni', 'apellidos'),
         ),
-        array('dni', 'apellidos', 'mails_de_contacto'),
-    );
-    $pre_form_ingreso = $form_ingreso = new CuerpoPostType(
-        'test',
-        'test',
-        'test',
-        false,
-        $prefijo,
-        'dashicons-editor-paste-text',
-        new TipoMetaBox(
-            'test',
-            array(
-                
-            ),
-            array()
-        ),
-        array()
+        array('dni', 'apellidos', 'mails_de_contacto', 'carreras'),
     );
 }

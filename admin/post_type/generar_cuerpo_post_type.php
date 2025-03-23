@@ -160,7 +160,7 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
                 $post_meta = get_post_meta($post_id, $this->get_prefijo() . '_' . $this->get_plural() . '_' . $columna_para_armar, true);
                 if ($columnas == $columna_para_armar) {
                     if (in_array($columna_para_armar, $nombres_post_types)) {
-                        $debug = get_post_meta($post_meta, 'INSPT_SISTEMA_DE_INSCRIPCIONES_tipos_de_carrera_nombre_tipo_de_carrera', true);
+                        $debug = get_post($post_meta)->post_title;
                     } else {
                         $debug = $post_meta;
                     }
