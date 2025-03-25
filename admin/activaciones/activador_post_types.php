@@ -12,6 +12,41 @@ function activar_post_types()
 {
     $prefijo = 'INSPT_SISTEMA_DE_INSCRIPCIONES';
 
+    $fechas = new CuerpoPostType(
+        'fecha',
+        'Fechas y calendario',
+        'fechas',
+        true,
+        $prefijo,
+        'dashicons-calendar-alt',
+        new TipoMetaBox(
+            'Editor de fechas y calendario',
+            array(
+                new CampoFecha(
+                    'apertura_entrega_documentacion',
+                    'Fecha del apertura de entrega de documentación',
+                    'Ingresar la fecha',
+                ),
+                new CampoFecha(
+                    'cierre_documentacion',
+                    'Fecha del cierre de entrega de documentación',
+                    'Ingresar la fecha',
+                ),
+                new CampoFecha(
+                    'apertura_apertura_de_inscripciones',
+                    'Fecha de apertura de inscripciones',
+                    'Ingresar la fecha',
+                ),
+                new CampoFecha(
+                    'cierre_de_inscripciones',
+                    'Fecha de cierre de inscripciones',
+                    'Ingresar la fecha',
+                ),
+            ),
+            array()
+        ),
+        array()
+    );
     $links_preinscripciones = new CuerpoPostType(
         'link de inscripciones',
         'Link de inscripciones',
@@ -679,7 +714,7 @@ con especialidad en:',
                 new CampoTexto(
                     'tel_fijo',
                     'Teléfono fijo',
-                    '11 - 111 111',
+                    '11 1111 1111',
                     'Se ingresa número de teléfono fijo',
                     true,
                     'string',

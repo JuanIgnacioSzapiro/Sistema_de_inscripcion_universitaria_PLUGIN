@@ -64,7 +64,8 @@ function activar_habilidades($roles)
         new CaracteristicasBasicasPostType('doc_total'), 
         new CaracteristicasBasicasPostType('pre_form_ingreso'), 
         new CaracteristicasBasicasPostType('form_ingreso'), 
-        new CaracteristicasBasicasPostType('links_preinscriptos'), 
+        new CaracteristicasBasicasPostType('links_preinscriptos'),
+        new CaracteristicasBasicasPostType('fechas'), 
     );
 
     foreach ($roles as $rol) {

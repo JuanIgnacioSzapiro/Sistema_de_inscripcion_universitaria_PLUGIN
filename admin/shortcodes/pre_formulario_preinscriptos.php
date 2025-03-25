@@ -1,7 +1,6 @@
 <?php
 require_once dirname(__FILE__) . '/../funciones.php';
 
-// En tu archivo functions.php o en un plugin personalizado
 function obtener_preguntas()
 {
     return array(
@@ -45,6 +44,7 @@ function pre_formulario_preinscriptos_shortcode()
     ob_start();
     wp_nonce_field('wp_rest');
     ?>
+    <div id="ocultador"></div>
     <div class="formulario">
         <form id="pre_formulario_preinscriptos_shortcode">
             <h2>INGRESO 2025</h2>
@@ -61,16 +61,7 @@ function pre_formulario_preinscriptos_shortcode()
                 no recibirlo, no dudes en comunicarte con nosotros a ingreso2025@inspt.utn.edu.ar .</p>
 
             <?php
-
-            foreach (obtener_preguntas() as $pregunta) {
-                ?>
-                <div class="en-meta-box">
-                    <?php
-                    $pregunta->generar_fragmento_html_formulario(obtener_prefijo());
-                    ?>
-                </div>
-                <?php
-            }
+            recorrer_array(obtener_preguntas(), obtener_prefijo('_pre_form_ingreso'));
             ?>
             <button type="submit" class="button">Iniciar preinscripción</button>
         </form>
@@ -81,10 +72,14 @@ function pre_formulario_preinscriptos_shortcode()
             $('#pre_formulario_preinscriptos_shortcode').submit(function (e) {
                 e.preventDefault();
 
+                var ocultador = document.getElementById('ocultador');
+
                 var form = $(this);
                 var nonce = $('#_wpnonce').val(); // Obtener el valor del nonce
 
                 var mensaje_error = document.getElementById('mensaje');
+
+                ocultador.classList.add("cargando");
 
                 if (mensaje_error.innerHTML !== '') {
                     mensaje_error.innerHTML = '';
@@ -101,6 +96,7 @@ function pre_formulario_preinscriptos_shortcode()
                         'X-WP-Nonce': nonce // Enviar el nonce en el header
                     },
                     success: function (response) {
+                        ocultador.classList.remove("cargando");
                         if (response.success) {
                             mensaje_error.classList.add("mensaje-de-success");
 
@@ -116,6 +112,7 @@ function pre_formulario_preinscriptos_shortcode()
                         }
                     },
                     error: function (xhr) {
+                        ocultador.classList.remove("cargando");
                         mensaje_error.innerHTML = 'Errores: ' + xhr.responseText;
                     }
                 });
@@ -124,22 +121,6 @@ function pre_formulario_preinscriptos_shortcode()
     </script>
     <?php
     return ob_get_clean();
-}
-
-function obtener_obligatorios()
-{
-    $obligatorio = [];
-    foreach (obtener_preguntas() as $pregunta) {
-        if (!$pregunta->get_es_campo_opcional()) {
-            $obligatorio += array(obtener_prefijo() . '_' . $pregunta->get_nombre_meta() => $pregunta->get_etiqueta());
-        }
-    }
-    return $obligatorio;
-}
-
-function obtener_prefijo()
-{
-    return $GLOBALS['prefijo_variables_sql'] . '_pre_form_ingreso';
 }
 
 add_action('rest_api_init', function () {
@@ -156,7 +137,7 @@ add_action('rest_api_init', function () {
 
 function handle_pre_formulario_preinscriptos_shortcode_submit($request)
 {
-    $prefijo = obtener_prefijo();
+    $prefijo = obtener_prefijo('_pre_form_ingreso');
     // Verificar el nonce desde los headers
     $nonce = isset($_SERVER['HTTP_X_WP_NONCE']) ? sanitize_text_field($_SERVER['HTTP_X_WP_NONCE']) : '';
 
@@ -170,7 +151,7 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
     // Obtener parámetros del formulario correctamente
     $datos = $request->get_params();
 
-    $errores = validar_datos($datos);
+    $errores = validar_datos_pre_formulario_preinscriptos($datos, $prefijo);
 
     if (!empty($errores)) {
         return new WP_REST_Response([
@@ -179,7 +160,7 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
             'data' => $datos
         ], 200);
     } else {
-        $datos_sanitizados = sanitizar_datos($datos);
+        $datos_sanitizados = sanitizar_datos_pre_formulario_preinscriptos($datos, $prefijo);
 
         wp_set_current_user(1);
 
@@ -222,11 +203,11 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
             // Opcional: Restaurar usuario original si es necesario
             wp_set_current_user(get_current_user_id());
 
-            enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], mensaje_rechazo_formulario_completado() . '<p>En caso de haberse vencido la inscripción:</p>' . mensaje_aceptacion($datos_sanitizados[$prefijo . '_apellidos'] . '; ' . $datos_sanitizados[$prefijo . '_nombres'], get_post($post_id)->guid));
+            enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], mensaje_rechazo_formulario_completado_pre_formulario() . '<p>En caso de haberse vencido la inscripción:</p>' . mensaje_aceptacion_pre_formulario($datos_sanitizados[$prefijo . '_apellidos'] . '; ' . $datos_sanitizados[$prefijo . '_nombres'], get_post($post_id)->guid));
 
             return new WP_REST_Response([
                 'success' => false,
-                'message' => ['<p><b>Únicamente terminar de completar el siguiente formulario en caso de haberse vencido la inscripción anterior</b>, revisar los mails.</p>', mensaje_rechazo_formulario_completado()],
+                'message' => ['<p><b>Únicamente terminar de completar el siguiente formulario en caso de haberse vencido la inscripción anterior</b>, revisar los mails.</p>', mensaje_rechazo_formulario_completado_pre_formulario()],
                 'data' => $datos_sanitizados
             ], 200);
         } elseif ( // falta la entrega de documentación
@@ -242,9 +223,9 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
                 return $x->post_title;
             }, obtener_resultado_query("SELECT post_title from wp_posts where wp_posts.ID IN (SELECT meta_value FROM wp_postmeta WHERE wp_postmeta.post_id = (SELECT ID FROM wp_posts WHERE post_title LIKE CONCAT( '%', (SELECT post_title FROM wp_posts INNER JOIN wp_postmeta on wp_posts.ID = (SELECT meta_value FROM wp_postmeta WHERE wp_postmeta.meta_key = 'INSPT_SISTEMA_DE_INSCRIPCIONES_form_ingreso_carreras' AND wp_postmeta.post_id = " . $post_id . ") limit 1), '%') and wp_posts.post_type = 'doc_total' and wp_posts.post_status like 'publish' ORDER BY wp_posts.post_date DESC LIMIT 1) AND wp_postmeta.meta_key like 'INSPT_SISTEMA_DE_INSCRIPCIONES_doc_total_doc') and wp_posts.post_status LIKE 'publish' ORDER by wp_posts.post_title ASC;"));
 
-            $documentacion_faltante = array_diff($documentacion_a_entregar, $documentacion_entregada);
+            $documentacion_faltante = array_diff($documentacion_a_entregar, !empty($documentacion_entregada) ? $documentacion_entregada : array());
 
-            $mensaje_total= mensaje_rechazo_formulario_incompleto($documentacion_faltante);
+            $mensaje_total = mensaje_rechazo_formulario_incompleto_pre_formulario($documentacion_faltante);
 
             enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], $mensaje_total);
 
@@ -269,11 +250,11 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
             // Opcional: Restaurar usuario original si es necesario
             wp_set_current_user(get_current_user_id());
 
-            enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], mensaje_aceptacion($datos_sanitizados[$prefijo . '_apellidos'] . '; ' . $datos_sanitizados[$prefijo . '_nombres'], get_post($post_id)->guid));
+            enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], mensaje_aceptacion_pre_formulario($datos_sanitizados[$prefijo . '_apellidos'] . '; ' . $datos_sanitizados[$prefijo . '_nombres'], get_post($post_id)->guid));
 
             return new WP_REST_Response([
                 'success' => true,
-                'message' => ['<p><b>IMPORTANTE:</b> Revisar los mails aportados para terminar la inscripción.</p>', repuesta_succes()],
+                'message' => ['<p><b>IMPORTANTE:</b> Revisar los mails aportados para terminar la inscripción.</p>', repuesta_succes_pre_formulario()],
                 'data' => $datos_sanitizados
             ], 200);
         } else {
@@ -297,93 +278,23 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
             // Opcional: Restaurar usuario original si es necesario
             wp_set_current_user(get_current_user_id());
 
-            enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], mensaje_aceptacion($datos_sanitizados[$prefijo . '_apellidos'] . '; ' . $datos_sanitizados[$prefijo . '_nombres'], get_post($post_id)->guid));
+            enviar_mail($datos_sanitizados[$prefijo . '_mails_de_contacto'], $datos_sanitizados[$prefijo . '_carreras'], mensaje_aceptacion_pre_formulario($datos_sanitizados[$prefijo . '_apellidos'] . '; ' . $datos_sanitizados[$prefijo . '_nombres'], get_post($post_id)->guid));
 
             return new WP_REST_Response([
                 'success' => true,
-                'message' => [repuesta_succes()],
+                'message' => [repuesta_succes_pre_formulario()],
                 'data' => $datos_sanitizados
             ], 200);
         }
     }
 }
 
-function validar_datos($datos)
+function repuesta_succes_pre_formulario()
 {
-    $prefijo = obtener_prefijo();
-    $errores = [];
-    $obligatorios = obtener_obligatorios();
-
-    foreach ($obligatorios as $campo => $etiqueta) {
-        if (empty($datos[$campo])) {
-            $errores[] = 'El campo "' . $etiqueta . '" es obligatorio';
-        }
-    }
-
-    if (!preg_match('/^\d{1,3}(?:\.\d{3})*$/', $datos[$prefijo . '_dni'])) {
-        $errores[] = "Formato incorrecto. Se ingresa el DNI. Exclusivamente números separados por punto cada tres caracteres de derecha a izquierda.";
-    }
-
-    foreach ($datos[$prefijo . '_mails_de_contacto'] as $mail) {
-        if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
-            $errores[] = "Correo inválido" . $mail;
-
-            $errores[] = '<p> usuario@.com (dominio inválido) </p>';
-
-            $errores[] = '<p> @example.com (falta la parte local) </p>';
-
-            $errores[] = '<p> usuario@dominio (falta el TLD, como .com) </p>';
-
-            $errores[] = '<p> usuario espacio@example.com (espacios no permitidos). </p>';
-        }
-    }
-
-    return $errores;
+    return '<p>Se ha iniciado el trámite de tu preinscripción. Personal del Departamento de Alumnos (ingreso2025@inspt.utn.edu.ar) se pondrá en contacto para finalizar con el trámite de preinscripción.</p>' . '<p><b>IMPORTANTE:</b> La preinscripción será finalizada una vez que hayas terminado el formulario de preinscripción y presentando la documentación requerida en la sede dentro de los plazos establecidos por el INSPT.</p>';
 }
 
-function repuesta_succes()
-{
-    return '<p>Se ha iniciado el trámite de tu preinscripción. Personal del Departamento de Alumnos (ingreso2025@inspt.utn.edu.ar) se pondrá en contacto para finalizar con el trámite de preinscripción.</p>' . '<p><b>IMPORTANTE:</b> La preinscripción será procesada una vez que hayas, presentando la documentación requerida en la sede dentro de los plazos establecidos por el INSPT.</p>';
-}
-
-function sanitizar_datos($datos)
-{
-    $prefijo = obtener_prefijo();
-    $dato_szanitizado = [];
-    foreach ($datos as $key => $dato) {
-        if ($key == $prefijo . '_apellidos' || $key == $prefijo . '_nombres') {
-            $dato_szanitizado[$key] = implode(" ", array_map(function ($x) {
-                return ucfirst(strtolower($x));
-            }, explode(" ", $dato)));
-        } else {
-            $dato_szanitizado[$key] = $dato;
-        }
-    }
-    return $dato_szanitizado;
-}
-function actualizar_data($post_id, $key, $dato)
-{
-    if (!is_wp_error($post_id)) {
-        if (is_array($dato)) {
-            foreach ($dato as $fragmento) {
-                add_post_meta($post_id, $key, $fragmento);
-            }
-        } else {
-            update_post_meta($post_id, $key, $dato);
-        }
-    } else {
-        return "Error al crear formulario: " . $post_id->get_error_message();
-    }
-}
-function enviar_mail($mails, $carrera, $mensaje)
-{
-    foreach ($mails as $mail) {
-        $mailer = new Mailing($mail, 'INSPT - Inscripción a ' . get_the_title($carrera), $mensaje);
-        $mailer->mandar_mail();
-    }
-}
-
-function mensaje_aceptacion($persona, $redireccionamiento)
+function mensaje_aceptacion_pre_formulario($persona, $redireccionamiento)
 {
     return '<style>
         .button {
@@ -429,7 +340,7 @@ function mensaje_aceptacion($persona, $redireccionamiento)
     <p>Instituto Nacional Superior del Profesorado Técnico</p>';
 }
 
-function mensaje_rechazo_formulario_incompleto($documentacion_faltante)
+function mensaje_rechazo_formulario_incompleto_pre_formulario($documentacion_faltante)
 {
     $mensaje = '<p>Este formulario ya está completado.</p><p>Entregar los documentos faltantes para finalizar la inscripción:</p><ul>';
     foreach ($documentacion_faltante as $doc) {
@@ -439,7 +350,54 @@ function mensaje_rechazo_formulario_incompleto($documentacion_faltante)
     return $mensaje;
 }
 
-function mensaje_rechazo_formulario_completado()
+function mensaje_rechazo_formulario_completado_pre_formulario()
 {
     return '<p>Este formulario ya está completado y <b>ya estás inscripto a la carrera</b></p>';
+}
+
+function validar_datos_pre_formulario_preinscriptos($datos, $prefijo)
+{
+    $errores = [];
+    $obligatorios = obtener_obligatorios(obtener_preguntas(), $prefijo);
+
+    foreach ($obligatorios as $campo => $etiqueta) {
+        if (empty($datos[$campo])) {
+            $errores[] = 'El campo "' . $etiqueta . '" es obligatorio';
+        }
+    }
+
+    if (!preg_match('/^\d{1,3}(?:\.\d{3})*$/', ($datos)[$prefijo . '_dni'])) {
+        $errores[] = "Formato incorrecto. Se ingresa el DNI. Exclusivamente números separados por punto cada tres caracteres de derecha a izquierda.";
+    }
+
+    foreach ($datos[$prefijo . '_mails_de_contacto'] as $mail) {
+        if (!filter_var($mail, FILTER_VALIDATE_EMAIL)) {
+            $errores[] = "Correo inválido" . $mail;
+
+            $errores[] = '<p> usuario@.com (dominio inválido) </p>';
+
+            $errores[] = '<p> @example.com (falta la parte local) </p>';
+
+            $errores[] = '<p> usuario@dominio (falta el TLD, como .com) </p>';
+
+            $errores[] = '<p> usuario espacio@example.com (espacios no permitidos). </p>';
+        }
+    }
+
+    return $errores;
+}
+
+function sanitizar_datos_pre_formulario_preinscriptos($datos, $prefijo)
+{
+    $dato_szanitizado = [];
+    foreach ($datos as $key => $dato) {
+        if ($key == $prefijo . '_apellidos' || $key == $prefijo . '_nombres') {
+            $dato_szanitizado[$key] = implode(" ", array_map(function ($x) {
+                return ucfirst(strtolower($x));
+            }, explode(" ", $dato)));
+        } else {
+            $dato_szanitizado[$key] = $dato;
+        }
+    }
+    return $dato_szanitizado;
 }

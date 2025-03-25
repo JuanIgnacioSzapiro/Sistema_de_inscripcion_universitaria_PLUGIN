@@ -35,6 +35,7 @@ function desinstalar_roles()
         new CaracteristicasBasicasPostType('pre_form_ingreso'), 
         new CaracteristicasBasicasPostType('form_ingreso'), 
         new CaracteristicasBasicasPostType('links_preinscriptos'), 
+        new CaracteristicasBasicasPostType('fechas'), 
     );
     foreach($total as $individual){
         foreach ($individual->get_habilidades() as $valor) {
