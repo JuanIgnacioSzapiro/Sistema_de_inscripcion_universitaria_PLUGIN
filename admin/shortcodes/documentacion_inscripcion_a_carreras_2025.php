@@ -27,7 +27,8 @@ function documentacion_inscripciones_a_carreras_2025()
                     <div class="lado-izq">
                         <p>1- Completar el formulario de Preinscripción</p>
                         <p>2- Presentar la documentación requerida en la sede </p>
-                        <button class="boton_link">Formulario de inscripción</button>
+                        <a href="<?php echo obtener_el_link_de_pagina($GLOBALS['prefijo_variables_sql'] . '_links_preinscriptos_link_previo_preinscripcion') ?>"
+                            class="redireccionamiento">Formulario de inscripción</a>
                     </div>
                     <div class="lado-der">
                         <p>Para otros trámites y consultas</p>
@@ -37,14 +38,12 @@ function documentacion_inscripciones_a_carreras_2025()
                     </p>
                 </div>
             </div>
-            <div><a href="<?php echo obtener_el_link_de_pagina($GLOBALS['prefijo_variables_sql'] . '_links_preinscriptos_link_previo_preinscripcion') ?>"
-                    class="redireccionamiento">Formulario de inscripción</a></div>
+
             <h2 class="subtitulo espaciado">Preguntas Frecuentes</h2>
             <div class="contenedor-dividido">
                 <div class="lado-izq">
                     <p class="pregunta">¿En qué fechas puedo presentar la documentación?</p>
-                    <p>>Primer período de 5/8/2024 al 13/12/2024</p>
-                    <p>>Segundo período de 27/01/2025 al 28/02/2025</p>
+                    <p>Primer período de <?php echo obtener_fechas_entrega_documentacion()[0] ?> al <?php echo obtener_fechas_entrega_documentacion()[1] ?></p>
                     <p>Ver requisitos según el tipo de ingreso de cada carrera</p>
                 </div>
                 <div class="lado-der">

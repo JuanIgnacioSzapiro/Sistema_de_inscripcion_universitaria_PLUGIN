@@ -3,7 +3,7 @@
  * Plugin Name:       Plugin del Sistema de Inscripicón a Carreras INSPT
  * Plugin URI:        The home page of the plugin, which should be a unique URL, preferably on your own website. This must be unique to your plugin. You cannot use a WordPress.org URL here.Example: https://example.com/plugins/the-basics/
  * Description:       Sistema de inscripción a carreras del Instituto Nacional Superior del Profesorado Técnico
- * Version:           0.1
+ * Version:           1.0
  * Requires at least: 5.2
  * Requires PHP:      7.2
  * Author:            Juan Ignacio Szapiro
@@ -48,6 +48,8 @@ if (!defined('ABSPATH')) { // si la busqueda de la página web no es del path ab
                 -------------------------|-------------------|----------------
                 Remove Tables from wpdb  |       No          |       Yes
                 */
+
+                // En tu plugin o functions.php
             }
 
             public function instalar_plugins_requeridos()

@@ -153,6 +153,12 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
 
     $errores = validar_datos_pre_formulario_preinscriptos($datos, $prefijo);
 
+    $fecha_valida = obtener_fecha_inscripciones_valida();
+
+    if ($fecha_valida) {
+        $errores[] = $fecha_valida;
+    }
+
     if (!empty($errores)) {
         return new WP_REST_Response([
             'success' => false,
@@ -164,7 +170,7 @@ function handle_pre_formulario_preinscriptos_shortcode_submit($request)
 
         wp_set_current_user(1);
 
-        $existe_pre_formulario = obtener_resultado_query("select post_id from wp_postmeta where wp_postmeta.post_id = (SELECT ID from wp_posts WHERE wp_posts.post_title like '" . $datos_sanitizados[$prefijo . '_dni'] . "%' and wp_posts.post_status like 'publish' and wp_posts.post_type like 'pre_form_ingreso') and wp_postmeta.meta_key like 'INSPT_SISTEMA_DE_INSCRIPCIONES_pre_form_ingreso_carreras' and wp_postmeta.meta_value = " . $datos_sanitizados[$prefijo . '_carreras']);
+        $existe_pre_formulario = obtener_resultado_query("SELECT post_id from wp_postmeta where wp_postmeta.post_id = (SELECT ID from wp_posts WHERE wp_posts.post_title like '" . $datos_sanitizados[$prefijo . '_dni'] . "%' AND wp_posts.post_status LIKE 'publish' AND wp_posts.post_type LIKE 'pre_form_ingreso'  ORDER BY ID DESC limit 1) and wp_postmeta.meta_key LIKE 'INSPT_SISTEMA_DE_INSCRIPCIONES_pre_form_ingreso_carreras' and wp_postmeta.meta_value = " . $datos_sanitizados[$prefijo . '_carreras']);
 
         $existe_formulario = !empty($existe_pre_formulario) ? obtener_resultado_query("SELECT ID from wp_posts WHERE wp_posts.post_title like '" . $datos_sanitizados[$prefijo . '_dni'] . "%' and wp_posts.post_type like 'form_ingreso'") : '';
 
@@ -330,7 +336,7 @@ function mensaje_aceptacion_pre_formulario($persona, $redireccionamiento)
     <a class="button" href="' . obtener_el_link_de_pagina($GLOBALS['prefijo_variables_sql'] . '_links_preinscriptos_link_documentacion') . '">Documentación requerida</a>
     <b>
     <p>Fechas para entrega de documentación para inscribirse:</p>
-    <p>Del 5/8/2024 al 13/12/2024 (lunes a viernes de 9 a 20 hs).</p>
+    <p>Del ' . obtener_fechas_entrega_documentacion()[0] . ' al ' . obtener_fechas_entrega_documentacion()[1] . ' (lunes a viernes de 9 a 20 hs).</p>
     <p>IMPORTANTE: Revisar en la página web las condiciones de ingreso a cada carrera (ver "TIPO DE INGRESO"). Allí se detallan los plazos de entrega de documentación para acceder a los mismos.</p>
     </b>
     <br><br>
@@ -346,7 +352,7 @@ function mensaje_rechazo_formulario_incompleto_pre_formulario($documentacion_fal
     foreach ($documentacion_faltante as $doc) {
         $mensaje .= '<li><p>' . $doc . '</p></li>';
     }
-    $mensaje .= '</ul>';
+    $mensaje .= '</ul>' . '<p>Fechas para entrega de documentación para inscribirse:</p><p>Del ' . obtener_fechas_entrega_documentacion()[0] . ' al ' . obtener_fechas_entrega_documentacion()[1] . ' (lunes a viernes de 9 a 20 hs).</p>';
     return $mensaje;
 }
 

@@ -81,3 +81,29 @@ function recorrer_array($campos, $prefijo)
         <?php
     }
 }
+
+function obtener_fecha_inscripciones_valida()
+{
+    $query_fecha = "SELECT meta_value from wp_postmeta WHERE wp_postmeta.post_id = (SELECT ID from wp_posts WHERE wp_posts.post_type like 'fechas' and wp_posts.post_status like 'publish' ORDER BY wp_posts.ID DESC limit 1) and wp_postmeta.meta_key like '";
+
+    $fecha_de_inscripcion_apertura = obtener_resultado_query($query_fecha . "INSPT_SISTEMA_DE_INSCRIPCIONES_fechas_apertura_apertura_de_inscripciones';")[0]->meta_value;
+
+    $fecha_de_inscripcion_cierre = obtener_resultado_query($query_fecha . "INSPT_SISTEMA_DE_INSCRIPCIONES_fechas_cierre_de_inscripciones';")[0]->meta_value;
+
+    if (date("d/m/y") <= $fecha_de_inscripcion_apertura && get_the_date() >= $fecha_de_inscripcion_cierre) {
+        return $errores[] = '<p>La fecha de inscripción es desde ' . $fecha_de_inscripcion_apertura . ', hasta ' . $fecha_de_inscripcion_cierre . '</p>';
+    } else {
+        return '';
+    }
+}
+
+function obtener_fechas_entrega_documentacion()
+{
+    $query_fecha = "SELECT meta_value from wp_postmeta WHERE wp_postmeta.post_id = (SELECT ID from wp_posts WHERE wp_posts.post_type like 'fechas' and wp_posts.post_status like 'publish' ORDER BY wp_posts.ID DESC limit 1) and wp_postmeta.meta_key like '";
+
+    $fecha_de_inscripcion_apertura = obtener_resultado_query($query_fecha . "INSPT_SISTEMA_DE_INSCRIPCIONES_fechas_apertura_entrega_documentacion';")[0]->meta_value;
+
+    $fecha_de_inscripcion_cierre = obtener_resultado_query($query_fecha . "INSPT_SISTEMA_DE_INSCRIPCIONES_fechas_cierre_documentacion';")[0]->meta_value;
+
+    return array($fecha_de_inscripcion_apertura, $fecha_de_inscripcion_cierre);
+}

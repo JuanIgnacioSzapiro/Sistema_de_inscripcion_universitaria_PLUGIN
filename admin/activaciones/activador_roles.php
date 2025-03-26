@@ -60,52 +60,95 @@ function activar_habilidades($roles)
         new CaracteristicasBasicasPostType('tipos_de_carrera'),
         new CaracteristicasBasicasPostType('materias'),
         new CaracteristicasBasicasPostType('planes_y_programas'),
-        new CaracteristicasBasicasPostType('doc'), 
-        new CaracteristicasBasicasPostType('doc_total'), 
-        new CaracteristicasBasicasPostType('pre_form_ingreso'), 
-        new CaracteristicasBasicasPostType('form_ingreso'), 
+        new CaracteristicasBasicasPostType('doc'),
+        new CaracteristicasBasicasPostType('doc_total'),
+        new CaracteristicasBasicasPostType('pre_form_ingreso'),
+        new CaracteristicasBasicasPostType('form_ingreso'),
         new CaracteristicasBasicasPostType('links_preinscriptos'),
-        new CaracteristicasBasicasPostType('fechas'), 
+        new CaracteristicasBasicasPostType('fechas'),
+    );
+    $apoyo = array(
+        new CaracteristicasBasicasPostType('form_ingreso'),
+    );
+
+    $coordinacion = array(
+        new CaracteristicasBasicasPostType('carreras'),
+        new CaracteristicasBasicasPostType('tipos_de_carrera'),
+        new CaracteristicasBasicasPostType('materias'),
+        new CaracteristicasBasicasPostType('planes_y_programas'),
+        new CaracteristicasBasicasPostType('doc'),
+        new CaracteristicasBasicasPostType('doc_total'),
+        new CaracteristicasBasicasPostType('form_ingreso'),
+        new CaracteristicasBasicasPostType('fechas'),
+    );
+    $profesores = array(
+        new CaracteristicasBasicasPostType('form_ingreso'),
     );
 
     foreach ($roles as $rol) {
         $rol_obtenido = get_role(is_a($rol, 'TipoDeRol') ? $rol->get_id() : $rol);
         switch ($rol_obtenido->name) {
-            case 'administrator':
-                foreach($total as $individual){
+            case 'administrator': {
+                foreach ($total as $individual) {
                     foreach ($individual->get_habilidades() as $valor) {
                         $rol_obtenido->add_cap($valor);
                     }
                 }
                 break;
+            }
 
-            case 'supra_apoyo_de_alumno':
-
+            case 'supra_apoyo_de_alumno': {
+                foreach ($apoyo as $individual) {
+                    foreach ($individual->get_habilidades() as $valor) {
+                        $rol_obtenido->add_cap($valor);
+                    }
+                }
                 break;
+            }
 
-            case 'apoyo_de_alumno':
-
+            case 'apoyo_de_alumno': {
+                foreach ($apoyo as $individual) {
+                    foreach ($individual->get_habilidades() as $valor) {
+                        $rol_obtenido->add_cap($valor);
+                    }
+                }
                 break;
+            }
 
-            case 'supra_coordinador':
-
+            case 'supra_coordinador': {
+                foreach ($coordinacion as $individual) {
+                    foreach ($individual->get_habilidades() as $valor) {
+                        $rol_obtenido->add_cap($valor);
+                    }
+                }
                 break;
+            }
 
-            case 'coordinador':
-
+            case 'coordinador': {
+                foreach ($coordinacion as $individual) {
+                    foreach ($individual->get_habilidades() as $valor) {
+                        $rol_obtenido->add_cap($valor);
+                    }
+                }
                 break;
-
-            case 'preinscripto':
-
+            }
+            case 'supra_profesor': {
+                foreach ($profesores as $individual) {
+                    foreach ($individual->get_habilidades_no_admin() as $valor) {
+                        $rol_obtenido->add_cap($valor);
+                    }
+                }
                 break;
+            }
 
-            case 'supra_profesor':
-
+            case 'profesor': {
+                foreach ($profesores as $individual) {
+                    foreach ($individual->get_habilidades_no_admin() as $valor) {
+                        $rol_obtenido->add_cap($valor);
+                    }
+                }
                 break;
-
-            case 'profesor':
-
-                break;
+            }
         }
     }
 }

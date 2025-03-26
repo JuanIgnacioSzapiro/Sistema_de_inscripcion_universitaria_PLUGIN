@@ -48,6 +48,10 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
         add_action('template_redirect', array($this, 'add_template_support'));
 
         $this->registrar_post_type();
+
+        // Dentro de __construct():
+        add_action('admin_init', array($this, 'generar_csv'));
+        add_filter('views_edit-' . $this->get_plural(), array($this, 'agregar_boton_csv'));
     }
     public function set_prefijo($valor)
     {
@@ -257,5 +261,98 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
                 ? dirname(__FILE__) . '/../templetes/muestra_individual.php'
                 : $template;
         });
+    }
+    public function generar_csv()
+    {
+        $post_types = get_post_types([], 'names');
+
+        if (!isset($_GET['download_csv']) || $_GET['download_csv'] != 1)
+            return;
+        if (!isset($_GET['post_type']) || $_GET['post_type'] != $this->get_plural())
+            return;
+        if (!wp_verify_nonce($_GET['nonce'], 'descargar_csv_' . $this->get_plural()))
+            wp_die('Acceso no autorizado');
+
+        $post_status = isset($_GET['post_status']) ? $_GET['post_status'] : 'all';
+        $args = [
+            'post_type' => $this->get_plural(),
+            'post_status' => ($post_status === 'all') ? 'any' : $post_status,
+            'posts_per_page' => -1,
+        ];
+
+        if ($post_status === 'trash')
+            $args['post_status'] = 'trash';
+
+        $posts = get_posts($args);
+        $meta_box = $this->get_meta();
+        $meta_fields = [];
+
+        foreach ($meta_box->get_contenido() as $campo) {
+            $meta_key = $this->get_prefijo() . '_' . $this->get_plural() . '_' . $campo->get_nombre_meta();
+            $meta_fields[$meta_key] = $campo->get_etiqueta();
+        }
+
+        $meta_fields['creador'] = 'Creador';
+        $meta_fields['fecha_de_carga'] = 'Fecha de carga';
+        $meta_fields['modificador'] = 'Último modificador';
+        $meta_fields['fecha_de_modificacion'] = 'Fecha de modificación';
+        $meta_fields['estado_de_publicacion'] = 'Estado de publicación';
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename=' . $this->get_plural() . '_' . $post_status . '.csv');
+        $output = fopen('php://output', 'w');
+
+        fputcsv($output, array_values($meta_fields));
+
+        foreach ($posts as $post) {
+            $row = [];
+            foreach ($meta_fields as $key => $label) {
+                $valor = get_post_meta($post->ID, $key, true);
+                if (in_array($key, ['creador', 'fecha_de_carga', 'modificador', 'fecha_de_modificacion', 'estado_de_publicacion'])) {
+                    switch ($key) {
+                        case 'creador':
+                            $row[] = get_the_author_meta('display_name', $post->post_author);
+                            break;
+                        case 'fecha_de_carga':
+                            $row[] = get_the_date('', $post->ID);
+                            break;
+                        case 'modificador':
+                            $last_id = get_post_meta($post->ID, '_edit_last', true);
+                            $user = $last_id ? get_userdata($last_id)->display_name : 'N/A';
+                            $row[] = $user;
+                            break;
+                        case 'fecha_de_modificacion':
+                            $row[] = get_the_modified_date('', $post->ID);
+                            break;
+                        case 'estado_de_publicacion':
+                            $estado = get_post_status($post->ID);
+                            $row[] = $estado === 'publish' ? 'Publicado' : ucfirst($estado);
+                            break;
+                    }
+                } elseif (is_numeric($valor) && get_post($valor) && get_post($valor)->post_type === 'attachment') {
+                    $row[] = get_post(($valor))->guid;
+                } elseif (in_array(str_replace($this->get_prefijo() . '_' . $this->get_plural() . '_', '', $key), $post_types)) {
+                    $row[] = get_post(($valor))->post_title;
+                } else {
+                    $row[] = is_array($valor) ? implode('; ', $valor) : $valor;
+                }
+            }
+            fputcsv($output, $row);
+        }
+
+        fclose($output);
+        exit;
+    }
+
+    public function agregar_boton_csv($views)
+    {
+        $url = add_query_arg([
+            'post_type' => $this->get_plural(),
+            'download_csv' => 1,
+            'nonce' => wp_create_nonce('descargar_csv_' . $this->get_plural())
+        ], admin_url('edit.php'));
+
+        $views['download_csv'] = '<a href="' . esc_url($url) . '" class="button">Descargar CSV</a>';
+        return $views;
     }
 }

@@ -621,6 +621,12 @@ function handle_formulario_preinscriptos_shortcode_submit($request)
 
     $errores = validar_datos_formulario_preinscriptos($datos, $prefijo);
 
+    $fecha_valida = obtener_fecha_inscripciones_valida();
+
+    if ($fecha_valida) {
+        $errores[] = $fecha_valida;
+    }
+
     if (!empty($errores)) {
         return new WP_REST_Response([
             'success' => false,
@@ -629,7 +635,6 @@ function handle_formulario_preinscriptos_shortcode_submit($request)
         ], 200);
     } else {
         $datos_sanitizados = sanitizar_datos_formulario_preinscriptos($datos, $prefijo);
-
 
         $existe_formulario = obtener_resultado_query("SELECT ID from wp_posts WHERE wp_posts.post_title like '" . $datos_sanitizados[$prefijo . '_dni'] . "%' and wp_posts.post_type like 'form_ingreso'");
 
@@ -705,8 +710,8 @@ function mensaje_aceptacion_formulario($persona)
     return '<p>Bienvenida/o ' . $persona . '</p>
     <p>El número de registro es para confirmarle que la preinscripción fue realizada correctamente pero no será utilizado en ningún otro trámite, solo si desea hacer una consulta sobre su preinscripción deberá hacer referencia a este número.</p>
     <p>Te recordamos que la vacante quedará reservada una vez que hayas presentado en nuestra sede de Av. Triunvirato 3174, CABA, de 9 a 20 hs., toda la documentación requerida.</p>
-    <p>Fechas para entrega de documentación:</p>
-    <p>Del 5/8/2025 al 13/12/2025</p>
+    <p>Fechas para entrega de documentación para inscribirse:</p>
+    <p>Del ' . obtener_fechas_entrega_documentacion()[0] . ' al ' . obtener_fechas_entrega_documentacion()[1] . ' (lunes a viernes de 9 a 20 hs).</p>
     <p>Ante cualquier inquietud, no dudes en comunicarte con nosotros a través de nuestra web o respondiendo este correo electrónico.</p>
     <br><br>
     <p>Ante cualquier inquietud, no dudes en comunicarte con nosotros a través de nuestra web o respondiendo este correo electrónico.</p>
@@ -721,7 +726,7 @@ function mensaje_rechazo_formulario_incompleto_formulario($documentacion_faltant
     foreach ($documentacion_faltante as $doc) {
         $mensaje .= '<li><p>' . $doc . '</p></li>';
     }
-    $mensaje .= '</ul>';
+    $mensaje .= '</ul>' . '<p>Fechas para entrega de documentación para inscribirse:</p><p>Del ' . obtener_fechas_entrega_documentacion()[0] . ' al ' . obtener_fechas_entrega_documentacion()[1] . ' (lunes a viernes de 9 a 20 hs).</p>';
     return $mensaje;
 }
 
