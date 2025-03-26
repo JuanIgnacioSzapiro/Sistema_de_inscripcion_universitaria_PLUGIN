@@ -68,15 +68,11 @@ function generador_general($para_mostrar, $el_id)
                 ob_start();
                 if (in_array($campo, $post_types)) {
                     foreach ($items as $key => $item) {
-                        $sub_meta = get_post_meta($item);
-                        if (!empty($sub_meta)) {
-                            if ($key != count($items) - 1) {
-                                echo '<table class="borde_inferior_rojo"><tbody>';
-                            } else {
-                                echo '<table class=""><tbody>';
-                            }
-                            generador_general($sub_meta, $item);
-                            echo '</tbody></table>';
+                        $titulo = get_post($item);
+                        if (count($items) > 1) {
+                            echo '<p><a href="' . $titulo->guid . '">' . $titulo->post_title . '</a><p>';
+                        } else {
+                            echo '<a href="' . $titulo->guid . '">' . $titulo->post_title . '</a>';
                         }
                     }
                 } else {

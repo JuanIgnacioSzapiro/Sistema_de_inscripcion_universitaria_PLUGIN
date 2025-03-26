@@ -2,9 +2,10 @@
 function activar_paginas()
 {
     $title_of_the_page = array(
-        'Demostración shortcodes' => "[mostrar_galeria post_type='carreras']",
+        'Visualizador de carreras' => "[mostrar_galeria post_type='carreras']",
         'Documentación para la inscripción a carreras 2025' => "[doc_insc_2025]",
         'Pre formulario de pre inscripción 2025' => "[pre_formulario_preinscriptos]",
+        'Inicio de sesión' => "[inicio_sesion_manejo_preinscriptos]",
     );
 
     foreach ($title_of_the_page as $key => $item) {

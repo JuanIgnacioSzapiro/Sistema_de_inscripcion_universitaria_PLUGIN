@@ -158,10 +158,10 @@ class CaracteristicasBasicasPostType
     public function get_habilidades_no_admin()
     {
         return [
-            'read_post' => 'read_' . $this->get_plural(),
-            'read_private_posts' => 'read_private_multiples_' . $this->get_plural(),
-            'edit_posts' => 'edit_multiples_' . $this->get_plural(),
-            'edit_others_posts' => 'edit_others_multiples_' . $this->get_plural(),
+            'read' => 'read', // Necesario para acceder al área de admin
+            'read_post' => 'read_' . $this->get_plural(), // Ver posts individuales
+            'read_private_posts' => 'read_private_multiples_' . $this->get_plural(), // Ver posts privados
+            'edit_others_posts' => 'edit_others_multiples_' . $this->get_plural(), // Ver posts de otros usuarios
         ];
     }
 

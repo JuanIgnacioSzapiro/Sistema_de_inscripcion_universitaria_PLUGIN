@@ -6,6 +6,8 @@ require_once dirname(__FILE__) . '/meta-box/meta_box_tipo_texto.php';
 require_once dirname(__FILE__) . '/filtros/creador_filtros.php';
 require_once dirname(__FILE__) . '/filtros/filtro.php';
 require_once dirname(__FILE__) . '/generador_post_type.php';
+require_once dirname(__FILE__) . '/meta-box/meta_box_clave.php';
+
 
 class CuerpoPostType extends CaracteristicasBasicasPostType
 {
