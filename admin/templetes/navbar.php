@@ -53,6 +53,7 @@ function obtener_navbar()
                         'X-WP-Nonce': '<?php echo $nonce; ?>' // Incluir nonce en headers
                     },
                     success: function (response) {
+                        window.location.href = '<?php echo obtener_resultado_query('SELECT guid FROM wp_posts where wp_posts.post_title like "Inicio de sesión" LIMIT 1;')[0]->guid ?>';
                     },
                     error: function (xhr, status, error) {
                         console.error('Error al cerrar sesión:', error);
