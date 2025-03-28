@@ -11,4 +11,5 @@ function activar_shortcodes()
 
     include_once dirname(__FILE__) . '/../shortcodes/inicio_sesion.php';
 
+    include_once dirname(__FILE__) . '/../shortcodes/menu_inicio.php';
 }

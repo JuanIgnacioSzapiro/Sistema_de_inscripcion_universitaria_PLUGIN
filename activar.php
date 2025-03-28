@@ -16,9 +16,9 @@ function activar_plugin()
 
     activar_roles();
 
-    activar_paginas();
-
     //activar_campo_registrar_usuario();
+
+    activar_paginas();
 
     activar_shortcodes();
 

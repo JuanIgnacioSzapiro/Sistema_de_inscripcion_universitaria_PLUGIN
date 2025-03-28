@@ -80,7 +80,8 @@ class TipoMetaBox
 
     public function get_llave_meta()
     {
-        return $GLOBALS['prefijo_variables_sql'] . '_' . $this->get_post_type_de_origen();
+        $x = isset($GLOBALS['prefijo_variables_sql']) ? $GLOBALS['prefijo_variables_sql'] : 'INSPT_SISTEMA_DE_INSCRIPCIONES';
+        return $x . '_' . $this->get_post_type_de_origen();
     }
 
     public function get_post_type_de_origen()

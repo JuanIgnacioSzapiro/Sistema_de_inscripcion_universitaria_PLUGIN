@@ -64,7 +64,7 @@ function activar_habilidades($roles)
         new CaracteristicasBasicasPostType('doc_total'),
         new CaracteristicasBasicasPostType('pre_form_ingreso'),
         new CaracteristicasBasicasPostType('form_ingreso'),
-        new CaracteristicasBasicasPostType('links_preinscriptos'),
+        new CaracteristicasBasicasPostType('links'),
         new CaracteristicasBasicasPostType('fechas'),
     );
     $apoyo = array(
@@ -151,4 +151,31 @@ function activar_habilidades($roles)
             }
         }
     }
+
+
 }
+
+function ocultar_admin_bar_para_roles()
+{
+    // Verificar si el usuario está logeado
+    if (is_user_logged_in()) {
+        // Obtener el objeto del usuario actual
+        $usuario = wp_get_current_user();
+
+        // Roles a los que quieres ocultar la barra
+        $roles_restringidos = array(
+            'apoyo_de_alumno',
+            'coordinador',
+            'preinscripto',
+            'supra_profesor',
+            'profesor',
+        );
+
+        // Comprobar si el usuario tiene alguno de los roles restringidos
+        if (array_intersect($roles_restringidos, $usuario->roles)) {
+            // Ocultar la barra de administración
+            show_admin_bar(false);
+        }
+    }
+}
+add_action('after_setup_theme', 'ocultar_admin_bar_para_roles');

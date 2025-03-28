@@ -1,2 +1,4 @@
 <?php
-die('Acceso no permitido');
+require_once dirname(__FILE__) . '/admin/templetes/redirect.php';
+
+controlar_acceso_pagina_con_shortcode();

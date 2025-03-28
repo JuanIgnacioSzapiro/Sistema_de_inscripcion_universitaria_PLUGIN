@@ -50,7 +50,7 @@ function activar_post_types()
     $links_preinscripciones = new CuerpoPostType(
         'link de inscripciones',
         'Link de inscripciones',
-        'links_preinscriptos',
+        'links',
         false,
         $prefijo,
         'dashicons-admin-links',
@@ -70,11 +70,17 @@ function activar_post_types()
                     'Se selecciona la página del formulario previo a la preinscripción'
                 ),
                 new CampoDropDownTipoPost(
-                    'link_preinscripcion',
-                    'Página del formulario',
+                    'inicio_sesion',
+                    'Página del inicio de sesión',
                     'page',
-                    'Se selecciona la página del formulario para la preinscripción'
-                )
+                    'Se selecciona la página del inicio de sesión'
+                ),
+                new CampoDropDownTipoPost(
+                    'menu_inicio',
+                    'Página del menú de inicio',
+                    'page',
+                    'Se selecciona la página del menú de inicio'
+                ),
             )
             ,
             array('page'),
@@ -939,4 +945,6 @@ con especialidad en:',
         ),
         array('dni', 'apellidos', 'mails_de_contacto', 'carreras'),
     );
+
+    
 }

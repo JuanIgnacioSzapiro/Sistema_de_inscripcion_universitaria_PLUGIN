@@ -54,6 +54,10 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
         // Dentro de __construct():
         add_action('admin_init', array($this, 'generar_csv'));
         add_filter('views_edit-' . $this->get_plural(), array($this, 'agregar_boton_csv'));
+
+        add_shortcode('shortcode_listado_post_type_' . $this->get_plural(), array($this, 'mostrar_pantalla_de_listado'));
+
+        $this->generador_pagina_post_type_listado();
     }
     public function set_prefijo($valor)
     {
@@ -253,6 +257,7 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
             ));
         }
     }
+
     public function add_template_support()
     {
         $post_type = $this->get_plural();
@@ -264,6 +269,7 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
                 : $template;
         });
     }
+
     public function generar_csv()
     {
         $post_types = get_post_types([], 'names');
@@ -356,5 +362,25 @@ class CuerpoPostType extends CaracteristicasBasicasPostType
 
         $views['download_csv'] = '<a href="' . esc_url($url) . '" class="button">Descargar CSV</a>';
         return $views;
+    }
+    public function mostrar_pantalla_de_listado()
+    {
+        ob_start();
+        if (is_user_logged_in()) {
+            obtener_navbar();
+        } else {
+            controlar_acceso_pagina_con_shortcode();
+        }
+        return ob_get_clean();
+    }
+
+    public function generador_pagina_post_type_listado()
+    {
+        $titulo = 'Listado de ' . $this->get_nombre_para_mostrar();
+        $paginador = new Paginador($titulo, '[shortcode_listado_post_type_' . $this->get_plural() . ']');
+        $objPage = $paginador->new_get_page_by_title($titulo);
+        if (empty($objPage)) {
+            $paginador->create_page($titulo, '[shortcode_listado_post_type_' . $this->get_plural() . ']');
+        }
     }
 }

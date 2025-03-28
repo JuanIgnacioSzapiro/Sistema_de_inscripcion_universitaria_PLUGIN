@@ -12,7 +12,7 @@ function desinstalar_post_types()
         new CaracteristicasBasicasPostType('doc_total'), 
         new CaracteristicasBasicasPostType('pre_form_ingreso'), 
         new CaracteristicasBasicasPostType('form_ingreso'), 
-        new CaracteristicasBasicasPostType('links_preinscriptos'), 
+        new CaracteristicasBasicasPostType('links'), 
         new CaracteristicasBasicasPostType('fechas'), 
     );
 

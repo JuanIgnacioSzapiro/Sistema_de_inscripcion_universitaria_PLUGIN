@@ -1,15 +1,7 @@
 <?php
 function obtener_el_link_de_pagina($key_de_array_asociado)
 {
-    return get_post(get_post_meta(get_posts(
-        array(
-            'numberposts' => 1,
-            'post_type' => 'links_preinscriptos',
-            'post_status' => 'publish',
-            'orderby' => 'date',
-            'order' => 'ASC'
-        )
-    )[0]->ID, $key_de_array_asociado, true))->guid;
+    return obtener_resultado_query('SELECT guid FROM wp_posts where wp_posts.post_title like "' . $key_de_array_asociado . '" LIMIT 1;')[0]->guid;
 }
 
 function obtener_resultado_query($query)
@@ -22,7 +14,8 @@ function obtener_resultado_query($query)
 
 function obtener_prefijo($prefijo_post_type)
 {
-    return $GLOBALS['prefijo_variables_sql'] . $prefijo_post_type;
+    $x = isset($GLOBALS['prefijo_variables_sql']) ? $GLOBALS['prefijo_variables_sql'] : 'INSPT_SISTEMA_DE_INSCRIPCIONES';
+    return $x . $prefijo_post_type;
 }
 
 function espiar($texto, $data)

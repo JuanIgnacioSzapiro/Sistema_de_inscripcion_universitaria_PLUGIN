@@ -333,7 +333,7 @@ function mensaje_aceptacion_pre_formulario($persona, $redireccionamiento)
     <p><b>IMPORTANTE:</b></p>
     <p><b>2. Presentación de la documentación</b></p>
     <p>La vacante quedará reservada una vez que hayas completado el formulario “continuar Preinscripción” y <b>presentado en nuestra sede de Av. Triunvirato 3174, CABA, de 9 a 20 hs. toda la documentación requerida dentro de los plazos fijados por el INSPT.</b></p>
-    <a class="button" href="' . obtener_el_link_de_pagina($GLOBALS['prefijo_variables_sql'] . '_links_preinscriptos_link_documentacion') . '">Documentación requerida</a>
+    <a class="button" href="' . obtener_resultado_query("SELECT guid FROM wp_posts WHERE wp_posts.ID = (SELECT meta_value FROM wp_postmeta WHERE meta_key like '" . $GLOBALS['prefijo_variables_sql'] . '_links_link_documentacion' . "')")[0]->guid . '">Documentación requerida</a>
     <b>
     <p>Fechas para entrega de documentación para inscribirse:</p>
     <p>Del ' . obtener_fechas_entrega_documentacion()[0] . ' al ' . obtener_fechas_entrega_documentacion()[1] . ' (lunes a viernes de 9 a 20 hs).</p>

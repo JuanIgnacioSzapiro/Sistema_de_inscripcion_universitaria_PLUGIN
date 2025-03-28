@@ -1,5 +1,7 @@
 <?php
 require_once dirname(__FILE__) . '/../funciones.php';
+require_once dirname(__FILE__) . '/../templetes/redirect.php';
+
 
 /**
  * Single Materia Template
@@ -42,8 +44,10 @@ get_header();
                 ?>
             </div>
             <?php
-        }
+        } else {
+            echo '<p>No tienes permiso para acceder a esta página.</p>';
 
+        }
     endwhile;
     ?>
 </div>
@@ -154,7 +158,7 @@ function generador_carreras($post)
         <h2 class="tipos-de-carrera">
             <?php echo get_the_title(get_post(get_post_meta($post->ID, $prefijo . '_carreras_tipos_de_carrera', true))); ?>
         </h2>
-        <a href="<?php echo obtener_el_link_de_pagina($GLOBALS['prefijo_variables_sql'] . '_links_preinscriptos_link_documentacion'); ?>"
+        <a href="<?php echo obtener_resultado_query("SELECT guid FROM wp_posts WHERE wp_posts.ID = (SELECT meta_value FROM wp_postmeta WHERE meta_key like '" . $GLOBALS['prefijo_variables_sql'] . '_links_link_documentacion' . "')")[0]->guid; ?>"
             class="redireccionamiento">Inscripción 2025</a>
     </div>
     <p class="descripcion-carrera">

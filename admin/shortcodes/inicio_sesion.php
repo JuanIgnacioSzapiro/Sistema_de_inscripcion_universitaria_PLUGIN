@@ -156,7 +156,7 @@ function handle_inicio_sesion_shortcode_submit($request)
 
     return new WP_REST_Response([
         'success' => true,
-        'redirect' => 'http://localhost/wordpress/index.php/carreras/informatica-aplicada/',
+        'redirect' => obtener_resultado_query("SELECT guid FROM wp_posts WHERE wp_posts.ID = (SELECT meta_value FROM wp_postmeta WHERE meta_key like '" . $GLOBALS['prefijo_variables_sql'] . '_links_menu_inicio' . "')")[0]->guid,
         'message' => ['Inicio de sesión exitoso']
     ], 200);
 }
